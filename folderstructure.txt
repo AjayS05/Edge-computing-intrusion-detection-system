@@ -1,0 +1,83 @@
+edge-computing-monitoring-solution/
+│
+├── hardware/                        # Hardware-related configurations and setup
+│   ├── raspberry_pi/                 # Raspberry Pi OS, configuration, and setup
+│   │   ├── install_os.sh            # Script to install OS (Raspberry Pi OS or Ubuntu)
+│   │   ├── pxeboot_setup.md         # Guide to PXE boot Raspberry Pi 3 nodes over LAN
+│   │   └── camera_setup.md          # Setup for Raspberry Pi Camera Module and AI HAT
+│
+├── object_detection/                # Object detection model development and training
+│   ├── dataset/                     # Images and data collection for training/testing
+│   │   ├── raw_data/                # Raw images from cameras
+│   │   └── processed_data/          # Preprocessed images for model training
+│   ├── training/                    # Training scripts and model files
+│   │   ├── train_model.py           # Python script to train object detection model
+│   │   └── trained_model.h5         # Model weights and configuration file
+│   ├── inference/                   # Inference scripts for real-time object detection
+│   │   └── detect_objects.py        # Real-time detection script for Raspberry Pi
+│   ├── requirements.txt             # Dependencies for object detection (e.g., TensorFlow, OpenCV)
+│
+├── mpi_cluster/                     # MPI Cluster setup and performance analysis
+│   ├── mpi_setup.md                 # Instructions to set up MPI on Raspberry Pi cluster
+│   ├── hpl_benchmark.py             # HPL (High Performance LINPACK) benchmark script
+│   ├── mpi_example_1.py             # MPI example to demonstrate scalability
+│   ├── mpi_example_2.py             # MPI example to demonstrate Amdahl's and Gustafson's Law
+│   └── requirements.txt             # Dependencies for MPI and benchmarking
+│
+├── monitoring/                      # Monitoring solution setup (e.g., Prometheus, Grafana)
+│   ├── prometheus_setup.md          # Guide to set up Prometheus for monitoring
+│   ├── grafana_dashboard.json       # Grafana dashboard JSON configuration
+│   ├── prometheus_config.yaml      # Prometheus configuration file
+│   └── monitoring_scripts/          # Scripts to collect system and service metrics
+│       └── monitor_system.py        # Script to collect health metrics from Pi nodes
+│
+├── backend/                         # Backend to manage sensor nodes and collected data
+│   ├── app/                          # Application code for the backend
+│   │   ├── __init__.py               # Python package init file
+│   │   ├── sensor_manager.py         # Logic to manage sensor nodes
+│   │   ├── data_storage.py           # Logic to store and retrieve sensor data
+│   │   ├── api/                      # API routes for frontend communication
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py             # REST API routes
+│   │   │   └── models.py             # Database models for sensor data
+│   │   └── config.py                 # Configuration file (e.g., database, sensor settings)
+│   ├── docker/                       # Docker related files
+│   │   ├── Dockerfile                # Dockerfile to containerize the backend app
+│   │   └── .dockerignore             # Docker ignore file
+│   ├── requirements.txt              # Dependencies (e.g., Flask/FastAPI, SQLAlchemy)
+│   └── telegram_bot.py               # Telegram bot for sending alerts
+│
+├── frontend/                        # Frontend application for event visualization
+│   ├── src/                          # React.js app
+│   │   ├── components/               # Reusable components (e.g., event cards, alert notifications)
+│   │   ├── pages/                    # Pages (e.g., dashboard, event log)
+│   │   ├── services/                 # Services to interact with backend APIs
+│   │   └── App.js                    # Main entry point of the frontend app
+│   ├── public/                       # Static assets (e.g., images, favicon)
+│   ├── docker/                       # Docker setup for frontend app
+│   │   ├── Dockerfile                # Dockerfile for the frontend
+│   │   └── .dockerignore             # Docker ignore file
+│   ├── requirements.txt              # Frontend dependencies (e.g., React, Axios for API calls)
+│   └── package.json                  # npm configuration file
+│
+├── kubernetes/                      # Kubernetes setup for deployment (frontend, backend, and monitoring)
+│   ├── backend-deployment.yaml       # Kubernetes deployment for backend
+│   ├── frontend-deployment.yaml      # Kubernetes deployment for frontend
+│   ├── prometheus-deployment.yaml    # Kubernetes deployment for Prometheus
+│   ├── grafana-deployment.yaml       # Kubernetes deployment for Grafana
+│   ├── service.yaml                  # Kubernetes service for frontend and backend communication
+│   └── ingress.yaml                  # Kubernetes Ingress for external access
+│
+├── scripts/                          # Miscellaneous scripts for setup and maintenance
+│   ├── setup_cluster.sh              # Script to set up the Raspberry Pi cluster
+│   ├── deploy_backend.sh             # Script to deploy backend on Raspberry Pi Kubernetes cluster
+│   └── deploy_frontend.sh            # Script to deploy frontend on Kubernetes
+│
+├── docs/                             # Documentation and guides
+│   ├── setup_guide.md                # Guide on setting up the project
+│   ├── deployment.md                 # Guide on deploying the app to the Raspberry Pi cluster
+│   ├── hardware_setup.md             # Hardware setup and Raspberry Pi configuration guide
+│   └── usage.md                      # How to use the IDS system and view results
+│
+├── .gitignore                        # Git ignore file
+└── README.md                         # Project overview and instructions

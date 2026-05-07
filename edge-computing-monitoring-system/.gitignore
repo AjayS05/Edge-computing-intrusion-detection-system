@@ -1,0 +1,50 @@
+# Python-related files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.vscode/
+env/
+.venv/
+env.bak/
+*.egg-info/
+Pipfile.lock
+poetry.lock
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Docker-related files
+*.log
+*.pid
+*.db
+.docker/
+.dockerignore
+
+# Kubernetes-related files
+.kube/
+secrets/
+*.yaml
+
+# Node.js and Frontend (React, etc.)
+node_modules/
+build/
+dist/
+npm-debug.log
+yarn-error.log
+
+# IDE/editor-specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS-specific files
+.DS_Store       # macOS
+Thumbs.db       # Windows
+
+# Temporary and backup files
+*~
+*.swp
+*.tmp
+*.bak
