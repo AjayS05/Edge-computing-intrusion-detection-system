@@ -20,7 +20,7 @@ Ran the training code inside the cc_ai_model.ipynb notebook using free cloud com
 
 Checked the accuracy graphs to make sure the model wasn't making too many mistakes, saving the progress charts straight to the results/ folder.
 
-Saved the final, optimized file as best_k.pt—built specifically to be small and fast enough to run smoothly on a Raspberry Pi.
+Saved the final, optimized file as best_k.pt built specifically to be small and fast enough to run smoothly on a Raspberry Pi.
 
 3. Setting Up the Raspberry Pi 4
 
