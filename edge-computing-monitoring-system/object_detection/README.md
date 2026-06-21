@@ -4,15 +4,15 @@
 
 To make sure the AI model works reliably under different real-world conditions, a large custom dataset was put together:
 
-Dataset Size: Collected and organized a library of over 34,000 images covering multiple threat categories.
+- Dataset Size: Collected and organized a library of over 34,000 images covering multiple threat categories.
 
 Image Tweaks (Augmentations): Modified the images on purpose to prepare the model for tough conditions:
 
-Low-Lighting: Dimmed the images to simulate dark rooms or nighttime security monitoring.
+- Low-Lighting: Dimmed the images to simulate dark rooms or nighttime security monitoring.
 
-Different Angles: Rotated and tilted images to make sure the model recognizes items even if the camera is mounted sideways or up high.
+- Different Angles: Rotated and tilted images to make sure the model recognizes items even if the camera is mounted sideways or up high.
 
-Labels: Drew clean boxes around objects and saved the labels so the model could learn from them.
+- Annotation Integrity: Standardized bounding boxes and multi-class tracking configurations mapped to the Roboflow dataset standard and referenced cleanly via data.yaml.
 
 ## 2. Training the Model on Kaggle
 
@@ -28,11 +28,11 @@ Saved the final, optimized file as best_k.pt built specifically to be small and 
 
 To move the project from the cloud onto the actual Raspberry Pi 4 hardware, a quick environment setup was completed:
 
-System Update: Updated the Pi’s internal operating system to the latest version.
+- System Update: Updated the Pi’s internal operating system to the latest version.
 
-YOLO Installation: Installed the necessary software libraries required to read the model file on the Pi's processor.
+- YOLO Installation: Installed the necessary software libraries required to read the model file on the Pi's processor.
 
-Speed Adjustments: Changed internal settings so the Pi can process images quickly without lagging or getting too hot.
+- Speed Adjustments: Changed internal settings so the Pi can process images quickly without lagging or getting too hot.
 
 ## 4. Running the Live Security Feed
 
