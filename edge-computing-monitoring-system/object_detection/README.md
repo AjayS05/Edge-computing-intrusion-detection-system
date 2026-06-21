@@ -1,4 +1,5 @@
-📊 1. Creating the Dataset
+1. Creating the Dataset
+
 To make sure the AI model works reliably under different real-world conditions, a large custom dataset was put together:
 
 Dataset Size: Collected and organized a library of over 34,000 images covering multiple threat categories.
@@ -11,7 +12,8 @@ Different Angles: Rotated and tilted images to make sure the model recognizes it
 
 Labels: Drew clean boxes around objects and saved the labels so the model could learn from them.
 
-⚡ 2. Training the Model on Kaggle
+2. Training the Model on Kaggle
+
 Because processing 34,000+ images requires massive computer power, the training was done in the cloud:
 
 Ran the training code inside the cc_ai_model.ipynb notebook using free cloud computers on Kaggle.
@@ -20,7 +22,8 @@ Checked the accuracy graphs to make sure the model wasn't making too many mistak
 
 Saved the final, optimized file as best_k.pt—built specifically to be small and fast enough to run smoothly on a Raspberry Pi.
 
-🛠️ 3. Setting Up the Raspberry Pi 4
+3. Setting Up the Raspberry Pi 4
+
 To move the project from the cloud onto the actual Raspberry Pi 4 hardware, a quick environment setup was completed:
 
 System Update: Updated the Pi’s internal operating system to the latest version.
@@ -29,5 +32,6 @@ YOLO Installation: Installed the necessary software libraries required to read t
 
 Speed Adjustments: Changed internal settings so the Pi can process images quickly without lagging or getting too hot.
 
-🚀 4. Running the Live Security Feed
+4. Running the Live Security Feed
+
 The actual live program lives inside inference/live_edge_threat2.py. This script turns on the camera, checks each frame using the trained best_k.pt file, and flags any threats instantly.
