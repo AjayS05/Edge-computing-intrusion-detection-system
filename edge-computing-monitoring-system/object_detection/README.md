@@ -1,4 +1,4 @@
-# OBJECT DETECTION README
+# OBJECT DETECTION Module
 
 ## 1. Creating the Dataset
 
