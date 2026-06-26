@@ -46,3 +46,77 @@ The project requires the installation of MPI(e.g, OpenMPI).
 
 -Compilation: mpicc -o MonteCarlopi MonteCarlopi.c
 -Execution: mpirun -np 6 MonteCarlopi
+
+# Matrix Multiplication using OpenMPI
+
+## Description
+
+This second example consists of computing the product of two matrices A and B.
+
+The goal is to parallelize the computation and store the result into a matrix C.
+
+Each node receives a row of A and the full matrix B and computes the corresponding row in C.
+
+---
+
+## Matrix product (row × matrix interpretation)
+
+The entry \( C_{ij} \) of the matrix \( C = A \times B \) is:
+
+\[
+C_{ij} = \sum_{k=0}^{n-1} a_{ik} \, b_{kj}
+\]
+
+---
+
+## Row of C as a product of a row of A with B
+
+The \( i \)-th row of \( C \) is:
+
+\[
+C_{i,*} = A_{i,*} \times B
+\]
+
+---
+
+## Dot product interpretation
+
+Each element of the row is a dot product:
+
+\[
+C_{ij} =
+\begin{bmatrix}
+a_{i0} & a_{i1} & \dots & a_{i,n-1}
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+b_{0j} \\
+b_{1j} \\
+\vdots \\
+b_{n-1,j}
+\end{bmatrix}
+\]
+
+---
+
+## Summary
+
+A row of \( C \) = a row of \( A \) multiplied by the matrix \( B \)
+
+## Parallelization with MPI
+
+The program follows the master/worker architecture :
+
+- **Master node**
+  - Allocates the memory for A and C
+
+- **Worker nodes**
+  - Compute their local row.
+
+
+## Compilation and execution
+
+The project requires the installation of MPI(e.g, OpenMPI).
+
+-Compilation: mpicc -o MatrixMulti MatrixMulti.c
+-Execution: mpirun -np 6 MatrixMulti

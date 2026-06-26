@@ -31,7 +31,7 @@ int main(int argc, char * argv[]){
     if(rank==0){
         double pi = 4.0 * (double)global_count / (double)N;
         end = MPI_Wtime();
-        printf("%f\n", size, end-start);
+        printf("%f\n", end-start);
     }
     MPI_Finalize();
     return 0;
