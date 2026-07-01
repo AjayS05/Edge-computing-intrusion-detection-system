@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Optional
+from uuid import uuid4
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from app.core.config import settings
+from app.services.inference_service import inference_service
 from app.services.storage_service import storage_service
 
 router = APIRouter(prefix="/api/v1/frames", tags=["frames"])
@@ -36,6 +38,7 @@ async def upload_frame(
     frame_id = storage_service.generate_frame_id()
 
     extension = "png" if image.content_type == "image/png" else "jpg"
+
     raw_image_key = storage_service.build_raw_image_key(
         sensor_node_id=sensor_node_id,
         frame_id=frame_id,
@@ -48,6 +51,71 @@ async def upload_frame(
         content_type=image.content_type or "image/jpeg",
     )
 
+    detections = []
+    events = []
+    annotated_image_key = None
+    annotated_image_uri = None
+    annotation_check = "not_run"
+    inference_latency_seconds = None
+    annotation_diff_pixels = 0
+
+    if settings.run_inference_on_upload:
+        try:
+            inference_result = inference_service.run_on_image_bytes(image_bytes)
+
+            detections = inference_result.detections
+            inference_latency_seconds = round(
+                inference_result.inference_latency_seconds,
+                4,
+            )
+            annotation_diff_pixels = inference_result.annotation_diff_pixels
+
+            if inference_result.annotated_image_bytes is not None:
+                annotated_image_key = storage_service.build_annotated_image_key(
+                    sensor_node_id=sensor_node_id,
+                    frame_id=frame_id,
+                    extension="jpg",
+                )
+
+                annotated_image_uri = storage_service.upload_image_bytes(
+                    image_bytes=inference_result.annotated_image_bytes,
+                    object_key=annotated_image_key,
+                    content_type="image/jpeg",
+                )
+
+                if annotation_diff_pixels > 0:
+                    annotation_check = "passed"
+                else:
+                    annotation_check = "failed_no_visual_difference"
+            else:
+                annotation_check = "not_applicable_no_detections"
+
+            for detection in detections:
+                if detection["severity"] in {"critical", "high", "medium"}:
+                    event_id = uuid4().hex
+                    events.append(
+                        {
+                            "event_id": event_id,
+                            "frame_id": frame_id,
+                            "event_type": detection["class_name"],
+                            "severity": detection["severity"],
+                            "confidence": detection["confidence"],
+                            "confidence_percent": detection["confidence_percent"],
+                            "sensor_node_id": sensor_node_id,
+                            "camera_location": camera_location,
+                            "captured_at": captured_at,
+                            "created_at": datetime.now(timezone.utc).isoformat(),
+                            "raw_image_key": raw_image_key,
+                            "annotated_image_key": annotated_image_key,
+                        }
+                    )
+
+        except Exception as exc:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Inference failed: {exc}",
+            ) from exc
+
     metadata = {
         "frame_id": frame_id,
         "sensor_node_id": sensor_node_id,
@@ -59,8 +127,15 @@ async def upload_frame(
         "size_bytes": len(image_bytes),
         "raw_image_key": raw_image_key,
         "raw_image_uri": raw_image_uri,
+        "annotated_image_key": annotated_image_key,
+        "annotated_image_uri": annotated_image_uri,
         "storage_backend": settings.storage_backend,
-        "status": "stored",
+        "status": "processed" if settings.run_inference_on_upload else "stored",
+        "detections": detections,
+        "events": events,
+        "inference_latency_seconds": inference_latency_seconds,
+        "annotation_check": annotation_check,
+        "annotation_diff_pixels": annotation_diff_pixels,
     }
 
     metadata_key = storage_service.build_frame_metadata_key(frame_id)
@@ -69,9 +144,31 @@ async def upload_frame(
         object_key=metadata_key,
     )
 
+    detection_key = storage_service.build_detection_metadata_key(frame_id)
+    detection_uri = storage_service.upload_metadata_json(
+        metadata={
+            "frame_id": frame_id,
+            "detections": detections,
+            "events": events,
+            "annotation_check": annotation_check,
+            "annotation_diff_pixels": annotation_diff_pixels,
+            "annotated_image_key": annotated_image_key,
+        },
+        object_key=detection_key,
+    )
+
+    for event in events:
+        event_key = storage_service.build_event_metadata_key(event["event_id"])
+        storage_service.upload_metadata_json(
+            metadata=event,
+            object_key=event_key,
+        )
+
     return {
-        "message": "Frame uploaded and stored successfully",
+        "message": "Frame uploaded and processed successfully",
         "frame": metadata,
         "metadata_key": metadata_key,
         "metadata_uri": metadata_uri,
+        "detection_key": detection_key,
+        "detection_uri": detection_uri,
     }

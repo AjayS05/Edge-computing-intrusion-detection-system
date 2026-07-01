@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     s3_unsigned_requests: bool = True
 
     max_upload_size_bytes: int = 5 * 1024 * 1024
+    
+    run_inference_on_upload: bool = True
+    yolo_model_path: str = "../object_detection/training/best_k.pt"
+    yolo_confidence_threshold: float = 0.55
 
     model_config = SettingsConfigDict(
         env_file=".env",
