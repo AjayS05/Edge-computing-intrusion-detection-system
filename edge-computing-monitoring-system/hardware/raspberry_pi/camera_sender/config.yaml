@@ -1,0 +1,15 @@
+backend_url: "http://192.168.50.1:8000"
+
+sensor_node_id: "rpi4-camera-01"
+camera_location: "lab-entry"
+
+capture_interval_seconds: 3
+
+width: 640
+height: 480
+jpeg_quality: 85
+
+request_timeout_seconds: 10
+retry_queue_max_images: 50
+
+runtime_directory: "~/edge-camera-sender-runtime"

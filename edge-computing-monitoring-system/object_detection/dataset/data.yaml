@@ -1,0 +1,13 @@
+train: c:/Users/madhu/Desktop/CloudComputing/train/images
+val: c:/Users/madhu/Desktop/CloudComputing/valid/images
+test: c:/Users/madhu/Desktop/CloudComputing/test/images
+
+nc: 6
+names: ['fire', 'intruder', 'liquid_spill', 'person', 'smoke', 'weapon']
+
+roboflow:
+  workspace: madhusudans-workspace-31zqm
+  project: cc_ai_model-v1
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/madhusudans-workspace-31zqm/cc_ai_model-v1/dataset/2
