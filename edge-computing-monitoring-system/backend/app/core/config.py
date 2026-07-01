@@ -1,37 +1,52 @@
-from __future__ import annotations
-
-import os
-from dataclasses import dataclass
 from pathlib import Path
 
-
-@dataclass(frozen=True)
-class Settings:
-    """Runtime settings loaded from environment variables."""
-
-    app_name: str
-    app_version: str
-    data_directory: Path
-    raw_frames_directory: Path
-    database_path: Path
-    max_upload_bytes: int
-    allowed_content_types: frozenset[str]
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-def load_settings() -> Settings:
-    data_directory = Path(
-        os.getenv("EDGE_MONITORING_DATA_DIR", "~/edge-monitoring-data")
-    ).expanduser().resolve()
+class Settings(BaseSettings):
+    app_name: str = "Edge Monitoring Backend"
+    app_version: str = "0.2.0"
 
-    return Settings(
-        app_name="Edge Computing Monitoring Backend",
-        app_version="0.1.0",
-        data_directory=data_directory,
-        raw_frames_directory=data_directory / "raw",
-        database_path=data_directory / "database" / "edge_monitoring.sqlite3",
-        max_upload_bytes=int(os.getenv("MAX_UPLOAD_BYTES", str(5 * 1024 * 1024))),
-        allowed_content_types=frozenset({"image/jpeg", "image/png"}),
+    # Storage mode: local or s3
+    storage_backend: str = "local"
+
+    # Local fallback/debug storage root
+    data_directory: Path = Path.home() / "edge-monitoring-data"
+
+    # Backward-compatible paths used by earlier backend code
+    database_path: Path | None = None
+    raw_frames_directory: Path | None = None
+    annotated_frames_directory: Path | None = None
+    metadata_directory: Path | None = None
+
+    # SeaweedFS S3 configuration
+    s3_endpoint_url: str = "http://192.168.178.200:8333"
+    s3_images_bucket: str = "captured-images"
+    s3_metadata_bucket: str = "event-metadata"
+    s3_unsigned_requests: bool = True
+
+    max_upload_size_bytes: int = 5 * 1024 * 1024
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
     )
 
+    def model_post_init(self, __context):
+        self.data_directory = Path(self.data_directory)
 
-settings = load_settings()
+        if self.database_path is None:
+            self.database_path = self.data_directory / "database" / "edge_monitoring.sqlite3"
+
+        if self.raw_frames_directory is None:
+            self.raw_frames_directory = self.data_directory / "raw"
+
+        if self.annotated_frames_directory is None:
+            self.annotated_frames_directory = self.data_directory / "annotated"
+
+        if self.metadata_directory is None:
+            self.metadata_directory = self.data_directory / "metadata"
+
+
+settings = Settings()

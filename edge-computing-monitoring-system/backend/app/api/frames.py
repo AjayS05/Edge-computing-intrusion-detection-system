@@ -1,115 +1,77 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from uuid import uuid4
+from typing import Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from app.core.config import settings
-from app.metrics.prometheus_metrics import (
-    FRAME_UPLOAD_BYTES,
-    FRAME_UPLOAD_FAILURES_TOTAL,
-    FRAME_UPLOAD_PROCESSING_SECONDS,
-    FRAMES_UPLOADED_TOTAL,
-)
-from app.models.frame import FrameResponse, FrameUploadResponse
-from app.services.frame_repository import FrameRepository
-from app.services.storage_service import (
-    InvalidUploadError,
-    LocalFrameStorage,
-    UploadTooLargeError,
-)
+from app.services.storage_service import storage_service
 
 router = APIRouter(prefix="/api/v1/frames", tags=["frames"])
-storage = LocalFrameStorage(settings.raw_frames_directory)
-repository = FrameRepository(settings.database_path)
 
 
-def _parse_captured_at(value: str) -> datetime:
-    try:
-        captured_at = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="captured_at must be an ISO-8601 datetime, such as 2026-06-11T14:30:15Z",
-        ) from exc
-
-    if captured_at.tzinfo is None:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="captured_at must include a timezone, such as Z or +00:00",
-        )
-
-    return captured_at.astimezone(timezone.utc)
-
-
-@router.post("", response_model=FrameUploadResponse, status_code=status.HTTP_201_CREATED)
+@router.post("")
 async def upload_frame(
     image: UploadFile = File(...),
     sensor_node_id: str = Form(...),
     captured_at: str = Form(...),
-    sequence_number: int | None = Form(default=None),
-    camera_location: str | None = Form(default=None),
-) -> FrameUploadResponse:
-    parsed_captured_at = _parse_captured_at(captured_at)
-    received_at = datetime.now(timezone.utc)
-
-    with FRAME_UPLOAD_PROCESSING_SECONDS.time():
-        try:
-            stored_filename, size_bytes = await storage.save_upload(
-                upload=image,
-                sensor_node_id=sensor_node_id,
-                captured_at=parsed_captured_at,
-            )
-        except UploadTooLargeError as exc:
-            FRAME_UPLOAD_FAILURES_TOTAL.labels(reason="too_large").inc()
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                detail=str(exc),
-            ) from exc
-        except InvalidUploadError as exc:
-            FRAME_UPLOAD_FAILURES_TOTAL.labels(reason="invalid_upload").inc()
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=str(exc),
-            ) from exc
-        except OSError as exc:
-            FRAME_UPLOAD_FAILURES_TOTAL.labels(reason="storage_error").inc()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Unable to store uploaded image",
-            ) from exc
-
-        frame = FrameResponse(
-            frame_id=str(uuid4()),
-            sensor_node_id=sensor_node_id,
-            sequence_number=sequence_number,
-            camera_location=camera_location,
-            captured_at=parsed_captured_at,
-            received_at=received_at,
-            status="received",
-            content_type=image.content_type or "application/octet-stream",
-            size_bytes=size_bytes,
-            stored_filename=stored_filename,
+    sequence_number: Optional[int] = Form(None),
+    camera_location: Optional[str] = Form(None),
+):
+    if image.content_type not in {"image/jpeg", "image/jpg", "image/png"}:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type: {image.content_type}",
         )
 
-        try:
-            repository.create(frame)
-        except Exception as exc:
-            FRAME_UPLOAD_FAILURES_TOTAL.labels(reason="database_error").inc()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Image was stored but metadata could not be recorded",
-            ) from exc
+    image_bytes = await image.read()
 
-    FRAMES_UPLOADED_TOTAL.labels(sensor_node_id=sensor_node_id).inc()
-    FRAME_UPLOAD_BYTES.observe(size_bytes)
-    return FrameUploadResponse(frame=frame)
+    if len(image_bytes) > settings.max_upload_size_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail="Uploaded image is too large",
+        )
 
+    frame_id = storage_service.generate_frame_id()
 
-@router.get("/{frame_id}", response_model=FrameResponse)
-def get_frame(frame_id: str) -> FrameResponse:
-    frame = repository.get_by_id(frame_id)
-    if frame is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Frame not found")
-    return frame
+    extension = "png" if image.content_type == "image/png" else "jpg"
+    raw_image_key = storage_service.build_raw_image_key(
+        sensor_node_id=sensor_node_id,
+        frame_id=frame_id,
+        extension=extension,
+    )
+
+    raw_image_uri = storage_service.upload_image_bytes(
+        image_bytes=image_bytes,
+        object_key=raw_image_key,
+        content_type=image.content_type or "image/jpeg",
+    )
+
+    metadata = {
+        "frame_id": frame_id,
+        "sensor_node_id": sensor_node_id,
+        "captured_at": captured_at,
+        "received_at": datetime.now(timezone.utc).isoformat(),
+        "sequence_number": sequence_number,
+        "camera_location": camera_location,
+        "content_type": image.content_type,
+        "size_bytes": len(image_bytes),
+        "raw_image_key": raw_image_key,
+        "raw_image_uri": raw_image_uri,
+        "storage_backend": settings.storage_backend,
+        "status": "stored",
+    }
+
+    metadata_key = storage_service.build_frame_metadata_key(frame_id)
+    metadata_uri = storage_service.upload_metadata_json(
+        metadata=metadata,
+        object_key=metadata_key,
+    )
+
+    return {
+        "message": "Frame uploaded and stored successfully",
+        "frame": metadata,
+        "metadata_key": metadata_key,
+        "metadata_uri": metadata_uri,
+    }

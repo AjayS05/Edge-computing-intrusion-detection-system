@@ -1,90 +1,116 @@
 from __future__ import annotations
 
-import os
-import re
-from datetime import datetime
+import json
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
-from fastapi import UploadFile
+import boto3
+from botocore import UNSIGNED
+from botocore.config import Config
 
 from app.core.config import settings
 
 
-class InvalidUploadError(ValueError):
-    pass
+class StorageService:
+    def __init__(self) -> None:
+        self.storage_backend = settings.storage_backend.lower()
 
+        if self.storage_backend == "s3":
+            boto_config = Config(signature_version=UNSIGNED) if settings.s3_unsigned_requests else None
 
-class UploadTooLargeError(ValueError):
-    pass
-
-
-_SAFE_NODE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
-_CONTENT_TYPE_EXTENSIONS = {
-    "image/jpeg": ".jpg",
-    "image/png": ".png",
-}
-
-
-class LocalFrameStorage:
-    """Save incoming frames atomically on the Pi 5 local SSD or filesystem."""
-
-    def __init__(self, raw_frames_directory: Path) -> None:
-        self.raw_frames_directory = raw_frames_directory
-
-    @staticmethod
-    def validate_sensor_node_id(sensor_node_id: str) -> None:
-        if not _SAFE_NODE_ID.fullmatch(sensor_node_id):
-            raise InvalidUploadError(
-                "sensor_node_id must contain only letters, numbers, '.', '_' or '-', "
-                "start with a letter or number, and be at most 64 characters long"
+            self.s3_client = boto3.client(
+                "s3",
+                endpoint_url=settings.s3_endpoint_url,
+                config=boto_config,
             )
+        else:
+            self.s3_client = None
+            settings.data_directory.mkdir(parents=True, exist_ok=True)
 
-    async def save_upload(
+    def generate_frame_id(self) -> str:
+        return uuid4().hex
+
+    def today_utc(self) -> str:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    def build_raw_image_key(self, sensor_node_id: str, frame_id: str, extension: str = "jpg") -> str:
+        return f"raw/{sensor_node_id}/{self.today_utc()}/{frame_id}.{extension}"
+
+    def build_annotated_image_key(self, sensor_node_id: str, frame_id: str, extension: str = "jpg") -> str:
+        return f"annotated/{sensor_node_id}/{self.today_utc()}/{frame_id}_annotated.{extension}"
+
+    def build_frame_metadata_key(self, frame_id: str) -> str:
+        return f"frames/{frame_id}.json"
+
+    def build_detection_metadata_key(self, frame_id: str) -> str:
+        return f"detections/{frame_id}.json"
+
+    def build_event_metadata_key(self, event_id: str) -> str:
+        return f"events/{event_id}.json"
+
+    def upload_image_bytes(
         self,
         *,
-        upload: UploadFile,
-        sensor_node_id: str,
-        captured_at: datetime,
-    ) -> tuple[str, int]:
-        self.validate_sensor_node_id(sensor_node_id)
+        image_bytes: bytes,
+        object_key: str,
+        content_type: str,
+    ) -> str:
+        if self.storage_backend == "s3":
+            assert self.s3_client is not None
 
-        content_type = upload.content_type or ""
-        extension = _CONTENT_TYPE_EXTENSIONS.get(content_type)
-        if extension is None:
-            raise InvalidUploadError("Only JPEG and PNG images are accepted")
+            self.s3_client.put_object(
+                Bucket=settings.s3_images_bucket,
+                Key=object_key,
+                Body=image_bytes,
+                ContentType=content_type,
+            )
 
-        destination_directory = (
-            self.raw_frames_directory
-            / sensor_node_id
-            / captured_at.strftime("%Y-%m-%d")
-        )
-        destination_directory.mkdir(parents=True, exist_ok=True)
+            return f"s3://{settings.s3_images_bucket}/{object_key}"
 
-        stored_filename = f"{captured_at.strftime('%H%M%S_%f')}_{uuid4().hex}{extension}"
-        destination_path = destination_directory / stored_filename
-        temporary_path = destination_path.with_suffix(destination_path.suffix + ".part")
+        local_path = settings.data_directory / object_key
+        local_path.parent.mkdir(parents=True, exist_ok=True)
+        local_path.write_bytes(image_bytes)
+        return str(local_path)
 
-        total_bytes = 0
-        try:
-            with temporary_path.open("wb") as output_file:
-                while chunk := await upload.read(1024 * 1024):
-                    total_bytes += len(chunk)
-                    if total_bytes > settings.max_upload_bytes:
-                        raise UploadTooLargeError(
-                            f"Image exceeds the {settings.max_upload_bytes}-byte limit"
-                        )
-                    output_file.write(chunk)
+    def upload_metadata_json(
+        self,
+        *,
+        metadata: dict[str, Any],
+        object_key: str,
+    ) -> str:
+        body = json.dumps(metadata, indent=2, default=str).encode("utf-8")
 
-            if total_bytes == 0:
-                raise InvalidUploadError("Uploaded image is empty")
+        if self.storage_backend == "s3":
+            assert self.s3_client is not None
 
-            os.replace(temporary_path, destination_path)
-        except Exception:
-            temporary_path.unlink(missing_ok=True)
-            raise
-        finally:
-            await upload.close()
+            self.s3_client.put_object(
+                Bucket=settings.s3_metadata_bucket,
+                Key=object_key,
+                Body=body,
+                ContentType="application/json",
+            )
 
-        relative_path = destination_path.relative_to(settings.data_directory)
-        return str(relative_path), total_bytes
+            return f"s3://{settings.s3_metadata_bucket}/{object_key}"
+
+        local_path = settings.data_directory / object_key
+        local_path.parent.mkdir(parents=True, exist_ok=True)
+        local_path.write_bytes(body)
+        return str(local_path)
+
+    def download_image_bytes(self, object_key: str) -> bytes:
+        if self.storage_backend == "s3":
+            assert self.s3_client is not None
+
+            response = self.s3_client.get_object(
+                Bucket=settings.s3_images_bucket,
+                Key=object_key,
+            )
+            return response["Body"].read()
+
+        local_path = settings.data_directory / object_key
+        return local_path.read_bytes()
+
+
+storage_service = StorageService()
