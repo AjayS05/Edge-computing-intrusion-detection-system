@@ -10,16 +10,21 @@ int main(int argc, char * argv[]){
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(rank == 0){
-        start = MPI_Wtime();
-    }
+    
     long long N = 20000000;
+    if(argc>0){
+        sscanf(argv[1], "%lld", &N);
+    }
+
     long long local_N = N/size;
     long long count = 0;
     long long global_count;
 
     srand(time(NULL) + rank);
+
+    if(rank == 0){
+        start = MPI_Wtime();
+    }
     for(long long i=0; i<local_N; i++){
         double x = (double)rand()/RAND_MAX;
         double y = (double)rand()/RAND_MAX;

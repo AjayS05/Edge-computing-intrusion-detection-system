@@ -47,6 +47,7 @@ Thumbs.db       # Windows
 results.txt
 MatrixMulti
 MonteCarlopi
+automating.sh
 # Temporary and backup files
 *~
 *.swp

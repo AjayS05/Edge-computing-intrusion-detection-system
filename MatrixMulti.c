@@ -4,15 +4,6 @@
 #include <time.h>
 #define N 1000  
 
-void print_matrix(int *M, int n){
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-            printf("%d ", M[i*n + j]);
-        }
-        printf("\n");
-    }
-}
-
 int main(int argc, char **argv){
 
     int rank, size;
@@ -20,6 +11,10 @@ int main(int argc, char **argv){
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if(argc>0){
+        sscanf(argv[1], "%d", &N);
+    }
 
     int rows_per_proc = N / size;
 
