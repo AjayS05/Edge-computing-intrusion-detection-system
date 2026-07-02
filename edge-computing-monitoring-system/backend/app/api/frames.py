@@ -194,3 +194,24 @@ def get_frame(frame_id: str):
     )
 
     return frame
+
+@router.get("/{frame_id}/annotation-check")
+def get_annotation_check(frame_id: str):
+    frame_key = storage_service.build_frame_metadata_key(frame_id)
+
+    try:
+        frame = storage_service.read_metadata_json(frame_key)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Frame not found: {frame_id}",
+        ) from exc
+
+    return {
+        "frame_id": frame_id,
+        "detections_count": len(frame.get("detections", [])),
+        "annotated_image_key": frame.get("annotated_image_key"),
+        "annotated_image_uri": frame.get("annotated_image_uri"),
+        "annotation_check": frame.get("annotation_check"),
+        "annotation_diff_pixels": frame.get("annotation_diff_pixels"),
+    }
