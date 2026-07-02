@@ -1,26 +1,45 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+
 function EventTable({ events }) {
   return (
-    <table border="1" cellPadding="10">
-      <thead>
-        <tr>
-          <th>Event Type</th>
-          <th>Sensor Node</th>
-          <th>Confidence</th>
-          <th>Timestamp</th>
-        </tr>
-      </thead>
+    <TableContainer
+      component={Paper}
+      sx={{
+        bgcolor: "background.paper",
+        overflowX: "auto",
+        borderRadius: 2,
+      }}
+    >
+      <Table sx={{ minWidth: 700 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell><strong>Event Type</strong></TableCell>
+            <TableCell><strong>Sensor Node</strong></TableCell>
+            <TableCell><strong>Confidence</strong></TableCell>
+            <TableCell><strong>Timestamp</strong></TableCell>
+          </TableRow>
+        </TableHead>
 
-      <tbody>
-        {events.map((event) => (
-          <tr key={event.id}>
-            <td>{event.type}</td>
-            <td>{event.node}</td>
-            <td>{event.confidence}</td>
-            <td>{event.timestamp}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+        <TableBody>
+          {events.map((event, index) => (
+            <TableRow key={index}>
+              <TableCell>{event.event}</TableCell>
+              <TableCell>{event.node}</TableCell>
+              <TableCell>{event.confidence}</TableCell>
+              <TableCell>{event.timestamp}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

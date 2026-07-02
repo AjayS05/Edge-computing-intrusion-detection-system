@@ -2,8 +2,6 @@ import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
-const drawerWidth = 240;
-
 function Layout({ children }) {
   return (
     <Box sx={{ display: "flex" }}>
@@ -13,21 +11,17 @@ function Layout({ children }) {
         component="main"
         sx={{
           flexGrow: 1,
-          ml: `${drawerWidth}px`,
-          minHeight: "100vh",
           bgcolor: "background.default",
+          minHeight: "100vh",
         }}
       >
         <Navbar />
 
         <Box
-  sx={{
-    p: 4,
-    width: "100%",
-    maxWidth: "100%",
-    mx: "auto",
-  }}
->
+          sx={{
+            p: 4,
+          }}
+        >
           {children}
         </Box>
       </Box>
