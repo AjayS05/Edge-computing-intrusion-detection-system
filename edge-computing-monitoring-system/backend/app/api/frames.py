@@ -172,3 +172,25 @@ async def upload_frame(
         "detection_key": detection_key,
         "detection_uri": detection_uri,
     }
+
+@router.get("/{frame_id}")
+def get_frame(frame_id: str):
+    frame_key = storage_service.build_frame_metadata_key(frame_id)
+
+    try:
+        frame = storage_service.read_metadata_json(frame_key)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Frame not found: {frame_id}",
+        ) from exc
+
+    frame["frame_metadata_key"] = frame_key
+    frame["raw_image_url"] = storage_service.build_public_image_url(
+        frame.get("raw_image_key")
+    )
+    frame["annotated_image_url"] = storage_service.build_public_image_url(
+        frame.get("annotated_image_key")
+    )
+
+    return frame

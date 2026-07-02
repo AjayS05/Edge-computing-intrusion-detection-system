@@ -28,7 +28,53 @@ class StorageService:
         else:
             self.s3_client = None
             settings.data_directory.mkdir(parents=True, exist_ok=True)
+    def read_metadata_json(self, object_key: str) -> dict[str, Any]:
+       if self.storage_backend == "s3":
+           assert self.s3_client is not None
 
+           response = self.s3_client.get_object(
+               Bucket=settings.s3_metadata_bucket,
+               Key=object_key,
+           )
+           return json.loads(response["Body"].read().decode("utf-8"))
+
+       local_path = settings.data_directory / object_key
+       return json.loads(local_path.read_text(encoding="utf-8"))
+
+    def list_metadata_keys(self, prefix: str) -> list[str]:
+        if self.storage_backend == "s3":
+            assert self.s3_client is not None
+
+            keys: list[str] = []
+            paginator = self.s3_client.get_paginator("list_objects_v2")
+
+            for page in paginator.paginate(
+                Bucket=settings.s3_metadata_bucket,
+                Prefix=prefix,
+            ):
+                for item in page.get("Contents", []):
+                    keys.append(item["Key"])
+
+            return sorted(keys)
+
+        local_root = settings.data_directory / prefix
+        if not local_root.exists():
+            return []
+
+        return sorted(
+            str(path.relative_to(settings.data_directory))
+            for path in local_root.rglob("*.json")
+        )
+
+    def build_public_image_url(self, object_key: str | None) -> str | None:
+        if object_key is None:
+            return None
+
+        if self.storage_backend == "s3":
+            endpoint = settings.s3_endpoint_url.rstrip("/")
+            return f"{endpoint}/{settings.s3_images_bucket}/{object_key}"
+
+        return str(settings.data_directory / object_key) 
     def generate_frame_id(self) -> str:
         return uuid4().hex
 

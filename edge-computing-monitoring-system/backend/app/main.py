@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from prometheus_client import make_asgi_app
-
+from app.api.events import router as events_router
 from app.api.frames import router as frames_router
 from app.api.health import router as health_router
 from app.core.config import settings
@@ -24,4 +24,5 @@ app = FastAPI(
 
 app.include_router(health_router)
 app.include_router(frames_router)
+app.include_router(events_router)
 app.mount("/metrics", make_asgi_app())
