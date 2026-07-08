@@ -4,17 +4,34 @@ from datetime import datetime, timezone
 from typing import Optional
 from uuid import uuid4
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
 from app.core.config import settings
+from app.services.alert_service import alert_service
 from app.services.inference_service import inference_service
 from app.services.storage_service import storage_service
 
 router = APIRouter(prefix="/api/v1/frames", tags=["frames"])
 
 
+def _api_base_url(request: Request) -> str:
+    return str(request.base_url).rstrip("/")
+
+
+def _raw_image_api_url(request: Request, frame_id: str) -> str:
+    return f"{_api_base_url(request)}/api/v1/images/raw/{frame_id}"
+
+
+def _annotated_image_api_url(request: Request, frame_id: str, annotated_image_key: str | None) -> str | None:
+    if not annotated_image_key:
+        return None
+
+    return f"{_api_base_url(request)}/api/v1/images/annotated/{frame_id}"
+
+
 @router.post("")
 async def upload_frame(
+    request: Request,
     image: UploadFile = File(...),
     sensor_node_id: str = Form(...),
     captured_at: str = Form(...),
@@ -36,6 +53,7 @@ async def upload_frame(
         )
 
     frame_id = storage_service.generate_frame_id()
+    received_at = datetime.now(timezone.utc).isoformat()
 
     extension = "png" if image.content_type == "image/png" else "jpg"
 
@@ -51,8 +69,10 @@ async def upload_frame(
         content_type=image.content_type or "image/jpeg",
     )
 
-    detections = []
-    events = []
+    detections: list[dict] = []
+    events: list[dict] = []
+    alerts: list[dict] = []
+
     annotated_image_key = None
     annotated_image_uri = None
     annotation_check = "not_run"
@@ -91,24 +111,46 @@ async def upload_frame(
                 annotation_check = "not_applicable_no_detections"
 
             for detection in detections:
-                if detection["severity"] in {"critical", "high", "medium"}:
-                    event_id = uuid4().hex
-                    events.append(
-                        {
-                            "event_id": event_id,
-                            "frame_id": frame_id,
-                            "event_type": detection["class_name"],
-                            "severity": detection["severity"],
-                            "confidence": detection["confidence"],
-                            "confidence_percent": detection["confidence_percent"],
-                            "sensor_node_id": sensor_node_id,
-                            "camera_location": camera_location,
-                            "captured_at": captured_at,
-                            "created_at": datetime.now(timezone.utc).isoformat(),
-                            "raw_image_key": raw_image_key,
-                            "annotated_image_key": annotated_image_key,
-                        }
+                event_id = uuid4().hex
+                created_at = datetime.now(timezone.utc).isoformat()
+
+                event = {
+                    "event_id": event_id,
+                    "frame_id": frame_id,
+                    "timestamp": created_at,
+                    "created_at": created_at,
+                    "captured_at": captured_at,
+                    "received_at": received_at,
+                    "event_type": detection.get("class_name", "unknown"),
+                    "severity": detection.get("severity", "unknown"),
+                    "confidence": detection.get("confidence"),
+                    "confidence_percent": detection.get("confidence_percent"),
+                    "node_name": sensor_node_id,
+                    "sensor_node_id": sensor_node_id,
+                    "camera_location": camera_location,
+                    "detection": detection,
+                    "detections": [detection],
+                    "raw_image_id": frame_id,
+                    "annotated_image_id": frame_id if annotated_image_key else None,
+                    "raw_image_key": raw_image_key,
+                    "annotated_image_key": annotated_image_key,
+                    "status": "open",
+                    "telegram_sent": False,
+                    "telegram_sent_at": None,
+                    "telegram_error": None,
+                }
+
+                events.append(event)
+
+                if alert_service.should_create_alert(detection):
+                    alert = alert_service.build_alert(
+                        frame_id=frame_id,
+                        event=event,
+                        detection=detection,
+                        raw_image_key=raw_image_key,
+                        annotated_image_key=annotated_image_key,
                     )
+                    alerts.append(alert)
 
         except Exception as exc:
             raise HTTPException(
@@ -118,21 +160,28 @@ async def upload_frame(
 
     metadata = {
         "frame_id": frame_id,
+        "timestamp": received_at,
         "sensor_node_id": sensor_node_id,
+        "node_name": sensor_node_id,
         "captured_at": captured_at,
-        "received_at": datetime.now(timezone.utc).isoformat(),
+        "received_at": received_at,
         "sequence_number": sequence_number,
         "camera_location": camera_location,
         "content_type": image.content_type,
         "size_bytes": len(image_bytes),
+        "raw_image_id": frame_id,
+        "annotated_image_id": frame_id if annotated_image_key else None,
         "raw_image_key": raw_image_key,
         "raw_image_uri": raw_image_uri,
         "annotated_image_key": annotated_image_key,
         "annotated_image_uri": annotated_image_uri,
+        "raw_image_url": _raw_image_api_url(request, frame_id),
+        "annotated_image_url": _annotated_image_api_url(request, frame_id, annotated_image_key),
         "storage_backend": settings.storage_backend,
         "status": "processed" if settings.run_inference_on_upload else "stored",
         "detections": detections,
         "events": events,
+        "alerts": alerts,
         "inference_latency_seconds": inference_latency_seconds,
         "annotation_check": annotation_check,
         "annotation_diff_pixels": annotation_diff_pixels,
@@ -148,10 +197,13 @@ async def upload_frame(
     detection_uri = storage_service.upload_metadata_json(
         metadata={
             "frame_id": frame_id,
+            "timestamp": received_at,
             "detections": detections,
             "events": events,
+            "alerts": alerts,
             "annotation_check": annotation_check,
             "annotation_diff_pixels": annotation_diff_pixels,
+            "raw_image_key": raw_image_key,
             "annotated_image_key": annotated_image_key,
         },
         object_key=detection_key,
@@ -164,6 +216,13 @@ async def upload_frame(
             object_key=event_key,
         )
 
+    for alert in alerts:
+        alert_key = storage_service.build_alert_metadata_key(alert["alert_id"])
+        storage_service.upload_metadata_json(
+            metadata=alert,
+            object_key=alert_key,
+        )
+
     return {
         "message": "Frame uploaded and processed successfully",
         "frame": metadata,
@@ -171,10 +230,13 @@ async def upload_frame(
         "metadata_uri": metadata_uri,
         "detection_key": detection_key,
         "detection_uri": detection_uri,
+        "events": events,
+        "alerts": alerts,
     }
 
+
 @router.get("/{frame_id}")
-def get_frame(frame_id: str):
+def get_frame(frame_id: str, request: Request):
     frame_key = storage_service.build_frame_metadata_key(frame_id)
 
     try:
@@ -186,17 +248,22 @@ def get_frame(frame_id: str):
         ) from exc
 
     frame["frame_metadata_key"] = frame_key
-    frame["raw_image_url"] = storage_service.build_public_image_url(
-        frame.get("raw_image_key")
+    frame["raw_image_id"] = frame.get("raw_image_id") or frame_id
+    frame["annotated_image_id"] = frame.get("annotated_image_id") or (
+        frame_id if frame.get("annotated_image_key") else None
     )
-    frame["annotated_image_url"] = storage_service.build_public_image_url(
-        frame.get("annotated_image_key")
+    frame["raw_image_url"] = _raw_image_api_url(request, frame_id)
+    frame["annotated_image_url"] = _annotated_image_api_url(
+        request,
+        frame_id,
+        frame.get("annotated_image_key"),
     )
 
     return frame
 
+
 @router.get("/{frame_id}/annotation-check")
-def get_annotation_check(frame_id: str):
+def get_annotation_check(frame_id: str, request: Request):
     frame_key = storage_service.build_frame_metadata_key(frame_id)
 
     try:
@@ -207,10 +274,17 @@ def get_annotation_check(frame_id: str):
             detail=f"Frame not found: {frame_id}",
         ) from exc
 
+    annotated_image_key = frame.get("annotated_image_key")
+
     return {
         "frame_id": frame_id,
         "detections_count": len(frame.get("detections", [])),
-        "annotated_image_key": frame.get("annotated_image_key"),
+        "raw_image_id": frame_id,
+        "annotated_image_id": frame_id if annotated_image_key else None,
+        "raw_image_key": frame.get("raw_image_key"),
+        "annotated_image_key": annotated_image_key,
+        "raw_image_url": _raw_image_api_url(request, frame_id),
+        "annotated_image_url": _annotated_image_api_url(request, frame_id, annotated_image_key),
         "annotated_image_uri": frame.get("annotated_image_uri"),
         "annotation_check": frame.get("annotation_check"),
         "annotation_diff_pixels": frame.get("annotation_diff_pixels"),
