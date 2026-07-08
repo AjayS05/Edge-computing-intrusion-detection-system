@@ -1,6 +1,6 @@
-# React + Vite
+# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
 
@@ -11,57 +11,65 @@ Currently, two official plugins are available:
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the Oxlint configuration
+## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
-=======
-# Raspberry Pi Cluster Monitoring with Prometheus and Grafana
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Overview
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-This monitoring setup collects system health metrics from the Raspberry Pi cluster using Prometheus Node Exporter, Prometheus, and Grafana.
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-Prometheus and Grafana run on the Raspberry Pi 5 master node. Prometheus Node Exporter is installed on the Raspberry Pi 3 worker nodes using Ansible. Each node exposes metrics on port 9100, Prometheus scrapes those metrics, and Grafana visualizes them through a dashboard.
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
-## Architecture
+```
 
-RP3 Worker Nodes → Node Exporter :9100  
-RP5 Master → Prometheus :9090  
-RP5 Master → Grafana :3000  
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-## Components
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-- Prometheus Node Exporter: collects CPU, memory, disk, network, and uptime metrics
-- Prometheus: scrapes and stores metrics
-- Grafana: visualizes metrics in dashboards
-- Ansible: automates Node Exporter installation on all RP3 nodes
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
-## Access URLs
-
-Prometheus:
-
-http://<RP5-IP>:9090
-
-Grafana:
-
-http://<RP5-IP>:3000
-
-Prometheus targets:
-
-http://<RP5-IP>:9090/classic/targets
-
-## Current Status
-
-- Prometheus installed on RP5
-- Grafana installed on RP5
-- Node Exporter deployed to RP3 nodes using Ansible
-- Grafana dashboard connected to Prometheus
-- Live metrics visible for CPU, memory, disk, network, and uptime
-
-## Verification
-
-Check Node Exporter on a node:
-
-```bash
-curl http://192.168.50.101:9100/metrics
-
+```
