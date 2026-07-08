@@ -48,12 +48,15 @@ class StorageService:
             keys: list[str] = []
             paginator = self.s3_client.get_paginator("list_objects_v2")
 
-            for page in paginator.paginate(
-                Bucket=settings.s3_metadata_bucket,
-                Prefix=prefix,
-            ):
-                for item in page.get("Contents", []):
-                    keys.append(item["Key"])
+            try:
+                for page in paginator.paginate(
+                    Bucket=settings.s3_metadata_bucket,
+                    Prefix=prefix,
+                ):
+                    for item in page.get("Contents", []):
+                        keys.append(item["Key"])
+            except self.s3_client.exceptions.NoSuchBucket:
+                return []
 
             return sorted(keys)
 
