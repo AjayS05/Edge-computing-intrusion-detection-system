@@ -9,7 +9,12 @@ class Settings(BaseSettings):
 
     # Storage mode: local or s3
     storage_backend: str = "s3"
-
+    
+    #Telegram bot
+    telegram_enabled: bool = False
+    telegram_bot_token: str | None = None
+    telegram_chat_id: str | None = None
+    
     # Local fallback/debug storage root
     data_directory: Path = Path.home() / "edge-monitoring-data"
 
