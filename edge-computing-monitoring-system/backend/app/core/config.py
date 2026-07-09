@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     app_version: str = "0.2.0"
 
     # Storage mode: local or s3
-    storage_backend: str = "local"
+    storage_backend: str = "s3"
 
     # Local fallback/debug storage root
     data_directory: Path = Path.home() / "edge-monitoring-data"
@@ -23,7 +23,9 @@ class Settings(BaseSettings):
     s3_endpoint_url: str = "http://192.168.178.200:8333"
     s3_images_bucket: str = "captured-images"
     s3_metadata_bucket: str = "event-metadata"
-    s3_unsigned_requests: bool = True
+    s3_access_key_id: str = "admin"
+    s3_secret_access_key: str = "admin"
+    s3_unsigned_requests: bool = False
 
     max_upload_size_bytes: int = 5 * 1024 * 1024
     
