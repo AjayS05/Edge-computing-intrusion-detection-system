@@ -36,13 +36,14 @@ int main(int argc, char **argv){
         for(int i = 0; i < N; i++){
             for(int j = 0; j < N; j++){
                 A[i*N + j] = rand() % 10;
-                B[i*N + j] = rand() % 10;
             }
         }
     }
-
-    // Broadcast B to everyone
-    MPI_Bcast(B, N*N, MPI_INT, 0, MPI_COMM_WORLD);
+    for (int i=0; i<N; i++){
+        for (int j=0; j<N; j++){
+            B[i*N+j] = 1;
+        }
+    }
 
     // Scatter A by rows
     MPI_Scatter(A, rows_per_proc * N, MPI_INT,
