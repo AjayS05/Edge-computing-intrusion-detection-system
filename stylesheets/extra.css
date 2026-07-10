@@ -1,0 +1,10 @@
+:root [data-md-color-primary="custom"] {
+  --md-primary-fg-color:        #1e293b; /* Sleek Slate Gray */
+  --md-primary-fg-color--dark:  #0f172a;
+  --md-primary-bg-color:        #ffffff;
+}
+
+:root [data-md-color-scheme="slate"][data-md-color-primary="custom"] {
+  --md-primary-fg-color:        #0f172a;
+  --md-primary-fg-color--dark:  #020617;
+}
