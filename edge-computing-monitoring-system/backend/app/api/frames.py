@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
 from uuid import uuid4
-
+from app.services.telegram_service import telegram_service
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
 from app.core.config import settings
@@ -157,7 +157,23 @@ async def upload_frame(
                 status_code=500,
                 detail=f"Inference failed: {exc}",
             ) from exc
+    
+    for alert in alerts:
+        telegram_result = telegram_service.send_alert(
+            alert,
+            raw_image_url=_raw_image_api_url(request, frame_id),
+        )
 
+        alert["telegram_sent"] = telegram_result["telegram_sent"]
+        alert["telegram_sent_at"] = telegram_result["telegram_sent_at"]
+        alert["telegram_error"] = telegram_result["telegram_error"]
+
+        for event in events:
+            if event.get("event_id") == alert.get("event_id"):
+                event["telegram_sent"] = telegram_result["telegram_sent"]
+                event["telegram_sent_at"] = telegram_result["telegram_sent_at"]
+                event["telegram_error"] = telegram_result["telegram_error"]
+    
     metadata = {
         "frame_id": frame_id,
         "timestamp": received_at,

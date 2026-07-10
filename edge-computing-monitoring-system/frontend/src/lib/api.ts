@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://192.168.178.200:8000";
+  import.meta.env.VITE_API_BASE_URL || "http://192.168.50.1:8000";
 
 export type NodeStatus = "online" | "offline" | "unknown" | "degraded";
 export type HealthStatus = "online" | "offline" | "normal" | "warning" | "critical" | "unknown";
