@@ -1,115 +1,307 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Optional
 from uuid import uuid4
-
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from app.services.telegram_service import telegram_service
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
 from app.core.config import settings
-from app.metrics.prometheus_metrics import (
-    FRAME_UPLOAD_BYTES,
-    FRAME_UPLOAD_FAILURES_TOTAL,
-    FRAME_UPLOAD_PROCESSING_SECONDS,
-    FRAMES_UPLOADED_TOTAL,
-)
-from app.models.frame import FrameResponse, FrameUploadResponse
-from app.services.frame_repository import FrameRepository
-from app.services.storage_service import (
-    InvalidUploadError,
-    LocalFrameStorage,
-    UploadTooLargeError,
-)
+from app.services.alert_service import alert_service
+from app.services.inference_service import inference_service
+from app.services.storage_service import storage_service
 
 router = APIRouter(prefix="/api/v1/frames", tags=["frames"])
-storage = LocalFrameStorage(settings.raw_frames_directory)
-repository = FrameRepository(settings.database_path)
 
 
-def _parse_captured_at(value: str) -> datetime:
-    try:
-        captured_at = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="captured_at must be an ISO-8601 datetime, such as 2026-06-11T14:30:15Z",
-        ) from exc
-
-    if captured_at.tzinfo is None:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="captured_at must include a timezone, such as Z or +00:00",
-        )
-
-    return captured_at.astimezone(timezone.utc)
+def _api_base_url(request: Request) -> str:
+    return str(request.base_url).rstrip("/")
 
 
-@router.post("", response_model=FrameUploadResponse, status_code=status.HTTP_201_CREATED)
+def _raw_image_api_url(request: Request, frame_id: str) -> str:
+    return f"{_api_base_url(request)}/api/v1/images/raw/{frame_id}"
+
+
+def _annotated_image_api_url(request: Request, frame_id: str, annotated_image_key: str | None) -> str | None:
+    if not annotated_image_key:
+        return None
+
+    return f"{_api_base_url(request)}/api/v1/images/annotated/{frame_id}"
+
+
+@router.post("")
 async def upload_frame(
+    request: Request,
     image: UploadFile = File(...),
     sensor_node_id: str = Form(...),
     captured_at: str = Form(...),
-    sequence_number: int | None = Form(default=None),
-    camera_location: str | None = Form(default=None),
-) -> FrameUploadResponse:
-    parsed_captured_at = _parse_captured_at(captured_at)
-    received_at = datetime.now(timezone.utc)
-
-    with FRAME_UPLOAD_PROCESSING_SECONDS.time():
-        try:
-            stored_filename, size_bytes = await storage.save_upload(
-                upload=image,
-                sensor_node_id=sensor_node_id,
-                captured_at=parsed_captured_at,
-            )
-        except UploadTooLargeError as exc:
-            FRAME_UPLOAD_FAILURES_TOTAL.labels(reason="too_large").inc()
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                detail=str(exc),
-            ) from exc
-        except InvalidUploadError as exc:
-            FRAME_UPLOAD_FAILURES_TOTAL.labels(reason="invalid_upload").inc()
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=str(exc),
-            ) from exc
-        except OSError as exc:
-            FRAME_UPLOAD_FAILURES_TOTAL.labels(reason="storage_error").inc()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Unable to store uploaded image",
-            ) from exc
-
-        frame = FrameResponse(
-            frame_id=str(uuid4()),
-            sensor_node_id=sensor_node_id,
-            sequence_number=sequence_number,
-            camera_location=camera_location,
-            captured_at=parsed_captured_at,
-            received_at=received_at,
-            status="received",
-            content_type=image.content_type or "application/octet-stream",
-            size_bytes=size_bytes,
-            stored_filename=stored_filename,
+    sequence_number: Optional[int] = Form(None),
+    camera_location: Optional[str] = Form(None),
+):
+    if image.content_type not in {"image/jpeg", "image/jpg", "image/png"}:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type: {image.content_type}",
         )
 
+    image_bytes = await image.read()
+
+    if len(image_bytes) > settings.max_upload_size_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail="Uploaded image is too large",
+        )
+
+    frame_id = storage_service.generate_frame_id()
+    received_at = datetime.now(timezone.utc).isoformat()
+
+    extension = "png" if image.content_type == "image/png" else "jpg"
+
+    raw_image_key = storage_service.build_raw_image_key(
+        sensor_node_id=sensor_node_id,
+        frame_id=frame_id,
+        extension=extension,
+    )
+
+    raw_image_uri = storage_service.upload_image_bytes(
+        image_bytes=image_bytes,
+        object_key=raw_image_key,
+        content_type=image.content_type or "image/jpeg",
+    )
+
+    detections: list[dict] = []
+    events: list[dict] = []
+    alerts: list[dict] = []
+
+    annotated_image_key = None
+    annotated_image_uri = None
+    annotation_check = "not_run"
+    inference_latency_seconds = None
+    annotation_diff_pixels = 0
+
+    if settings.run_inference_on_upload:
         try:
-            repository.create(frame)
+            inference_result = inference_service.run_on_image_bytes(image_bytes)
+
+            detections = inference_result.detections
+            inference_latency_seconds = round(
+                inference_result.inference_latency_seconds,
+                4,
+            )
+            annotation_diff_pixels = inference_result.annotation_diff_pixels
+
+            if inference_result.annotated_image_bytes is not None:
+                annotated_image_key = storage_service.build_annotated_image_key(
+                    sensor_node_id=sensor_node_id,
+                    frame_id=frame_id,
+                    extension="jpg",
+                )
+
+                annotated_image_uri = storage_service.upload_image_bytes(
+                    image_bytes=inference_result.annotated_image_bytes,
+                    object_key=annotated_image_key,
+                    content_type="image/jpeg",
+                )
+
+                if annotation_diff_pixels > 0:
+                    annotation_check = "passed"
+                else:
+                    annotation_check = "failed_no_visual_difference"
+            else:
+                annotation_check = "not_applicable_no_detections"
+
+            for detection in detections:
+                event_id = uuid4().hex
+                created_at = datetime.now(timezone.utc).isoformat()
+
+                event = {
+                    "event_id": event_id,
+                    "frame_id": frame_id,
+                    "timestamp": created_at,
+                    "created_at": created_at,
+                    "captured_at": captured_at,
+                    "received_at": received_at,
+                    "event_type": detection.get("class_name", "unknown"),
+                    "severity": detection.get("severity", "unknown"),
+                    "confidence": detection.get("confidence"),
+                    "confidence_percent": detection.get("confidence_percent"),
+                    "node_name": sensor_node_id,
+                    "sensor_node_id": sensor_node_id,
+                    "camera_location": camera_location,
+                    "detection": detection,
+                    "detections": [detection],
+                    "raw_image_id": frame_id,
+                    "annotated_image_id": frame_id if annotated_image_key else None,
+                    "raw_image_key": raw_image_key,
+                    "annotated_image_key": annotated_image_key,
+                    "status": "open",
+                    "telegram_sent": False,
+                    "telegram_sent_at": None,
+                    "telegram_error": None,
+                }
+
+                events.append(event)
+
+                if alert_service.should_create_alert(detection):
+                    alert = alert_service.build_alert(
+                        frame_id=frame_id,
+                        event=event,
+                        detection=detection,
+                        raw_image_key=raw_image_key,
+                        annotated_image_key=annotated_image_key,
+                    )
+                    alerts.append(alert)
+
         except Exception as exc:
-            FRAME_UPLOAD_FAILURES_TOTAL.labels(reason="database_error").inc()
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Image was stored but metadata could not be recorded",
+                status_code=500,
+                detail=f"Inference failed: {exc}",
             ) from exc
+    
+    for alert in alerts:
+        telegram_result = telegram_service.send_alert(
+            alert,
+            raw_image_url=_raw_image_api_url(request, frame_id),
+        )
 
-    FRAMES_UPLOADED_TOTAL.labels(sensor_node_id=sensor_node_id).inc()
-    FRAME_UPLOAD_BYTES.observe(size_bytes)
-    return FrameUploadResponse(frame=frame)
+        alert["telegram_sent"] = telegram_result["telegram_sent"]
+        alert["telegram_sent_at"] = telegram_result["telegram_sent_at"]
+        alert["telegram_error"] = telegram_result["telegram_error"]
+
+        for event in events:
+            if event.get("event_id") == alert.get("event_id"):
+                event["telegram_sent"] = telegram_result["telegram_sent"]
+                event["telegram_sent_at"] = telegram_result["telegram_sent_at"]
+                event["telegram_error"] = telegram_result["telegram_error"]
+    
+    metadata = {
+        "frame_id": frame_id,
+        "timestamp": received_at,
+        "sensor_node_id": sensor_node_id,
+        "node_name": sensor_node_id,
+        "captured_at": captured_at,
+        "received_at": received_at,
+        "sequence_number": sequence_number,
+        "camera_location": camera_location,
+        "content_type": image.content_type,
+        "size_bytes": len(image_bytes),
+        "raw_image_id": frame_id,
+        "annotated_image_id": frame_id if annotated_image_key else None,
+        "raw_image_key": raw_image_key,
+        "raw_image_uri": raw_image_uri,
+        "annotated_image_key": annotated_image_key,
+        "annotated_image_uri": annotated_image_uri,
+        "raw_image_url": _raw_image_api_url(request, frame_id),
+        "annotated_image_url": _annotated_image_api_url(request, frame_id, annotated_image_key),
+        "storage_backend": settings.storage_backend,
+        "status": "processed" if settings.run_inference_on_upload else "stored",
+        "detections": detections,
+        "events": events,
+        "alerts": alerts,
+        "inference_latency_seconds": inference_latency_seconds,
+        "annotation_check": annotation_check,
+        "annotation_diff_pixels": annotation_diff_pixels,
+    }
+
+    metadata_key = storage_service.build_frame_metadata_key(frame_id)
+    metadata_uri = storage_service.upload_metadata_json(
+        metadata=metadata,
+        object_key=metadata_key,
+    )
+
+    detection_key = storage_service.build_detection_metadata_key(frame_id)
+    detection_uri = storage_service.upload_metadata_json(
+        metadata={
+            "frame_id": frame_id,
+            "timestamp": received_at,
+            "detections": detections,
+            "events": events,
+            "alerts": alerts,
+            "annotation_check": annotation_check,
+            "annotation_diff_pixels": annotation_diff_pixels,
+            "raw_image_key": raw_image_key,
+            "annotated_image_key": annotated_image_key,
+        },
+        object_key=detection_key,
+    )
+
+    for event in events:
+        event_key = storage_service.build_event_metadata_key(event["event_id"])
+        storage_service.upload_metadata_json(
+            metadata=event,
+            object_key=event_key,
+        )
+
+    for alert in alerts:
+        alert_key = storage_service.build_alert_metadata_key(alert["alert_id"])
+        storage_service.upload_metadata_json(
+            metadata=alert,
+            object_key=alert_key,
+        )
+
+    return {
+        "message": "Frame uploaded and processed successfully",
+        "frame": metadata,
+        "metadata_key": metadata_key,
+        "metadata_uri": metadata_uri,
+        "detection_key": detection_key,
+        "detection_uri": detection_uri,
+        "events": events,
+        "alerts": alerts,
+    }
 
 
-@router.get("/{frame_id}", response_model=FrameResponse)
-def get_frame(frame_id: str) -> FrameResponse:
-    frame = repository.get_by_id(frame_id)
-    if frame is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Frame not found")
+@router.get("/{frame_id}")
+def get_frame(frame_id: str, request: Request):
+    frame_key = storage_service.build_frame_metadata_key(frame_id)
+
+    try:
+        frame = storage_service.read_metadata_json(frame_key)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Frame not found: {frame_id}",
+        ) from exc
+
+    frame["frame_metadata_key"] = frame_key
+    frame["raw_image_id"] = frame.get("raw_image_id") or frame_id
+    frame["annotated_image_id"] = frame.get("annotated_image_id") or (
+        frame_id if frame.get("annotated_image_key") else None
+    )
+    frame["raw_image_url"] = _raw_image_api_url(request, frame_id)
+    frame["annotated_image_url"] = _annotated_image_api_url(
+        request,
+        frame_id,
+        frame.get("annotated_image_key"),
+    )
+
     return frame
+
+
+@router.get("/{frame_id}/annotation-check")
+def get_annotation_check(frame_id: str, request: Request):
+    frame_key = storage_service.build_frame_metadata_key(frame_id)
+
+    try:
+        frame = storage_service.read_metadata_json(frame_key)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Frame not found: {frame_id}",
+        ) from exc
+
+    annotated_image_key = frame.get("annotated_image_key")
+
+    return {
+        "frame_id": frame_id,
+        "detections_count": len(frame.get("detections", [])),
+        "raw_image_id": frame_id,
+        "annotated_image_id": frame_id if annotated_image_key else None,
+        "raw_image_key": frame.get("raw_image_key"),
+        "annotated_image_key": annotated_image_key,
+        "raw_image_url": _raw_image_api_url(request, frame_id),
+        "annotated_image_url": _annotated_image_api_url(request, frame_id, annotated_image_key),
+        "annotated_image_uri": frame.get("annotated_image_uri"),
+        "annotation_check": frame.get("annotation_check"),
+        "annotation_diff_pixels": frame.get("annotation_diff_pixels"),
+    }
