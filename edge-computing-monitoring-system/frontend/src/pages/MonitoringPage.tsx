@@ -375,6 +375,6 @@ function hasTemperatureMetric(nodes: UiNode[]) {
 }
 
 function formatAlertTitle(type: string, severity: string) {
-  const cleanType = type.replaceAll("_", " ");
+  const cleanType = type.replace(/_/g, " ");
   return `${severity.toUpperCase()} · ${cleanType}`;
 }
