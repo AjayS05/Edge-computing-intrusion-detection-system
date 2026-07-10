@@ -48,6 +48,7 @@ results.txt
 MatrixMulti
 MonteCarlopi
 automating.sh
+*.png
 # Temporary and backup files
 *~
 *.swp
