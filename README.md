@@ -2,7 +2,7 @@
 
 ## Description
 
-This project consists of estimating the value of pi with the Monte Carlo method.
+This example consists of estimating the value of pi with the Monte Carlo method.
 
 The goal is to parallelize the task within a cluster of worker nodes.
 
@@ -55,7 +55,7 @@ This second example consists of computing the product of two matrices A and B.
 
 The goal is to parallelize the computation and store the result into a matrix C.
 
-Each node receives a row of A and the full matrix B and computes the corresponding row in C.
+Each node receives a row of A and allocates memory for a same matrix B containing only ones.
 
 ---
 
@@ -108,10 +108,10 @@ A row of \( C \) = a row of \( A \) multiplied by the matrix \( B \)
 The program follows the master/worker architecture :
 
 - **Master node**
-  - Allocates the memory for A and C
+  - Allocates the memory for A and C, sends each row to a corresponding worker.
 
 - **Worker nodes**
-  - Compute their local row.
+  - Allocates the memory for a matrix B(containing only ones), compute their local row.
 
 
 ## Compilation and execution
