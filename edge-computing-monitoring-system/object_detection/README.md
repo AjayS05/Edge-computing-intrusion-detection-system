@@ -14,15 +14,38 @@ Image Tweaks (Augmentations): Modified the images on purpose to prepare the mode
 
 - Annotation Integrity: Standardized bounding boxes and multi-class tracking configurations mapped to the Roboflow dataset standard and referenced cleanly via data.yaml.
 
+### Model Classes
+The model is trained to detect and flag specific objects across these distinct classes:
+- **Person:** Detects unauthorized individuals entering monitored zones.
+- **Weapon:** Identifies visible security threats like firearms.
+- **Fire:** Detects early signs of flames or fire hazards.
+- **Container:** Identifies cups, bottles, or mugs to spot potential liquid spillages.
+
 ## 2. Training the Model on Kaggle
 
-Because processing 34,000+ images requires massive computer power, the training was done in the cloud:
+Because processing 34,000+ images requires massive computer power, the training runs were completed across different environments to get the best performance:
 
-Ran the training code inside the cc_ai_model.ipynb notebook using free cloud computers on Kaggle.
+- Ran the training code inside the cc_ai_model.ipynb notebook using local setups as well as free cloud computers on Kaggle.
+- Checked the accuracy graphs to make sure the model wasn't making too many mistakes, saving the progress charts straight to the runs/ folder.
+- Saved the final, most optimized file as **best_final.pt**, built specifically to be small and fast enough to run smoothly on a Raspberry Pi.
 
-Checked the accuracy graphs to make sure the model wasn't making too many mistakes, saving the progress charts straight to the results/ folder.
+### Hardware Training Performance Metrics
+Here is how the training performed across the environments we tested:
 
-Saved the final, optimized file as best_k.pt built specifically to be small and fast enough to run smoothly on a Raspberry Pi.
+| Where It Was Trained | Number of Epochs | Total Training Time | Resulting Model File |
+| :--- | :--- | :--- | :--- |
+| **Kaggle Cloud** | 100 Epochs | ~10.0 Hours | **`best_final.pt` (Final Deploy)** |
+
+### Model Accuracy Metrics
+Here is how accurately the final model detected items on our test data:
+
+| Class Name | Precision (How clean detections are) | Recall (How many threats it catches) | mAP50 (General Accuracy) | mAP50-95 (Strict Accuracy) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Container** | 95.2% | 95.5% | 97.7% | 86.3% |
+| **Fire** | 82.2% | 72.3% | 79.6% | 46.4% |
+| **Person** | 84.4% | 77.3% | 86.5% | 58.1% |
+| **Weapon** | 95.4% | 94.7% | 96.4% | 71.6% |
+| **Overall (All Combined)** | **89.3%** | **85.0%** | **90.0%** | **65.6%** |
 
 ## 3. Setting Up the Raspberry Pi 4
 
