@@ -10,8 +10,9 @@ env.bak/
 *.egg-info/
 Pipfile.lock
 poetry.lock
-performance-tooling/non-mpi/plot-vnv
 docs/.vnv/
+performance-tooling/non-mpi/plot-vnv/
+site/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
