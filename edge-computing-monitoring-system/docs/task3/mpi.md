@@ -71,49 +71,49 @@ Each node receives a row of A and allocates memory for a same matrix B containin
 
 ---
 
-## Matrix product (row × matrix interpretation)
+## Matrix product (row x matrix interpretation)
 
-The entry \( C_{ij} \) of the matrix \( C = A \times B \) is:
+The element `C[i,j]` of the matrix `C = A x B` is:
 
-\[
-C_{ij} = \sum_{k=0}^{n-1} a_{ik} \, b_{kj}
-\]
+$$
+C_{ij} = \sum_{k=0}^{n-1} a_{ik} b_{kj}
+$$
 
 ---
 
 ## Row of C as a product of a row of A with B
 
-The \( i \)-th row of \( C \) is:
+The `i`-th row of `C` can be written as:
 
-\[
-C_{i,*} = A_{i,*} \times B
-\]
+$$
+C_{i,:} = A_{i,:} B
+$$
 
 ---
 
 ## Dot product interpretation
 
-Each element of the row is a dot product:
+Each element `C[i,j]` is computed as the dot product between a row of `A` and a column of `B`:
 
-\[
+$$
 C_{ij} =
 \begin{bmatrix}
-a_{i0} & a_{i1} & \dots & a_{i,n-1}
+a_{i0} & a_{i1} & ... & a_{i,n-1}
 \end{bmatrix}
-\cdot
 \begin{bmatrix}
 b_{0j} \\
 b_{1j} \\
-\vdots \\
+... \\
 b_{n-1,j}
 \end{bmatrix}
-\]
+$$
 
 ---
 
 ## Summary
 
-A row of \( C \) = a row of \( A \) multiplied by the matrix \( B \)
+A row of `C` is obtained by multiplying one row of `A` with the matrix `B`.
+
 
 ## Parallelization with MPI
 
@@ -152,8 +152,8 @@ This section shows how were the execution automated.
 ```
 ## Monte Carlo Pi
 ![MonteCarlopi](images/MPI_mcpi_boxplots.png)
--For N=1 000 and N=100 000, we can see that even though the speed up increases from 1 to 8 proc, it drastically drops at 8 and keeps getting worse until 32 proc. This is because the problem size is too low for an efficient parallelization(Amdahl's law). In fact, from 8 proc and on, the work is not done within one single worker node, thus the communication takes a large proportion of the run-time.
--For N=10 000 000 and N=1 000 000 000, the sequential part is much less important, so the parallelization becomes more efficient. In fact, the more workers the better the speedup gets, matter of fact it peaked at 21 with $np = 32 and N = 1 000 000 000(Gustafson's law).
+- For N=1 000 and N=100 000, we can see that even though the speed up increases from 1 to 8 proc, it drastically drops at 8 and keeps getting worse until 32 proc. This is because the problem size is too low for an efficient parallelization(Amdahl's law). In fact, from 8 proc and on, the work is not done within one single worker node, thus the communication takes a large proportion of the run-time.
+- For N=10 000 000 and N=1 000 000 000, the sequential part is much less important, so the parallelization becomes more efficient. In fact, the more workers the better the speedup gets, matter of fact it peaked at 21 with $np = 32 and N = 1 000 000 000(Gustafson's law).
 
 ## Matrix Multiplication
 ![Matrix Multiplication](images/MPI_mm_boxplots.png)
