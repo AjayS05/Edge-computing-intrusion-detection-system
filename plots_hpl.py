@@ -1,106 +1,172 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Nombre de processus MPI
-processes = [1, 2, 4, 8, 16, 32]
+data_rp3_8 = {
+    4000:  [1.89, 2.41, 2.27, 2.28, 2.33],
+    6000:  [3.25, 3.24, 3.35, 3.28, 3.36],
+    8000:  [3.99, 4.06, 4.15, 4.07, 4.00],
+    10000: [2.99, 4.35, 3.54, 4.39, 4.42]
+}
 
-# Données : 5 exécutions par configuration
-# Exemple de structure :
-# results["N=1600"][processus] = [mesure1, mesure2, ..., mesure5]
+data_rp3_16 = {
+    8000:  [6.32, 6.59, 6.70, 6.48, 6.48],
+    10000: [7.69, 7.74, 6.90, 7.63, 7.11],
+    12000: [8.13, 8.60, 8.40, 8.40, 7.86],
+    14000: [7.92, 3.37, 2.74, 6.99, 3.07]
+}
 
-results = {
-    "N=10000": {
-        1:  [0.00048, 0.0005, 0.0002, 0.00047, 0.00047, 0.000479, 0.000477, 0.000211, 0.000477, 0.000477, 0.000479],
-        2:  [0.00016, 0.00046, 0.0005, 0.00043, 0.00053, 0.00042, 0.00036, 0.00026, 0.00043, 0.00017, 0.000343],
-        4:  [0.0042, 0.0005, 0.001, 0.0004, 0.0004, 0.0015, 0.000284, 0.0016, 0.00045, 0.0015, 0.00041],
-        8:  [0.046, 0.112, 0.059, 0.0458, 0.051, 0.0629, 0.0438, 0.052, 0.060, 0.051, 0.044],
-        16: [0.106, 0.152, 0.133, 0.104, 0.08, 0.11, 0.080, 0.093, 0.129, 0.09],
-        32: [0.190, 0.164, 0.111, 0.119, 0.123, 0.141, 0.108, 0.13, 0.15, 0.13, 0.16, 0.13]
-    },
-    "N=14000": {
-        1:  [0.019, 0.045, 0.019, 0.045, 0.035, 0.046, 0.019, 0.019, 0.019, 0.045],
-        2:  [0.023, 0.023, 0.022, 0.024, 0.026, 0.023, 0.033, 0.023, 0.022, 0.009],
-        4:  [0.012, 0.011, 0.013, 0.012, 0.018, 0.025, 0.019, 0.013, 0.015, 0.014],
-        8:  [0.052, 0.063, 0.0621, 0.050, 0.06, 0.049, 0.054, 0.049, 0.058, 0.052],
-        16: [0.114, 0.122, 0.082, 0.103, 0.104, 0.14, 0.17, 0.09, 0.07, 0.11],
-        32: [0.119, 0.142, 0.162, 0.122, 0.115, 0.110, 0.132, 0.127, 0.149, 0.114, 0.126]
-    },
-
-    "N=18000": {
-        1:  [3.56, 3.59, 3.95, 4.35, 3.80, 3.85, 3.57, 2.34, 2.58, 2.75, 3.56],
-        2:  [2.22, 2.28, 2.20, 2.06, 2.04, 2.16, 2.44, 2.36, 2.14, 2.11, 1.87],
-        4:  [1.13, 1.21, 1.18, 1.18, 1.15, 1.17, 1.24, 1.19, 1.28, 1.24, 1.43],
-        8:  [0.94, 0.77, 0.76, 0.75, 0.81, 0.81, 0.79, 0.67, 0.68, 0.67, 1.04],
-        16: [0.37, 0.71, 0.49, 0.39, 0.36, 0.47, 0.37, 0.35, 0.37, 0.38, 0.36],
-        32: [0.251, 0.287, 0.271, 0.335, 0.279, 0.285, 0.24, 0.29, 0.42, 0.44, 0.28]
-    },
-
-    "N=22000": {
-        1:  [363.56, 356.16, 354.9, 362.24, 351.61],
-        2:  [204.14, 176.62, 122.9, 126.43, 127.02],
-        4:  [88.78, 91.28, 84.53, 102.99, 79.60],
-        8:  [65.71, 63.91, 64.21, 64.01, 64.42],
-        16: [32.13, 32.42, 32.40, 31.60, 33.13],
-        32: [17.41, 16.22, 15.86, 16.00, 15.96]
-    },
+data_rp3_32 = {
+    10000: [12.4, 11.9, 10.8, 11.7, 11.7],
+    14000: [15.8, 15.2, 14.5, 12.6, 15.6],
+    18000: [16.3, 16.9, 15.3, 16.9, 17.3],
+    20000: [12.5, 8.19, 7.8, 11.9, 4.17]
 }
 
 
-fig, axes = plt.subplots(
-    2,
-    4,
-    figsize=(20, 8)
+'''Speedup for N = 10 000'''
+time_rp3_8 = np.array([
+    333.88,
+    153.16,
+    187.93,
+    151.89,
+    150.61
+])
+
+time_rp3_16 = np.array([
+    86.61,
+    86.06,
+    96.09,
+    87.33,
+    93.69
+])
+
+time_rp3_32 = np.array([
+    53.72,
+    56.03,
+    61.22,
+    56.91,
+    56.64
+])
+
+
+# ----------------------------------
+# Calcul du speedup
+# Référence = 2 RPi
+# ----------------------------------
+
+speedup_rp3_8 = time_rp3_8 / time_rp3_8
+speedup_rp3_16 = time_rp3_8 / time_rp3_16
+speedup_rp3_32 = time_rp3_8 / time_rp3_32
+
+
+speedups = [
+    speedup_rp3_8,
+    speedup_rp3_16,
+    speedup_rp3_32
+]
+
+
+labels = [
+    "2 RPi\n(8 cores)",
+    "4 RPi\n(16 cores)",
+    "8 RPi\n(32 cores)"
+]
+
+
+# Moyenne et écart-type
+means = [np.mean(x) for x in speedups]
+stds = [np.std(x) for x in speedups]
+
+
+# ----------------------------------
+# Création du bar plot
+# ----------------------------------
+
+plt.figure(figsize=(7,5))
+
+bars = plt.bar(
+    labels,
+    means,
+    yerr=stds,
+    capsize=5
 )
 
 
-for col, (size, data) in enumerate(results.items()):
-
-    times = [
-        data[p] for p in processes
-    ]
-
-    axes[0, col].boxplot(
-        times,
-        labels=processes
+# Afficher les valeurs au-dessus des barres
+for bar, value in zip(bars, means):
+    plt.text(
+        bar.get_x() + bar.get_width()/2,
+        value + 0.05,
+        f"{value:.2f}",
+        ha='center',
+        fontsize=10
     )
 
-    axes[0, col].set_title(size)
-    axes[0, col].set_ylabel("Time (s)")
-    axes[0, col].set_xlabel("Nb of cores")
-    axes[0, col].grid(True)
 
-    speedups = []
+plt.ylabel("Speedup")
+plt.xlabel("Configuration")
+plt.title("HPL Speedup for N = 10000")
 
-    base = np.mean(data[1])
-
-    for p in processes:
-        speedups.append(
-            [base / t for t in data[p]]
-        )
-
-
-    axes[1, col].boxplot(
-        speedups,
-        labels=processes
-    )
-
-    axes[1, col].set_ylabel("Speedup")
-    axes[1, col].set_xlabel("Nb of cores")
-    axes[1, col].grid(True)
-
-
-plt.suptitle(
-    "Performance MPI - Monte Carlo pi\n"
-    "Distribution on 5 executions",
-    fontsize=16
+plt.grid(
+    axis='y',
+    linestyle='--',
+    alpha=0.4
 )
+
+
+
 
 plt.tight_layout()
 
 plt.savefig(
-    "MPI_mcpi_boxplots.png",
+    "boxplot_speedup.png",
     dpi=300,
     bbox_inches="tight"
 )
 
-plt.show()
+
+plt.close()
+
+def plot_boxplot(data, title, filename):
+    N = list(data.keys())
+    values = list(data.values())
+
+    plt.figure(figsize=(7,5))
+
+    plt.boxplot(
+        values,
+        labels=N,
+        patch_artist=True,
+        showmeans=True
+    )
+
+    plt.title(title)
+    plt.xlabel("Matrix size (N)")
+    plt.ylabel("Performance (GFLOPS)")
+    plt.grid(axis='y', linestyle='--', alpha=0.4)
+
+    plt.tight_layout()
+
+    # Sauvegarde en PNG haute résolution
+    plt.savefig(filename, dpi=300, bbox_inches="tight")
+
+    plt.close()
+
+
+plot_boxplot(
+    data_rp3_8,
+    "HPL Performance - 2 Raspberry Pi 3 (8 cores)",
+    "boxplot_rp3_8.png"
+)
+
+plot_boxplot(
+    data_rp3_16,
+    "HPL Performance - 4 Raspberry Pi 3 (16 cores)",
+    "boxplot_rp3_16.png"
+)
+
+plot_boxplot(
+    data_rp3_32,
+    "HPL Performance - 8 Raspberry Pi 3 (32 cores)",
+    "boxplot_rp3_32.png"
+)
