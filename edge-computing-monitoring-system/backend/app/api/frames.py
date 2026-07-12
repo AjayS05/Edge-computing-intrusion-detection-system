@@ -8,7 +8,6 @@ from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
 from app.core.config import settings
 from app.services.alert_service import alert_service
-from app.services.inference_service import inference_service
 from app.services.storage_service import storage_service
 
 router = APIRouter(prefix="/api/v1/frames", tags=["frames"])
@@ -75,21 +74,21 @@ async def upload_frame(
 
     annotated_image_key = None
     annotated_image_uri = None
-    annotation_check = "not_run"
-    inference_latency_seconds = None
-    annotation_diff_pixels = 0
-
-    if settings.run_inference_on_upload:
+        if settings.run_inference_on_upload:
         try:
+            from app.services.inference_service import inference_service
+
             inference_result = inference_service.run_on_image_bytes(image_bytes)
 
             detections = inference_result.detections
             inference_latency_seconds = round(
                 inference_result.inference_latency_seconds,
                 4,
-            )
-            annotation_diff_pixels = inference_result.annotation_diff_pixels
+            )annotation_check = "not_run"
+    inference_latency_seconds = None
+    annotation_diff_pixels = 0
 
+    
             if inference_result.annotated_image_bytes is not None:
                 annotated_image_key = storage_service.build_annotated_image_key(
                     sensor_node_id=sensor_node_id,
@@ -228,7 +227,7 @@ async def upload_frame(
     for event in events:
         event_key = storage_service.build_event_metadata_key(event["event_id"])
         storage_service.upload_metadata_json(
-            metadata=event,
+            m\etadata=event,
             object_key=event_key,
         )
 
