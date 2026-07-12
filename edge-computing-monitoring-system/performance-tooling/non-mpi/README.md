@@ -8,12 +8,11 @@ The key question being answered: *how does a broker-mediated, pull-based schedul
 
 ---
 
-## Hardware Setup
+## Relevant Hardware Setup
 
 | Device | Role | Quantity |
 |---|---|---|
 | Raspberry Pi 5 | Master node, PXE boot server, Redis broker, task dispatcher | 1 |
-| Raspberry Pi 4 + AI Camera | Image capture and frame encoding (data source) | 1 |
 | Raspberry Pi 3 | Stateless worker nodes (PXE booted) | 8 |
 
 ### Network topology
