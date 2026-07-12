@@ -3,13 +3,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
 from uuid import uuid4
-from app.services.telegram_service import telegram_service
+
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
 from app.core.config import settings
 from app.services.alert_service import alert_service
-from app.services.inference_service import inference_service
 from app.services.storage_service import storage_service
+from app.services.telegram_service import telegram_service
 
 router = APIRouter(prefix="/api/v1/frames", tags=["frames"])
 
@@ -22,7 +22,11 @@ def _raw_image_api_url(request: Request, frame_id: str) -> str:
     return f"{_api_base_url(request)}/api/v1/images/raw/{frame_id}"
 
 
-def _annotated_image_api_url(request: Request, frame_id: str, annotated_image_key: str | None) -> str | None:
+def _annotated_image_api_url(
+    request: Request,
+    frame_id: str,
+    annotated_image_key: str | None,
+) -> str | None:
     if not annotated_image_key:
         return None
 
@@ -81,6 +85,11 @@ async def upload_frame(
 
     if settings.run_inference_on_upload:
         try:
+            # Lazy import:
+            # This prevents the lightweight Kubernetes backend from importing cv2/YOLO
+            # when RUN_INFERENCE_ON_UPLOAD=false.
+            from app.services.inference_service import inference_service
+
             inference_result = inference_service.run_on_image_bytes(image_bytes)
 
             detections = inference_result.detections
@@ -157,7 +166,7 @@ async def upload_frame(
                 status_code=500,
                 detail=f"Inference failed: {exc}",
             ) from exc
-    
+
     for alert in alerts:
         telegram_result = telegram_service.send_alert(
             alert,
@@ -173,7 +182,7 @@ async def upload_frame(
                 event["telegram_sent"] = telegram_result["telegram_sent"]
                 event["telegram_sent_at"] = telegram_result["telegram_sent_at"]
                 event["telegram_error"] = telegram_result["telegram_error"]
-    
+
     metadata = {
         "frame_id": frame_id,
         "timestamp": received_at,
@@ -192,7 +201,11 @@ async def upload_frame(
         "annotated_image_key": annotated_image_key,
         "annotated_image_uri": annotated_image_uri,
         "raw_image_url": _raw_image_api_url(request, frame_id),
-        "annotated_image_url": _annotated_image_api_url(request, frame_id, annotated_image_key),
+        "annotated_image_url": _annotated_image_api_url(
+            request,
+            frame_id,
+            annotated_image_key,
+        ),
         "storage_backend": settings.storage_backend,
         "status": "processed" if settings.run_inference_on_upload else "stored",
         "detections": detections,
@@ -300,7 +313,11 @@ def get_annotation_check(frame_id: str, request: Request):
         "raw_image_key": frame.get("raw_image_key"),
         "annotated_image_key": annotated_image_key,
         "raw_image_url": _raw_image_api_url(request, frame_id),
-        "annotated_image_url": _annotated_image_api_url(request, frame_id, annotated_image_key),
+        "annotated_image_url": _annotated_image_api_url(
+            request,
+            frame_id,
+            annotated_image_key,
+        ),
         "annotated_image_uri": frame.get("annotated_image_uri"),
         "annotation_check": frame.get("annotation_check"),
         "annotation_diff_pixels": frame.get("annotation_diff_pixels"),
