@@ -40,4 +40,8 @@ For each one of these configurations the theoretical maximum value of N was comp
 
 ![Boxplot 8 nodes](images/boxplot_rp3_16.png)
 - Lastly, as expected, here we have the best Glfops values yet as we use all 8 worker nodes(peak at 17.3 for N=18000). Moreover, we can once again observe the expected behavior: increasing until the limit where it drops.
+
+- Finally, let's see the speedup that we achieved from 2 worker nodes all the way up to 4 worker nodes.
+![Speedup](images/boxplot_speedup.png)
+- As we can observe, the speedup gets better with more workers but never exceed the multiplying factor which is expected because the sequential part such as the allocation of the memory cannot be parallelized which limits the speedup.
  
