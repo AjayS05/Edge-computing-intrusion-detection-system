@@ -1,0 +1,9 @@
+/shared/output/lockfile has been created.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+rpi3-01 has been finished.
+Image has been copied.
+Required time to process the 1st sequential part:    0.004s
+Required time to process the parallel part:          3.010s
+Required time to process the 2nd sequential part:    0.003s

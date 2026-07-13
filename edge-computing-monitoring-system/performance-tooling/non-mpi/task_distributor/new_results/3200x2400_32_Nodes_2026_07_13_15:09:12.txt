@@ -1,0 +1,75 @@
+/shared/output/lockfile has been created.
+Wait for rpi3-01 in lockfile.
+convert: unable to open image '/tmp/worker1/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker1/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+mv: cannot stat '/tmp/worker1/blob.png': No such file or directory
+Wait for rpi3-01 in lockfile.
+convert: unable to open image '/tmp/worker6/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker6/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+mv: cannot stat '/tmp/worker6/blob.png': No such file or directory
+rpi3-01 has been finished.
+Wait for rpi3-01 in lockfile.
+convert: unable to open image '/tmp/worker3/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker3/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+mv: cannot stat '/tmp/worker3/blob.png': No such file or directory
+convert: unable to open image '/tmp/worker8/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker8/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+convert: unable to open image '/tmp/worker5/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker5/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+convert: unable to open image '/tmp/worker7/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker7/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+mv: cannot stat '/tmp/worker8/blob.png': No such file or directory
+mv: cannot stat '/tmp/worker7/blob.png': No such file or directory
+mv: cannot stat '/tmp/worker5/blob.png': No such file or directory
+Wait for rpi3-01 in lockfile.
+convert: unable to open image '/tmp/worker4/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker4/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+convert: unable to open image '/tmp/worker2/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker2/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+mv: cannot stat '/tmp/worker4/blob.png': No such file or directory
+mv: cannot stat '/tmp/worker2/blob.png': No such file or directory
+rpi3-01 has been finished.
+rpi3-01 has been finished.
+rpi3-01 has been finished.
+rpi3-02 has been finished.
+rpi3-02 has been finished.
+rpi3-02 has been finished.
+rpi3-02 has been finished.
+Wait for rpi3-03 in lockfile.
+Wait for rpi3-03 in lockfile.
+Wait for rpi3-03 in lockfile.
+Wait for rpi3-03 in lockfile.
+Wait for rpi3-03 in lockfile.
+Wait for rpi3-03 in lockfile.
+Wait for rpi3-03 in lockfile.
+Wait for rpi3-03 in lockfile.
+Wait for rpi3-03 in lockfile.
+rpi3-03 has been finished.
+rpi3-03 has been finished.
+rpi3-03 has been finished.
+rpi3-03 has been finished.
+rpi3-04 has been finished.
+rpi3-04 has been finished.
+rpi3-04 has been finished.
+rpi3-04 has been finished.
+rpi3-05 has been finished.
+rpi3-05 has been finished.
+rpi3-05 has been finished.
+rpi3-05 has been finished.
+rpi3-06 has been finished.
+Wait for rpi3-06 in lockfile.
+rpi3-06 has been finished.
+rpi3-06 has been finished.
+rpi3-06 has been finished.
+rpi3-07 has been finished.
+rpi3-07 has been finished.
+rpi3-07 has been finished.
+rpi3-07 has been finished.
+rpi3-08 has been finished.
+rpi3-08 has been finished.
+rpi3-08 has been finished.
+rpi3-08 has been finished.
+Image parts have been composed.
+Required time to process the 1st sequential part:    0.021s
+Required time to process the parallel part:          17.469s
+Required time to process the 2nd sequential part:    9.319s
