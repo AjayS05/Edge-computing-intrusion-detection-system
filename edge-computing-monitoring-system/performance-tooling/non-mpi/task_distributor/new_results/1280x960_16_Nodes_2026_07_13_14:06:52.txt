@@ -1,0 +1,27 @@
+/shared/output/lockfile has been created.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+rpi3-01 has been finished.
+rpi3-01 has been finished.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+rpi3-02 has been finished.
+rpi3-02 has been finished.
+rpi3-03 has been finished.
+rpi3-03 has been finished.
+rpi3-04 has been finished.
+rpi3-04 has been finished.
+rpi3-05 has been finished.
+rpi3-05 has been finished.
+rpi3-06 has been finished.
+rpi3-06 has been finished.
+rpi3-07 has been finished.
+rpi3-07 has been finished.
+rpi3-08 has been finished.
+rpi3-08 has been finished.
+Image parts have been composed.
+Required time to process the 1st sequential part:    0.005s
+Required time to process the parallel part:          6.232s
+Required time to process the 2nd sequential part:    0.727s

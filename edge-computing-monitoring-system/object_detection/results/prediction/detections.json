@@ -1,0 +1,9 @@
+{
+  "model_path": "object_detection/models/best_k.pt",
+  "image_path": "/srv/nfs/edge-monitoring-data/raw/rpi4-camera-01/2026-06-11/144728_000000_fce104a629354804b9fc195fa1b20574.jpg",
+  "confidence_threshold": 0.2,
+  "latency_seconds": 2.4976,
+  "detection_count": 0,
+  "detections": [],
+  "annotated_image": "object_detection/results/prediction/annotated_144728_000000_fce104a629354804b9fc195fa1b20574.jpg"
+}

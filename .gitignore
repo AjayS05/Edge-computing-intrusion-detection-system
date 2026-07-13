@@ -24,7 +24,7 @@ poetry.lock
 # Kubernetes-related files
 .kube/
 secrets/
-*.yaml
+
 
 # Node.js and Frontend (React, etc.)
 node_modules/
@@ -54,5 +54,4 @@ automating.sh
 *.swp
 *.tmp
 *.bak
-*.txt
 *.zip

@@ -10,6 +10,9 @@ env.bak/
 *.egg-info/
 Pipfile.lock
 poetry.lock
+docs/.vnv/
+performance-tooling/non-mpi/plot-vnv/
+site/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
@@ -24,7 +27,7 @@ poetry.lock
 # Kubernetes-related files
 .kube/
 secrets/
-*.yaml
+
 
 # Node.js and Frontend (React, etc.)
 node_modules/
@@ -48,5 +51,7 @@ Thumbs.db       # Windows
 *.swp
 *.tmp
 *.bak
-*.txt
 *.zip
+
+# docs
+site/*
