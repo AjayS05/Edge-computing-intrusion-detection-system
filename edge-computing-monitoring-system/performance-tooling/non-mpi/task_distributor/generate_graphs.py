@@ -90,7 +90,7 @@ for image in data:
 # Generate Layout Grid
 # -----------------------------
 num_cols = len(resolutions)
-fig, axes = plt.subplots(2, num_cols, figsize=(3.2 * num_cols, 10), sharex=False)
+fig, axes = plt.subplots(2, num_cols, figsize=(20, 8), sharex=False)
 
 if num_cols == 1:
     axes = np.expand_dims(axes, axis=1)
@@ -148,6 +148,7 @@ for col_idx, image in enumerate(resolutions):
     ax_bottom.set_ylim(0, 5)
     ax_bottom.tick_params(axis='both', which='major', labelsize=9, direction='in')
     
+    
     for bar in bars:
         yval = bar.get_height()
         label_str = f"{yval:.2f}" if yval >= 1.0 else f".{int(round(yval*100)):02d}"
@@ -161,7 +162,7 @@ for col_idx, image in enumerate(resolutions):
         )
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-output_path = os.path.join(OUTPUT_DIR, "combined_performance_grid.png")
+output_path = os.path.join(OUTPUT_DIR, "combined_performance_grid2.png")
 plt.savefig(output_path, dpi=300, bbox_inches="tight")
 plt.close()
 
