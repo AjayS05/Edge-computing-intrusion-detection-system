@@ -86,7 +86,7 @@ async def upload_frame(
     if settings.run_inference_on_upload:
         try:
             # Lazy import:
-            # This prevents the lightweight Kubernetes backend from importing cv2/YOLO
+            # Prevents the lightweight Kubernetes backend from importing cv2/YOLO
             # when RUN_INFERENCE_ON_UPLOAD=false.
             from app.services.inference_service import inference_service
 
