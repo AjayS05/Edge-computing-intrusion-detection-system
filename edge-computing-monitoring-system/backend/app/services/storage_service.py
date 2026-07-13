@@ -238,9 +238,44 @@ class StorageService:
         try:
             self.s3_client.head_bucket(Bucket=bucket_name)
             return True
-        except ClientError:
-            return False
+        except ClientError as exc:
+            error_code = str(exc.response.get("Error", {}).get("Code", ""))
 
+            if error_code in {"404", "NoSuchBucket", "NotFound"}:
+                return False
+
+            raise
+    def ensure_buckets(self) -> None:
+        """Create required S3 buckets when they do not already exist."""
+        if self.storage_backend != "s3":
+            return
+
+        assert self.s3_client is not None
+
+        required_buckets = (
+            settings.s3_images_bucket,
+            settings.s3_metadata_bucket,
+        )
+
+        for bucket_name in required_buckets:
+            if self.bucket_exists(bucket_name):
+                continue
+
+            try:
+                self.s3_client.create_bucket(Bucket=bucket_name)
+            except ClientError as exc:
+                error_code = str(
+                    exc.response.get("Error", {}).get("Code", "")
+                )
+
+                if error_code not in {
+                    "BucketAlreadyExists",
+                    "BucketAlreadyOwnedByYou",
+                }:
+                    raise RuntimeError(
+                        f"Could not create storage bucket "
+                        f"'{bucket_name}': {error_code or exc}"
+                    ) from exc
     def build_public_image_url(self, object_key: str | None) -> str | None:
         """
         Direct SeaweedFS/S3 URL.
