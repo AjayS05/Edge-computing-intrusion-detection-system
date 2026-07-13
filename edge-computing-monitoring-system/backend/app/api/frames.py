@@ -79,10 +79,6 @@ async def upload_frame(
 
     annotated_image_key = None
     annotated_image_uri = None
-    annotation_check = "not_run"
-    inference_latency_seconds = None
-    annotation_diff_pixels = 0
-
     if settings.run_inference_on_upload:
         try:
             # Lazy import:
@@ -97,8 +93,11 @@ async def upload_frame(
                 inference_result.inference_latency_seconds,
                 4,
             )
-            annotation_diff_pixels = inference_result.annotation_diff_pixels
+            annotation_check = "not_run"
+            inference_latency_seconds = None
+            annotation_diff_pixels = 0
 
+            
             if inference_result.annotated_image_bytes is not None:
                 annotated_image_key = storage_service.build_annotated_image_key(
                     sensor_node_id=sensor_node_id,
