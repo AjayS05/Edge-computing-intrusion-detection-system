@@ -370,11 +370,8 @@ function hasPrometheusError(data: MonitoringOverview | null) {
   return Boolean(data?.debug?.prometheus_errors && data.debug.prometheus_errors.length > 0);
 }
 
-function hasTemperatureMetric(nodes: UiNode[]) {
-  return nodes.some((node) => typeof node.temperature === "number");
-}
 
 function formatAlertTitle(type: string, severity: string) {
-  const cleanType = type.replaceAll("_", " ");
+  const cleanType = type.replace(/_/g, " ");
   return `${severity.toUpperCase()} · ${cleanType}`;
 }

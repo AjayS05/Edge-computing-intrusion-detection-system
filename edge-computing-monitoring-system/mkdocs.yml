@@ -91,7 +91,7 @@ nav:
       - Architecture Design: task7/backend_architecture.md
       - REST API Reference: task7/backend_api.md
       - SeaweedFS Storage: task7/seaweedfs.md
-      - Kubernetes Deployment: task7/backend_k8s.md
+      - Kubernetes Deployment: task7/kubernetes.md
 
   - Frontend Dashboard:
       - UI Architecture: task8/frontend_architecture.md
