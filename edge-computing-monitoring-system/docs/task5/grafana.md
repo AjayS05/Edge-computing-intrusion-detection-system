@@ -1,26 +1,39 @@
-# Grafana Dashboard and Visualization
+# Grafana Dashboards
 
-> Grafana configuration and dashboard guide for the Raspberry Pi monitoring stack.
+> Grafana deployment and dashboard configuration for the Raspberry Pi edge-monitoring cluster.
 
 **Namespace:** `monitoring`  
 **Service:** `prometheus-grafana`  
-**Dashboard:** Node Exporter Full  
-**Dashboard ID:** `1860`  
+**Data source:** Prometheus  
 **Related documentation:** [Monitoring overview](monitoring.md) · [Prometheus](prometheus.md)
 
 ---
 
-## 1. Purpose
+## Overview
 
-Grafana visualizes the metrics stored by Prometheus. It provides real-time graphs and historical trends for CPU, memory, disk, network, uptime, load, temperature, and node availability.
+Grafana provides real-time and historical visualization of the metrics collected by Prometheus from Pi5, Pi4, and the eight Pi3 workers. The dashboard helps the team observe cluster health while intrusion detection, image processing, storage, and inference workloads are running.
 
-Grafana is useful during demonstrations and performance experiments because it shows the effect of inference and image-processing workloads on the Raspberry Pi cluster.
+The dashboard displays:
+
+- Node availability
+- CPU utilization
+- Memory utilization
+- Disk utilization
+- Network receive and transmit rates
+- Raspberry Pi temperature
+- System load and uptime
+
+Grafana is also useful during performance experiments because it makes resource changes visible before, during, and after inference workloads.
+
+> **IMAGE PLACEHOLDER — Complete dashboard**  
+> Suggested file: `images/monitoring/grafana-dashboard-overview.png`  
+> Add a screenshot showing the complete Raspberry Pi monitoring dashboard.
 
 ---
 
-## 2. Deployment
+## Grafana Deployment
 
-Grafana is enabled through `prometheus-k3s-values.yaml`:
+Grafana is installed as part of `kube-prometheus-stack`. It is enabled in `prometheus-k3s-values.yaml`:
 
 ```yaml
 grafana:
@@ -28,7 +41,7 @@ grafana:
   replicas: 1
 ```
 
-The complete stack is deployed with:
+Deploy the monitoring stack:
 
 ```bash
 helm upgrade --install prometheus \
@@ -40,27 +53,28 @@ helm upgrade --install prometheus \
   --timeout 30m
 ```
 
-Verify Grafana:
+Check the Grafana pod and service:
 
 ```bash
 kubectl get pods -n monitoring | grep grafana
 kubectl get svc -n monitoring | grep grafana
 ```
 
-Expected pod state:
+The Grafana pod should show all containers ready:
 
 ```text
 3/3 Running
 ```
 
-> **IMAGE PLACEHOLDER — Grafana pod**  
-> Suggested file: `images/monitoring/grafana-pod-running.png`
+> **IMAGE PLACEHOLDER — Grafana deployment**  
+> Suggested file: `images/monitoring/grafana-pod-running.png`  
+> Add the terminal output showing the Grafana pod in `Running` state.
 
 ---
 
-## 3. Access Grafana
+## Accessing Grafana
 
-Create a temporary port forward:
+Create a port forward from Pi5 to the Grafana service:
 
 ```bash
 kubectl port-forward --address 0.0.0.0 \
@@ -69,7 +83,7 @@ kubectl port-forward --address 0.0.0.0 \
   3001:80
 ```
 
-Open:
+Open Grafana from a device on the same network:
 
 ```text
 http://192.168.178.200:3001
@@ -85,168 +99,330 @@ kubectl get secret -n monitoring prometheus-grafana \
 echo
 ```
 
-Login username:
+Use the following username:
 
 ```text
 admin
 ```
 
-Do not store the administrator password in documentation, screenshots, or Git.
+Do not add the administrator password to Git, screenshots, or documentation.
+
+> **IMAGE PLACEHOLDER — Grafana login**  
+> Suggested file: `images/monitoring/grafana-login.png`  
+> Add the Grafana login page without displaying credentials.
 
 ---
 
-## 4. Prometheus data source
+## Prometheus Data Source Configuration
 
-The Helm chart normally provisions Prometheus automatically as a Grafana data source.
-
-Verify it in Grafana:
+The Helm chart normally provisions Prometheus automatically as a Grafana data source. Verify the configuration inside Grafana:
 
 1. Open **Connections**.
 2. Select **Data sources**.
 3. Open **Prometheus**.
-4. Confirm that the URL points to the Kubernetes Prometheus service.
+4. Confirm the Prometheus service URL.
 5. Select **Save & test**.
-6. Confirm that the data-source test succeeds.
+6. Confirm that the connection succeeds.
 
-The Kubernetes service URL is:
+The internal Kubernetes Prometheus URL is:
 
 ```text
 http://prometheus-operated.monitoring.svc.cluster.local:9090
 ```
 
+Kubernetes service DNS is used because Grafana and Prometheus run inside the same K3s cluster.
+
 > **IMAGE PLACEHOLDER — Prometheus data source**  
 > Suggested file: `images/monitoring/grafana-prometheus-datasource.png`  
-> Show the successful **Save & test** result without exposing credentials.
+> Add the successful **Save & test** response.
 
 ---
 
-## 5. Import Node Exporter Full
+## Dashboard Creation
+
+The dashboard can be created manually or initialized using the Node Exporter Full community dashboard.
+
+### Import the base dashboard
 
 1. Open **Dashboards**.
-2. Select **New** or **Import**.
+2. Select **New** and then **Import**.
 3. Enter dashboard ID `1860`.
-4. Load the dashboard definition.
-5. Select the Prometheus data source.
+4. Select **Load**.
+5. Choose the Prometheus data source.
 6. Select **Import**.
 
 The imported dashboard is named **Node Exporter Full**.
 
----
+### Configure dashboard variables
 
-## 6. Dashboard configuration
-
-Select:
+Use the following selections:
 
 - **Datasource:** Prometheus
 - **Job:** `raspberry-pi-nodes`
-- **Nodename/Instance:** required Raspberry Pi
+- **Instance/Nodename:** required Raspberry Pi
 - **Time range:** Last 15 minutes
 - **Refresh interval:** 10 seconds
 
-The dashboard displays:
+### Create a custom panel
 
-- CPU usage
-- Memory usage
-- Disk usage and capacity
-- Network receive and transmit rates
-- System uptime
-- Load average
-- Node availability
-- Temperature where available
-- Historical resource trends
+For each panel described below:
 
-Some panels may display `N/A` when a metric is not supported by the Raspberry Pi hardware, operating system, filesystem, or Node Exporter version. The dashboard is considered valid when the primary CPU, memory, disk, uptime, load, and availability panels display live data.
+1. Open the dashboard.
+2. Select **Add** and then **Visualization**.
+3. Choose the Prometheus data source.
+4. Paste the provided PromQL expression.
+5. Select the suggested visualization.
+6. Configure the title, unit, legend, and thresholds.
+7. Select **Apply**.
+8. Save the dashboard.
 
-> **IMAGE PLACEHOLDER — Node Exporter Full dashboard**  
-> Suggested file: `images/monitoring/grafana-node-exporter-dashboard.png`  
-> Show the selected Raspberry Pi and visible CPU, memory, disk, network, and uptime panels.
+> **IMAGE PLACEHOLDER — Dashboard editor**  
+> Suggested file: `images/monitoring/grafana-dashboard-editor.png`  
+> Add a screenshot showing one panel being configured.
 
 ---
 
-## 7. Useful dashboard queries
+## Node Availability Panel
 
-### CPU
-
-```promql
-100 - (
-  avg by(instance) (
-    rate(node_cpu_seconds_total{mode="idle"}[2m])
-  ) * 100
-)
-```
-
-### Memory
-
-```promql
-100 * (
-  1 - (
-    node_memory_MemAvailable_bytes
-    /
-    node_memory_MemTotal_bytes
-  )
-)
-```
-
-### Temperature
-
-```promql
-max by(instance) (node_hwmon_temp_celsius)
-```
-
-### Node state
+This panel shows whether Prometheus can reach each Raspberry Pi Node Exporter.
 
 ```promql
 up{job="raspberry-pi-nodes"}
 ```
 
+Recommended settings:
+
+| Setting | Value |
+|---|---|
+| Visualization | Stat or State timeline |
+| Title | Node Availability |
+| Unit | Short |
+| Value `1` | Online / green |
+| Value `0` | Offline / red |
+| Legend | `{{instance}}` |
+
+A stat panel is suitable for a compact cluster overview. A state timeline is useful when historical availability must be shown.
+
+> **IMAGE PLACEHOLDER — Node availability**  
+> Suggested file: `images/monitoring/grafana-node-availability.png`
+
 ---
 
-## 8. Alert visualization
+## CPU Usage Panel
 
-Prometheus evaluates the custom `raspberry-pi-cluster` rules and sends firing alerts to Alertmanager. Grafana can be used alongside the Prometheus and Alertmanager interfaces to visualize the affected resource metrics before and during an alert.
+CPU utilization is calculated from the non-idle CPU time reported by Node Exporter.
 
-Custom alerts include:
-
-- Raspberry Pi node down
-- High CPU usage
-- High memory usage
-- High disk usage
-- High temperature
-- Critical temperature
-
-Prometheus rules:
-
-```text
-http://192.168.178.200:30090/rules
+```promql
+100 - (
+  avg by(instance) (
+    rate(node_cpu_seconds_total{
+      job="raspberry-pi-nodes",
+      mode="idle"
+    }[2m])
+  ) * 100
+)
 ```
 
-Prometheus alerts:
+Recommended settings:
 
-```text
-http://192.168.178.200:30090/alerts
+| Setting | Value |
+|---|---|
+| Visualization | Time series |
+| Title | CPU Usage by Node |
+| Unit | Percent (0–100) |
+| Minimum | `0` |
+| Maximum | `100` |
+| Warning threshold | `80` |
+| Critical threshold | `90` |
+| Legend | `{{instance}}` |
+
+> **IMAGE PLACEHOLDER — CPU panel**  
+> Suggested file: `images/monitoring/grafana-cpu-panel.png`
+
+---
+
+## Memory Usage Panel
+
+Memory utilization is calculated using total memory and currently available memory.
+
+```promql
+100 * (
+  1 - (
+    node_memory_MemAvailable_bytes{job="raspberry-pi-nodes"}
+    /
+    node_memory_MemTotal_bytes{job="raspberry-pi-nodes"}
+  )
+)
 ```
 
-> **IMAGE PLACEHOLDER — Alert and matching Grafana metric**  
-> Suggested file: `images/monitoring/grafana-alert-metric.png`  
-> Show an alert condition together with the relevant Grafana resource graph.
+Recommended settings:
+
+| Setting | Value |
+|---|---|
+| Visualization | Time series or Gauge |
+| Title | Memory Usage by Node |
+| Unit | Percent (0–100) |
+| Minimum | `0` |
+| Maximum | `100` |
+| Warning threshold | `80` |
+| Critical threshold | `90` |
+| Legend | `{{instance}}` |
+
+> **IMAGE PLACEHOLDER — Memory panel**  
+> Suggested file: `images/monitoring/grafana-memory-panel.png`
 
 ---
 
-## 9. Validation checklist
+## Disk Usage Panel
 
-- [x] Grafana pod is `3/3 Running`.
-- [x] Grafana service is available.
-- [x] Login works with the Kubernetes secret.
-- [x] Prometheus data source passes validation.
-- [x] Node Exporter Full dashboard is imported.
-- [x] `raspberry-pi-nodes` is selectable.
-- [x] Raspberry Pi instances can be selected.
-- [x] CPU, memory, disk, network, uptime, and load data are visible.
-- [x] Dashboard refresh is configured.
-- [x] Grafana data matches Prometheus results.
+This query calculates root filesystem utilization while excluding temporary and container filesystems.
+
+```promql
+100 * (
+  1 - (
+    node_filesystem_avail_bytes{
+      job="raspberry-pi-nodes",
+      mountpoint="/",
+      fstype!~"tmpfs|overlay|squashfs"
+    }
+    /
+    node_filesystem_size_bytes{
+      job="raspberry-pi-nodes",
+      mountpoint="/",
+      fstype!~"tmpfs|overlay|squashfs"
+    }
+  )
+)
+```
+
+Recommended settings:
+
+| Setting | Value |
+|---|---|
+| Visualization | Bar gauge or Gauge |
+| Title | Root Disk Usage |
+| Unit | Percent (0–100) |
+| Minimum | `0` |
+| Maximum | `100` |
+| Warning threshold | `80` |
+| Critical threshold | `90` |
+| Legend | `{{instance}}` |
+
+> **IMAGE PLACEHOLDER — Disk panel**  
+> Suggested file: `images/monitoring/grafana-disk-panel.png`
 
 ---
 
-## 10. Result
+## Network Traffic Panel
 
-Grafana is successfully deployed in K3s and connected to Prometheus. The Node Exporter Full dashboard displays live and historical metrics for the Raspberry Pi cluster, supporting system-health monitoring, performance evaluation, demonstrations, and evidence collection for the project submission.
+Create two queries in the same time-series panel.
+
+### Query A — Receive rate
+
+```promql
+sum by(instance) (
+  rate(node_network_receive_bytes_total{
+    job="raspberry-pi-nodes",
+    device!~"lo|veth.*|docker.*|cni.*|flannel.*"
+  }[2m])
+)
+```
+
+### Query B — Transmit rate
+
+```promql
+sum by(instance) (
+  rate(node_network_transmit_bytes_total{
+    job="raspberry-pi-nodes",
+    device!~"lo|veth.*|docker.*|cni.*|flannel.*"
+  }[2m])
+)
+```
+
+Recommended settings:
+
+| Setting | Value |
+|---|---|
+| Visualization | Time series |
+| Title | Network Traffic by Node |
+| Unit | Bytes/second (Bps) |
+| Query A legend | `RX {{instance}}` |
+| Query B legend | `TX {{instance}}` |
+
+> **IMAGE PLACEHOLDER — Network panel**  
+> Suggested file: `images/monitoring/grafana-network-panel.png`
+
+---
+
+## Temperature Panel
+
+Use the temperature metric exposed by the Raspberry Pi Node Exporter environment.
+
+Primary query:
+
+```promql
+max by(instance) (
+  node_hwmon_temp_celsius{job="raspberry-pi-nodes"}
+)
+```
+
+Alternative query:
+
+```promql
+max by(instance) (
+  node_thermal_zone_temp{job="raspberry-pi-nodes"}
+)
+```
+
+Recommended settings:
+
+| Setting | Value |
+|---|---|
+| Visualization | Time series or Gauge |
+| Title | Raspberry Pi Temperature |
+| Unit | Celsius (°C) |
+| Warning threshold | `60` |
+| Critical threshold | `70` |
+| Legend | `{{instance}}` |
+
+Use the query that returns temperature data in Prometheus. Some nodes may not expose the same temperature metric depending on hardware and operating-system support.
+
+> **IMAGE PLACEHOLDER — Temperature panel**  
+> Suggested file: `images/monitoring/grafana-temperature-panel.png`
+
+---
+
+## Dashboard Verification
+
+Confirm that Grafana is receiving live Prometheus data:
+
+1. Select `raspberry-pi-nodes` from the Job variable.
+2. Select individual Pi5, Pi4, and Pi3 instances.
+3. Set the time range to **Last 15 minutes**.
+4. Set refresh to `10s`.
+5. Confirm that CPU, memory, disk, and network panels update.
+6. Confirm that `up` displays `1` for reachable nodes.
+7. Confirm that the values correspond with the same PromQL queries in Prometheus.
+
+The dashboard is successfully verified when live values are visible for the selected nodes and new samples appear after each refresh interval.
+
+Some panels may show `N/A` when a metric is not supported by a particular Raspberry Pi, operating system, filesystem, or Node Exporter version. This does not invalidate the dashboard when the core availability, CPU, memory, disk, network, uptime, and load metrics are present.
+
+> **IMAGE PLACEHOLDER — Verified dashboard**  
+> Suggested file: `images/monitoring/grafana-dashboard-verified.png`  
+> Add the final dashboard showing several nodes and live metric panels.
+
+---
+
+## Results
+
+Grafana is successfully deployed in K3s and connected to Prometheus. The monitoring dashboard displays live and historical resource data for Pi5, Pi4, and the eight Pi3 workers. It provides clear evidence of node availability, CPU, memory, disk, network, and temperature behavior during normal operation and edge-inference workloads.
+
+The completed dashboard supports:
+
+- Real-time cluster health monitoring
+- Historical performance analysis
+- Resource-bottleneck identification
+- Demonstration of node availability
+- Monitoring during inference and image processing
+- Evidence collection for project evaluation and final submission
