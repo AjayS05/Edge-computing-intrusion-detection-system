@@ -11,7 +11,7 @@ env.bak/
 Pipfile.lock
 poetry.lock
 docs/.vnv/
-performance-tooling/non-mpi/plot-vnv/
+non-mpi/plot-vnv/
 site/
 
 # Jupyter Notebook checkpoints
