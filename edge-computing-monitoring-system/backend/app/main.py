@@ -13,15 +13,14 @@ from app.api.images import router as images_router
 from app.api.monitoring import router as monitoring_router
 from app.core.config import settings
 from app.services.frame_repository import FrameRepository
-
-
+from app.services.storage_service import storage_service
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     settings.raw_frames_directory.mkdir(parents=True, exist_ok=True)
     settings.annotated_frames_directory.mkdir(parents=True, exist_ok=True)
     settings.metadata_directory.mkdir(parents=True, exist_ok=True)
     settings.database_path.parent.mkdir(parents=True, exist_ok=True)
-
+    storage_service.ensure_buckets()
     FrameRepository(settings.database_path).initialize()
 
     yield

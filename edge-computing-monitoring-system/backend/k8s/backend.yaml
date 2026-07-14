@@ -13,7 +13,7 @@ data:
   APP_VERSION: "0.2.0"
   STORAGE_BACKEND: "s3"
   DATA_DIRECTORY: "/data"
-  RUN_INFERENCE_ON_UPLOAD: "true"
+  RUN_INFERENCE_ON_UPLOAD: "false"
   YOLO_MODEL_PATH: "/app/models/best_k.pt"
   YOLO_CONFIDENCE_THRESHOLD: "0.55"
   MAX_UPLOAD_SIZE_BYTES: "5242880"
@@ -30,8 +30,8 @@ metadata:
   namespace: edge-monitoring
 type: Opaque
 stringData:
-  TELEGRAM_BOT_TOKEN: "replace_with_your_bot_token"
-  TELEGRAM_CHAT_ID: "replace_with_your_chat_id"
+  TELEGRAM_BOT_TOKEN: "8607169233:AAFnPgCPSgZZ00s52TH4NnORsEtA9isKtzE"
+  TELEGRAM_CHAT_ID: "7555204164"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -52,7 +52,7 @@ spec:
         kubernetes.io/hostname: cloud
       containers:
         - name: backend
-          image: edge-monitoring-backend:latest
+          image: edge-backend:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
@@ -84,3 +84,4 @@ spec:
       port: 8000
       targetPort: 8000
       nodePort: 30080
+
