@@ -539,18 +539,6 @@ helm upgrade --install prometheus \
   --timeout 30m
 ```
 
-The `--no-hooks` option was used when the Helm admission webhook hook was the only failing component while the monitoring resources themselves were healthy:
-
-```bash
-helm upgrade prometheus \
-  prometheus-community/kube-prometheus-stack \
-  -n monitoring \
-  -f prometheus-k3s-values.yaml \
-  --set nodeExporter.enabled=false \
-  --no-hooks \
-  --timeout 30m
-```
-
 ### 10.6 Verify the deployment
 
 ```bash
@@ -939,123 +927,7 @@ Browser verification:
 
 ---
 
-## 15. Troubleshooting and verified solutions
-
-### 15.1 Node Exporter pods entered `CrashLoopBackOff`
-
-Error:
-
-```text
-listen tcp 0.0.0.0:9100: bind: address already in use
-```
-
-Cause: Node Exporter was already running as an Ansible-installed systemd service. The Kubernetes DaemonSet attempted to use the same host port.
-
-Solution:
-
-```yaml
-nodeExporter:
-  enabled: false
-```
-
-The host exporters were preserved and the duplicate Kubernetes DaemonSet was removed.
-
-### 15.2 `node_exporter.service` could not be found
-
-The service installed by the Debian package can be named `prometheus-node-exporter`.
-
-```bash
-systemctl list-unit-files | grep -Ei 'node.?exporter|prometheus'
-sudo systemctl status prometheus-node-exporter --no-pager
-```
-
-### 15.3 `wget` not available inside the Prometheus container
-
-The Prometheus container image did not include `wget`. This did not mean Prometheus was broken. Readiness was tested through the service endpoint, port forwarding, or another pod with curl.
-
-### 15.4 Helm hook failed with `database is locked`
-
-Error:
-
-```text
-post-upgrade hooks failed
-rpc error: code = Unknown desc = database is locked
-```
-
-This was a temporary K3s/containerd internal database lock while creating an admission webhook patch job. The monitoring pods were inspected before making changes. Failed temporary jobs were removed and the upgrade was retried. K3s restart was reserved only for a persistent runtime lock.
-
-### 15.5 Helm reported failure while pods were healthy
-
-The Helm hook failed after Kubernetes resources were applied. When the hook was the only remaining problem and the monitoring resources were healthy, the release was updated once with `--no-hooks`.
-
-### 15.6 Pi5 appeared twice
-
-Pi5 was initially configured with both:
-
-```text
-192.168.178.200:9100
-192.168.50.1:9100
-```
-
-Both addresses referred to the same device. One was removed to prevent duplicate node entries, incorrect averages, and incorrect node counts. The retained monitoring address is:
-
-```text
-192.168.50.1:9100
-```
-
-### 15.7 Only Pi5 appeared `DOWN`
-
-The host Node Exporter service and port were checked:
-
-```bash
-sudo ss -lntp | grep ':9100'
-sudo systemctl enable --now prometheus-node-exporter
-```
-
-The configured Pi5 address was then tested directly.
-
-### 15.8 Backend could not reach Prometheus
-
-Using `localhost:9090` inside the backend pod was incorrect because `localhost` referred to the backend container. Kubernetes service DNS was used instead:
-
-```text
-http://prometheus-operated.monitoring.svc.cluster.local:9090
-```
-
-### 15.9 Prometheus NodePort was unavailable
-
-The service configuration was checked:
-
-```bash
-kubectl get svc -n monitoring | grep prometheus
-
-kubectl get svc prometheus-kube-prometheus-prometheus \
-  -n monitoring \
-  -o yaml | grep -E 'type:|port:|nodePort:|targetPort:'
-```
-
-Temporary access was possible through:
-
-```bash
-kubectl port-forward --address 0.0.0.0 \
-  -n monitoring \
-  svc/prometheus-kube-prometheus-prometheus \
-  9091:9090
-```
-
-Permanent NodePort exposure was restored through the Helm values configuration.
-
-### 15.10 cAdvisor out-of-order samples warning
-
-Prometheus logged an out-of-order samples warning for Kubernetes cAdvisor metrics. The configuration and rule manager still loaded successfully. The warning was unrelated to the custom Raspberry Pi alert rules and did not prevent the monitoring implementation from working.
-
-### 15.11 Temperature displayed as unknown
-
-Available temperature metrics were checked. Backend and frontend types were aligned, and `temperature_status` was included in each node object. The frontend handles unavailable temperature data without failing the entire monitoring page.
-
----
-
-## 16. Access information
+## 15. Access information
 
 ### Final Kubernetes access
 
@@ -1120,7 +992,7 @@ If another laptop cannot connect, verify that it is on the same network and that
 
 ---
 
-## 17. Security and repository guidance
+## 16. Security and repository guidance
 
 Recommended monitoring structure:
 
@@ -1162,7 +1034,7 @@ The following reproducible, sanitized files should be committed:
 
 ---
 
-## 18. Completed work
+## 17. Completed work
 
 The following work has been completed and verified:
 
@@ -1188,7 +1060,7 @@ The following work has been completed and verified:
 
 ---
 
-## 19. Final verification checklist
+## 18. Final verification checklist
 
 - [x] Required Kubernetes nodes are `Ready`.
 - [x] Prometheus is running in namespace `monitoring`.
@@ -1210,7 +1082,7 @@ The following work has been completed and verified:
 
 ---
 
-## 20. Final result
+## 19. Final result
 
 The monitoring implementation is complete. Node Exporter exposes system metrics from the Raspberry Pi devices, and Prometheus deployed in K3s successfully scrapes the configured Pi5, Pi4, and Pi3 targets. Grafana displays live and historical cluster metrics, while Alertmanager receives threshold-based alerts for node availability and resource health.
 
@@ -1218,7 +1090,7 @@ The FastAPI monitoring endpoint converts Prometheus data into frontend-ready JSO
 
 ---
 
-## 21. Image checklist
+## 20. Image checklist
 
 Add the following images before final submission:
 
@@ -1239,5 +1111,3 @@ Add the following images before final submission:
 | 13 | `monitoring-api-response.png` | Successful monitoring API JSON response |
 | 14 | `react-monitoring-page.png` | Final Monitoring page |
 | 15 | `react-alerts-page.png` | Final Alerts page |
-
-Do not include passwords, tokens, private keys, or sensitive configuration values in screenshots.
