@@ -40,7 +40,7 @@ Namespace: monitoring
 Internal service: :9090
 External NodePort: :30090
         │
-        ├────────► Grafana
+        ├────────► Grafana (:80 internal, :30300 external)
         ├────────► Alertmanager
         ├────────► Prometheus Operator
         └────────► kube-state-metrics
@@ -65,9 +65,7 @@ The existing Ansible-installed Node Exporters are retained as Linux services on 
 | FastAPI | Converts Prometheus data into frontend-ready JSON. |
 | React frontend | Displays cluster health, node metrics, and alerts. |
 
-> **DIAGRAM PLACEHOLDER — Monitoring architecture**  
-> Suggested file: `images/monitoring/monitoring-architecture.png`  
-> Add a diagram showing Pi nodes, Node Exporter, Prometheus, Grafana, Alertmanager, FastAPI, and React.
+![Raspberry Pi cluster monitoring architecture](images/monitoring/monitoring-architecture.svg)
 
 ---
 
@@ -145,11 +143,11 @@ The final monitoring addresses are:
 
 | Device | Node Exporter address |
 |---|---|
-| Pi5 control plane | `192.168.50.1:9100` |
+| Pi5 control plane | `192.168.178.200:9100` |
 | Pi4 sensor node | `192.168.50.144:9100` |
 | Pi3-01 to Pi3-08 | `192.168.50.101:9100` to `192.168.50.108:9100` |
 
-Only `192.168.50.1:9100` is used for Pi5 so the same device is not counted twice through its second network address.
+Only `192.168.178.200:9100` is used for Pi5 so the same device is not counted twice through another network address.
 
 > **IMAGE PLACEHOLDER — Ansible result**  
 > Suggested file: `images/monitoring/ansible-node-exporter-success.png`  
@@ -187,7 +185,7 @@ The backend deployment is named `backend` in namespace `edge-monitoring`.
 ```bash
 kubectl set env deployment/backend \
   -n edge-monitoring \
-  PROMETHEUS_URL=http://prometheus-operated.monitoring.svc.cluster.local:9090
+  PROMETHEUS_URL=http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
 ```
 
 Verify the deployment and configuration:
@@ -205,7 +203,7 @@ Test Prometheus connectivity from the backend:
 
 ```bash
 kubectl exec -n edge-monitoring deployment/backend -- \
-  python -c "import urllib.request; print(urllib.request.urlopen('http://prometheus-operated.monitoring.svc.cluster.local:9090/-/ready').read().decode())"
+  python -c "import urllib.request; print(urllib.request.urlopen('http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/-/ready').read().decode())"
 ```
 
 Test the monitoring endpoint:
@@ -291,29 +289,7 @@ Verification:
 
 ---
 
-## 7. Final verification
-
-```bash
-kubectl get nodes -o wide
-kubectl get pods -n monitoring
-kubectl get pods -n edge-monitoring
-kubectl get prometheusrule -n monitoring
-```
-
-- [x] Required Kubernetes nodes are `Ready`.
-- [x] Host Node Exporters answer on port `9100`.
-- [x] No duplicate Kubernetes Node Exporter DaemonSet is running.
-- [x] Pi5, Pi4, and eight Pi3 targets are configured.
-- [x] Prometheus collects the required host metrics.
-- [x] Grafana receives and visualizes Prometheus data.
-- [x] Alertmanager and custom rules are active.
-- [x] Backend uses internal Kubernetes service discovery.
-- [x] Monitoring API returns live data.
-- [x] React Monitoring and Alerts pages display the API response.
-
----
-
-## 8. Repository guidance
+## 7. Repository guidance
 
 Recommended files:
 
@@ -336,7 +312,6 @@ Do not commit passwords, SSH private keys, real `.env` files, API tokens, or oth
 
 ---
 
-## 9. Result
+## 8. Result
 
 The monitoring implementation is complete. Node Exporter exposes system metrics from Pi5, Pi4, and the eight Pi3 workers. Prometheus collects the metrics inside K3s, Grafana visualizes live and historical data, Alertmanager manages health alerts, and the FastAPI backend supplies normalized monitoring information to the React frontend.
-
