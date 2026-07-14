@@ -9,7 +9,10 @@ from app.core.config import settings
 from app.services.alert_service import alert_service
 from app.services.storage_service import storage_service
 from app.services.telegram_service import telegram_service
-
+from app.services.inference_client import inference_client
+from app.services.distributed_frame_service import (
+    distributed_frame_service,
+)
 
 @dataclass(frozen=True)
 class FrameProcessingInput:
@@ -84,18 +87,26 @@ class FrameProcessingService:
         annotation_diff_pixels = 0
 
         if settings.run_inference_on_upload:
+            distributed_outcome = (
+                distributed_frame_service.prepare_for_inference(
+                    frame_id=frame_id,
+                    image_bytes=payload.image_bytes,
+                    content_type=payload.content_type,
+                )
+            )
             (
                 detections,
                 annotated_image_key,
                 annotated_image_uri,
                 inference_latency_seconds,
                 annotation_check,
-                annotation_diff_pixels,
+                annotation_diff_pixels,	
             ) = self._run_inference(
-                image_bytes=payload.image_bytes,
-                sensor_node_id=payload.sensor_node_id,
-                frame_id=frame_id,
-            )
+                image_bytes=distributed_outcome.image_bytes,
+    		content_type=distributed_outcome.content_type,
+    		sensor_node_id=payload.sensor_node_id,
+    		frame_id=frame_id,
+		)
 
             events, alerts = self._build_events_and_alerts(
                 detections=detections,
@@ -206,6 +217,7 @@ class FrameProcessingService:
     def _run_inference(
         self,
         *,
+        content_type: str,
         image_bytes: bytes,
         sensor_node_id: str,
         frame_id: str,
@@ -217,19 +229,23 @@ class FrameProcessingService:
         str,
         int,
     ]:
-        # Lazy import keeps lightweight deployments usable when
-        # RUN_INFERENCE_ON_UPLOAD is disabled.
-        from app.services.inference_service import inference_service
+        from app.services.inference_client import inference_client
 
-        inference_result = inference_service.run_on_image_bytes(image_bytes)
+        extension = "png" if content_type == "image/png" else "jpg"
+
+        inference_result = inference_client.infer(
+            image_bytes=image_bytes,
+            content_type=content_type,
+            filename=f"{frame_id}.{extension}",
+        )
 
         detections = inference_result.detections
+
         latency = round(
             inference_result.inference_latency_seconds,
             4,
         )
 
-        # This assignment was missing from the previous frames.py.
         annotation_diff_pixels = (
             inference_result.annotation_diff_pixels
         )
