@@ -444,17 +444,3 @@ kubectl set env deployment/backend \
   -n edge-monitoring \
   PROMETHEUS_URL=http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
 ```
-
----
-
-## 9. Completion checklist
-
-- [x] Prometheus is deployed and ready.
-- [x] Alertmanager is deployed and ready.
-- [x] kube-state-metrics and the operator are ready.
-- [x] Node Exporter chart dependency is disabled.
-- [x] Ten Raspberry Pi targets are configured.
-- [x] Targets are visible in Prometheus.
-- [x] PromQL returns host metrics.
-- [x] Custom alert rules are loaded.
-- [x] Backend can access the internal Prometheus service.
