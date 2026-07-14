@@ -2,62 +2,86 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://yourdomain.com/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
+    </url>
+    <url>
+         <loc>https://yourdomain.com/results/future_work/</loc>
+         <lastmod>2026-07-14</lastmod>
+    </url>
+    <url>
+         <loc>https://yourdomain.com/results/performance/</loc>
+         <lastmod>2026-07-14</lastmod>
+    </url>
+    <url>
+         <loc>https://yourdomain.com/task1/</loc>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task1/architecture/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
+    </url>
+    <url>
+         <loc>https://yourdomain.com/task1/execution_flow/</loc>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task1/hardware/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task1/network/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task2/hpl/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task3/mpi/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task4/non-mpi/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task5/monitoring/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
-         <loc>https://yourdomain.com/task6/machine_learning/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <loc>https://yourdomain.com/task6/evaluation/</loc>
+         <lastmod>2026-07-14</lastmod>
+    </url>
+    <url>
+         <loc>https://yourdomain.com/task6/model_training/</loc>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task7/backend_architecture/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task7/backend_overview/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
+    </url>
+    <url>
+         <loc>https://yourdomain.com/task7/backup/</loc>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task7/kubernetes/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task7/seaweedfs/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task8/frontend/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
     <url>
          <loc>https://yourdomain.com/task9/telegram/</loc>
-         <lastmod>2026-07-10</lastmod>
+         <lastmod>2026-07-14</lastmod>
     </url>
 </urlset>
