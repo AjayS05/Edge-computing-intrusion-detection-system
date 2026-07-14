@@ -25,9 +25,10 @@ The dashboard displays:
 
 Grafana is also useful during performance experiments because it makes resource changes visible before, during, and after inference workloads.
 
-> **IMAGE PLACEHOLDER — Complete dashboard**  
-> Suggested file: `images/monitoring/grafana-dashboard-overview.png`  
-> Add a screenshot showing the complete Raspberry Pi monitoring dashboard.
+> **IMAGE REQUIRED — Complete dashboard**  
+> Save as: `images/monitoring/grafana-dashboard-overview.png`  
+> Capture the complete dashboard with the Job set to `raspberry-pi-nodes`, several live panels, the selected time range, and no credentials visible. Replace this placeholder with:  
+> `![Complete Raspberry Pi Grafana dashboard](images/monitoring/grafana-dashboard-overview.png)`
 
 ---
 
@@ -66,15 +67,31 @@ The Grafana pod should show all containers ready:
 3/3 Running
 ```
 
-> **IMAGE PLACEHOLDER — Grafana deployment**  
-> Suggested file: `images/monitoring/grafana-pod-running.png`  
-> Add the terminal output showing the Grafana pod in `Running` state.
+![Grafana pod running in the monitoring namespace](images/monitoring/prometheus-grafana-pod.png)
+
+The screenshot above is valid evidence: the Grafana pod reports `3/3` containers ready and `Running`.
+
+![Grafana and Prometheus services in the monitoring namespace](images/monitoring/grafana-monitoring-services.png)
+
+The service output confirms that Grafana is exposed as a NodePort service on port `30300` and Prometheus on port `30090`.
 
 ---
 
 ## Accessing Grafana
 
-Create a port forward from Pi5 to the Grafana service:
+Grafana is exposed by the configured NodePort and can be accessed directly at:
+
+```text
+http://<K3S-NODE-IP>:30300
+```
+
+For this deployment, use:
+
+```text
+http://192.168.178.200:30300
+```
+
+If NodePort access is unavailable, use temporary port forwarding:
 
 ```bash
 kubectl port-forward --address 0.0.0.0 \
@@ -83,7 +100,7 @@ kubectl port-forward --address 0.0.0.0 \
   3001:80
 ```
 
-Open Grafana from a device on the same network:
+Then open:
 
 ```text
 http://192.168.178.200:3001
@@ -107,9 +124,10 @@ admin
 
 Do not add the administrator password to Git, screenshots, or documentation.
 
-> **IMAGE PLACEHOLDER — Grafana login**  
-> Suggested file: `images/monitoring/grafana-login.png`  
-> Add the Grafana login page without displaying credentials.
+> **OPTIONAL IMAGE — Grafana login**  
+> Save as: `images/monitoring/grafana-login.png`  
+> Capture the login page without displaying credentials. Replace this placeholder with:  
+> `![Grafana login page](images/monitoring/grafana-login.png)`
 
 ---
 
@@ -124,17 +142,18 @@ The Helm chart normally provisions Prometheus automatically as a Grafana data so
 5. Select **Save & test**.
 6. Confirm that the connection succeeds.
 
-The internal Kubernetes Prometheus URL is:
+Use the regular Prometheus service created by the Helm release:
 
 ```text
-http://prometheus-operated.monitoring.svc.cluster.local:9090
+http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
 ```
 
 Kubernetes service DNS is used because Grafana and Prometheus run inside the same K3s cluster.
 
-> **IMAGE PLACEHOLDER — Prometheus data source**  
-> Suggested file: `images/monitoring/grafana-prometheus-datasource.png`  
-> Add the successful **Save & test** response.
+> **IMAGE REQUIRED — Prometheus data source**  
+> Save as: `images/monitoring/grafana-prometheus-datasource.png`  
+> Capture the Prometheus URL and successful **Save & test** response. Do not expose credentials. Replace this placeholder with:  
+> `![Successful Prometheus data-source connection](images/monitoring/grafana-prometheus-datasource.png)`
 
 ---
 
@@ -176,9 +195,10 @@ For each panel described below:
 7. Select **Apply**.
 8. Save the dashboard.
 
-> **IMAGE PLACEHOLDER — Dashboard editor**  
-> Suggested file: `images/monitoring/grafana-dashboard-editor.png`  
-> Add a screenshot showing one panel being configured.
+> **OPTIONAL IMAGE — Dashboard editor**  
+> Save as: `images/monitoring/grafana-dashboard-editor.png`  
+> Capture one panel editor with its PromQL query and preview visible. Replace this placeholder with:  
+> `![Grafana panel configuration](images/monitoring/grafana-dashboard-editor.png)`
 
 ---
 
@@ -203,8 +223,9 @@ Recommended settings:
 
 A stat panel is suitable for a compact cluster overview. A state timeline is useful when historical availability must be shown.
 
-> **IMAGE PLACEHOLDER — Node availability**  
-> Suggested file: `images/monitoring/grafana-node-availability.png`
+> **IMAGE REQUIRED — Node availability**  
+> Save as: `images/monitoring/grafana-node-availability.png`  
+> Replace this placeholder with: `![Node availability panel](images/monitoring/grafana-node-availability.png)`
 
 ---
 
@@ -236,8 +257,9 @@ Recommended settings:
 | Critical threshold | `90` |
 | Legend | `{{instance}}` |
 
-> **IMAGE PLACEHOLDER — CPU panel**  
-> Suggested file: `images/monitoring/grafana-cpu-panel.png`
+> **IMAGE REQUIRED — CPU panel**  
+> Save as: `images/monitoring/grafana-cpu-panel.png`  
+> Replace this placeholder with: `![CPU usage panel](images/monitoring/grafana-cpu-panel.png)`
 
 ---
 
@@ -268,8 +290,9 @@ Recommended settings:
 | Critical threshold | `90` |
 | Legend | `{{instance}}` |
 
-> **IMAGE PLACEHOLDER — Memory panel**  
-> Suggested file: `images/monitoring/grafana-memory-panel.png`
+> **IMAGE REQUIRED — Memory panel**  
+> Save as: `images/monitoring/grafana-memory-panel.png`  
+> Replace this placeholder with: `![Memory usage panel](images/monitoring/grafana-memory-panel.png)`
 
 ---
 
@@ -308,8 +331,9 @@ Recommended settings:
 | Critical threshold | `90` |
 | Legend | `{{instance}}` |
 
-> **IMAGE PLACEHOLDER — Disk panel**  
-> Suggested file: `images/monitoring/grafana-disk-panel.png`
+> **IMAGE REQUIRED — Disk panel**  
+> Save as: `images/monitoring/grafana-disk-panel.png`  
+> Replace this placeholder with: `![Disk usage panel](images/monitoring/grafana-disk-panel.png)`
 
 ---
 
@@ -349,8 +373,9 @@ Recommended settings:
 | Query A legend | `RX {{instance}}` |
 | Query B legend | `TX {{instance}}` |
 
-> **IMAGE PLACEHOLDER — Network panel**  
-> Suggested file: `images/monitoring/grafana-network-panel.png`
+> **IMAGE REQUIRED — Network panel**  
+> Save as: `images/monitoring/grafana-network-panel.png`  
+> Replace this placeholder with: `![Network traffic panel](images/monitoring/grafana-network-panel.png)`
 
 ---
 
@@ -387,8 +412,9 @@ Recommended settings:
 
 Use the query that returns temperature data in Prometheus. Some nodes may not expose the same temperature metric depending on hardware and operating-system support.
 
-> **IMAGE PLACEHOLDER — Temperature panel**  
-> Suggested file: `images/monitoring/grafana-temperature-panel.png`
+> **IMAGE REQUIRED — Temperature panel**  
+> Save as: `images/monitoring/grafana-temperature-panel.png`  
+> Replace this placeholder with: `![Raspberry Pi temperature panel](images/monitoring/grafana-temperature-panel.png)`
 
 ---
 
@@ -408,9 +434,10 @@ The dashboard is successfully verified when live values are visible for the sele
 
 Some panels may show `N/A` when a metric is not supported by a particular Raspberry Pi, operating system, filesystem, or Node Exporter version. This does not invalidate the dashboard when the core availability, CPU, memory, disk, network, uptime, and load metrics are present.
 
-> **IMAGE PLACEHOLDER — Verified dashboard**  
-> Suggested file: `images/monitoring/grafana-dashboard-verified.png`  
-> Add the final dashboard showing several nodes and live metric panels.
+> **IMAGE REQUIRED — Verified dashboard**  
+> Save as: `images/monitoring/grafana-dashboard-verified.png`  
+> Capture the final dashboard showing several nodes, live values, the Job selection, and the time range. Replace this placeholder with:  
+> `![Verified Grafana dashboard with live Raspberry Pi metrics](images/monitoring/grafana-dashboard-verified.png)`
 
 ---
 
