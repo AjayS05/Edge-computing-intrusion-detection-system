@@ -416,13 +416,4 @@ Some panels may show `N/A` when a metric is not supported by a particular Raspbe
 
 ## Results
 
-Grafana is successfully deployed in K3s and connected to Prometheus. The monitoring dashboard displays live and historical resource data for Pi5, Pi4, and the eight Pi3 workers. It provides clear evidence of node availability, CPU, memory, disk, network, and temperature behavior during normal operation and edge-inference workloads.
-
-The completed dashboard supports:
-
-- Real-time cluster health monitoring
-- Historical performance analysis
-- Resource-bottleneck identification
-- Demonstration of node availability
-- Monitoring during inference and image processing
-- Evidence collection for project evaluation and final submission
+Grafana is successfully deployed in K3s and connected to Prometheus. The dashboard displays live and historical availability, CPU, memory, disk, network, and temperature data for Pi5, Pi4, and the eight Pi3 workers.
