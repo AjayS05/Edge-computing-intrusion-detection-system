@@ -22,7 +22,7 @@ function App() {
       <main className="app-main">
         {activePage === "dashboard" && <DashboardPage />}
 
-        {activePage === "liveDetection" && && <LiveDetectionPage />}
+        {activePage === "liveDetection" && <LiveDetectionPage />}
 
         {activePage === "eventHistory" && <EventHistoryPage />}
 
@@ -44,7 +44,7 @@ function App() {
           </>
         )}
 
-        {activePage === "modelDataset" && && <ModelDatasetPage />}
+        {activePage === "modelDataset" && <ModelDatasetPage />}
 
         {activePage === "clusterPerformance" && (
           <>
