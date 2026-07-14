@@ -5,7 +5,7 @@ site_url: https://yourdomain.com # Change to your actual domain
 theme:
   name: material
   favicon: assets/favicon.png
-  
+
   # Modern, sleek color palettes with proper contrast
   palette:
     - scheme: default
@@ -55,25 +55,24 @@ markdown_extensions:
 
 # Cleaned up, semantic navigation structure
 nav:
-  - Home: index.md
+  # - Home: index.md
 
-  - Introduction:
-      - Project Overview: introduction/overview.md
-      - Objectives: introduction/objectives.md
-      - System Architecture: introduction/architecture.md
+  - Home: task1/index.md
 
   - Hardware & Infrastructure:
-      - Hardware Components: task1/hardware.md
-      - Raspberry Pi Cluster: task1/cluster.md
-      - PXE Boot: task1/pxe.md
-      - Operating System Setup: task1/os.md
+        # - Hardware Components: task1/hardware.md
+        - System Architecture: task1/architecture.md
+        - Execution Flow: task1/execution_flow.md
+      # - Raspberry Pi Cluster: task1/cluster.md
+      # - PXE Boot: task1/pxe.md
+      # - Operating System Setup: task1/os.md
 
   - Performance Evaluation:
       - HPL & GFLOPS Benchmarks: task2/hpl.md
       - MPI Cluster Setup: task3/mpi.md
       - Non-MPI Performance: task4/non-mpi.md
-      - Amdahl's Law Analysis: task3/amdahl.md
-      - Gustafson's Law Analysis: task3/gustafson.md
+      # - Amdahl's Law Analysis: task3/amdahl.md
+      # - Gustafson's Law Analysis: task3/gustafson.md
 
   - Monitoring Platform:
       - Infrastructure Architecture: task5/monitoring.md
@@ -108,5 +107,4 @@ nav:
 
   - Results & Analysis:
       - Performance Summary: results/performance.md
-      - Lessons Learned: results/lessons.md
       - Future Work: results/future_work.md
