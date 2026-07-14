@@ -21,13 +21,15 @@ class ProcessedTile:
 
 
 class TileProcessor:
-    """Performs lightweight preprocessing on an image tile."""
+    """Performs lightweight preprocessing on one image tile."""
 
     def process(
         self,
         image_bytes: bytes,
         content_type: str,
     ) -> ProcessedTile:
+        del content_type
+
         if not image_bytes:
             raise ValueError("Image tile is empty")
 
@@ -47,9 +49,7 @@ class TileProcessor:
             )
 
         start_time = time.perf_counter()
-
         processed_frame = self._apply_processing(frame)
-
         processing_latency_seconds = (
             time.perf_counter() - start_time
         )
@@ -65,9 +65,7 @@ class TileProcessor:
             )
 
         processed_bytes = encoded_image.tobytes()
-
         height, width = processed_frame.shape[:2]
-
         checksum = hashlib.sha256(
             processed_bytes
         ).hexdigest()

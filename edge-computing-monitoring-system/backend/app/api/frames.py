@@ -10,6 +10,7 @@ from fastapi import (
     Request,
     UploadFile,
 )
+from starlette.concurrency import run_in_threadpool
 
 from app.core.config import settings
 from app.services.frame_processing_service import (
@@ -104,33 +105,42 @@ async def upload_frame(
         image_bytes=image_bytes,
     )
 
-    if not sensor_node_id.strip():
+    sensor_node_id = sensor_node_id.strip()
+    captured_at = captured_at.strip()
+
+    if not sensor_node_id:
         raise HTTPException(
             status_code=400,
             detail="sensor_node_id cannot be empty",
         )
 
-    if not captured_at.strip():
+    if not captured_at:
         raise HTTPException(
             status_code=400,
             detail="captured_at cannot be empty",
         )
 
+    processing_input = FrameProcessingInput(
+        image_bytes=image_bytes,
+        content_type=content_type,
+        sensor_node_id=sensor_node_id,
+        captured_at=captured_at,
+        sequence_number=sequence_number,
+        camera_location=(
+            camera_location.strip()
+            if camera_location and camera_location.strip()
+            else None
+        ),
+        api_base_url=_api_base_url(request),
+    )
+
     try:
-        result = frame_processing_service.process(
-            FrameProcessingInput(
-                image_bytes=image_bytes,
-                content_type=content_type,
-                sensor_node_id=sensor_node_id.strip(),
-                captured_at=captured_at.strip(),
-                sequence_number=sequence_number,
-                camera_location=(
-                    camera_location.strip()
-                    if camera_location
-                    else None
-                ),
-                api_base_url=_api_base_url(request),
-            )
+        # Storage, worker HTTP calls, inference HTTP calls and Telegram are
+        # synchronous operations. Run the complete pipeline outside the
+        # FastAPI event loop.
+        result = await run_in_threadpool(
+            frame_processing_service.process,
+            processing_input,
         )
 
     except FileNotFoundError as exc:
@@ -160,6 +170,7 @@ async def upload_frame(
         "detection_uri": result.detection_uri,
         "events": result.events,
         "alerts": result.alerts,
+        "distribution": result.distribution,
     }
 
 
@@ -261,4 +272,8 @@ def get_annotation_check(
         "annotation_diff_pixels": frame.get(
             "annotation_diff_pixels"
         ),
+        "distributed_processing": frame.get(
+            "distributed_processing"
+        ),
     }
+

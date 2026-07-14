@@ -46,22 +46,13 @@ class SplitImageResult:
 
 
 class ImageSplitter:
-    """Splits images into overlapping tiles and reconstructs them."""
+    """Splits an image into overlapping tiles and reconstructs it."""
 
     @staticmethod
     def choose_layout(
         active_worker_count: int,
     ) -> tuple[int, int]:
-        """
-        Return rows and columns based on available workers.
-
-        8+ workers: 2 rows x 4 columns
-        6-7 workers: 2 rows x 3 columns
-        4-5 workers: 2 rows x 2 columns
-        2-3 workers: 1 row x 2 columns
-        0-1 workers: 1 row x 1 column
-        """
-
+        # Returned as rows, columns.
         if active_worker_count >= 8:
             return 2, 4
 
@@ -83,6 +74,7 @@ class ImageSplitter:
         image_bytes: bytes,
         active_worker_count: int,
         overlap_pixels: int,
+        jpeg_quality: int = 95,
     ) -> SplitImageResult:
         if not image_bytes:
             raise ValueError("Cannot split an empty image")
@@ -109,6 +101,7 @@ class ImageSplitter:
         )
 
         overlap_pixels = max(0, overlap_pixels)
+        jpeg_quality = max(1, min(100, jpeg_quality))
 
         x_edges = [
             index * original_width // columns
@@ -126,7 +119,6 @@ class ImageSplitter:
             for column in range(columns):
                 core_x_start = x_edges[column]
                 core_x_end = x_edges[column + 1]
-
                 core_y_start = y_edges[row]
                 core_y_end = y_edges[row + 1]
 
@@ -134,17 +126,14 @@ class ImageSplitter:
                     0,
                     core_x_start - overlap_pixels,
                 )
-
                 crop_y_start = max(
                     0,
                     core_y_start - overlap_pixels,
                 )
-
                 crop_x_end = min(
                     original_width,
                     core_x_end + overlap_pixels,
                 )
-
                 crop_y_end = min(
                     original_height,
                     core_y_end + overlap_pixels,
@@ -155,19 +144,23 @@ class ImageSplitter:
                     crop_x_start:crop_x_end,
                 ]
 
+                if tile_frame.size == 0:
+                    raise RuntimeError(
+                        f"Generated an empty tile at {row}-{column}"
+                    )
+
                 success, encoded_tile = cv2.imencode(
                     ".jpg",
                     tile_frame,
                     [
                         int(cv2.IMWRITE_JPEG_QUALITY),
-                        95,
+                        jpeg_quality,
                     ],
                 )
 
                 if not success:
                     raise RuntimeError(
-                        f"Could not encode tile "
-                        f"{row}-{column}"
+                        f"Could not encode tile {row}-{column}"
                     )
 
                 tile_id = f"tile-{row}-{column}"
@@ -259,7 +252,6 @@ class ImageSplitter:
             required_width = (
                 tile.source_offset_x + tile.core_width
             )
-
             required_height = (
                 tile.source_offset_y + tile.core_height
             )

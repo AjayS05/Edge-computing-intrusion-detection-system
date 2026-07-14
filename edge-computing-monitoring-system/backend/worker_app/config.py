@@ -7,15 +7,22 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class WorkerSettings(BaseSettings):
-    service_name: str = "edge-image-worker"
-
-    worker_id: str = Field(
-        default_factory=socket.gethostname
+    service_name: str = Field(
+        default="edge-image-worker",
+        validation_alias="WORKER_SERVICE_NAME",
     )
-
-    processing_mode: str = "clahe"
-
-    max_upload_size_bytes: int = 5 * 1024 * 1024
+    worker_id: str = Field(
+        default_factory=socket.gethostname,
+        validation_alias="WORKER_ID",
+    )
+    processing_mode: str = Field(
+        default="clahe",
+        validation_alias="WORKER_PROCESSING_MODE",
+    )
+    max_upload_size_bytes: int = Field(
+        default=5 * 1024 * 1024,
+        validation_alias="WORKER_MAX_UPLOAD_SIZE_BYTES",
+    )
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -25,7 +32,10 @@ class WorkerSettings(BaseSettings):
 
     @field_validator("processing_mode")
     @classmethod
-    def validate_processing_mode(cls, value: str) -> str:
+    def validate_processing_mode(
+        cls,
+        value: str,
+    ) -> str:
         normalized_value = value.strip().lower()
 
         supported_modes = {

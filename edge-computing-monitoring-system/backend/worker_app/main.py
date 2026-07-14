@@ -19,6 +19,7 @@ from worker_app.schemas import (
     WorkerHealthResponse,
 )
 
+
 LOGGER = logging.getLogger("edge_image_worker")
 
 ALLOWED_IMAGE_TYPES = {
@@ -53,16 +54,12 @@ def health() -> WorkerHealthResponse:
 )
 async def process_tile(
     image: UploadFile = File(...),
-
     frame_id: str = Form(...),
     tile_id: str = Form(...),
-
     row: int = Form(...),
     column: int = Form(...),
-
     x: int = Form(...),
     y: int = Form(...),
-
     original_width: int = Form(...),
     original_height: int = Form(...),
 ) -> TileProcessingResponse:
@@ -102,10 +99,7 @@ async def process_tile(
             detail="Uploaded image tile is empty",
         )
 
-    if (
-        len(image_bytes)
-        > worker_settings.max_upload_size_bytes
-    ):
+    if len(image_bytes) > worker_settings.max_upload_size_bytes:
         raise HTTPException(
             status_code=413,
             detail="Uploaded image tile is too large",
@@ -125,9 +119,7 @@ async def process_tile(
         ) from exc
 
     except Exception as exc:
-        LOGGER.exception(
-            "Image tile processing failed"
-        )
+        LOGGER.exception("Image tile processing failed")
 
         raise HTTPException(
             status_code=500,

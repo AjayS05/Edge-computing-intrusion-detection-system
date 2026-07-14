@@ -22,7 +22,7 @@ class WorkerEndpoint:
 
 
 class WorkerRegistry:
-    """Discovers configured workers and checks their health."""
+    """Discovers configured workers and filters unhealthy endpoints."""
 
     def _configured_urls(self) -> list[str]:
         urls: list[str] = []
@@ -54,20 +54,15 @@ class WorkerRegistry:
                 host,
                 exc,
             )
-
             return []
 
-        urls: list[str] = []
+        urls = [
+            f"http://{result[4][0]}:"
+            f"{settings.worker_service_port}"
+            for result in address_results
+        ]
 
-        for address_result in address_results:
-            ip_address = address_result[4][0]
-
-            urls.append(
-                f"http://{ip_address}:"
-                f"{settings.worker_service_port}"
-            )
-
-        return urls
+        return list(dict.fromkeys(urls))
 
     def candidate_urls(self) -> list[str]:
         combined_urls = (
@@ -88,9 +83,11 @@ class WorkerRegistry:
                     settings.worker_health_timeout_seconds
                 ),
             )
-
             response.raise_for_status()
-            payload: dict[str, Any] = response.json()
+            payload: Any = response.json()
+
+            if not isinstance(payload, dict):
+                return None
 
             if payload.get("status") != "healthy":
                 return None
@@ -98,10 +95,7 @@ class WorkerRegistry:
             return WorkerEndpoint(
                 base_url=base_url,
                 worker_id=str(
-                    payload.get(
-                        "worker_id",
-                        base_url,
-                    )
+                    payload.get("worker_id", base_url)
                 ),
                 processing_mode=str(
                     payload.get(
@@ -121,7 +115,6 @@ class WorkerRegistry:
                 base_url,
                 exc,
             )
-
             return None
 
     def discover_active_workers(
@@ -133,7 +126,7 @@ class WorkerRegistry:
             return []
 
         with ThreadPoolExecutor(
-            max_workers=len(candidate_urls)
+            max_workers=min(len(candidate_urls), 32)
         ) as executor:
             checked_workers = list(
                 executor.map(

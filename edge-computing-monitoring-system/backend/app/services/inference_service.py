@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import io
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -13,7 +12,7 @@ from ultralytics import YOLO
 from app.core.config import settings
 
 
-@dataclass
+@dataclass(frozen=True)
 class InferenceResult:
     detections: list[dict[str, Any]]
     annotated_image_bytes: bytes | None
@@ -23,38 +22,86 @@ class InferenceResult:
 
 
 class InferenceService:
+    """Loads the YOLO model once and performs inference."""
+
     def __init__(self) -> None:
-        self.model: YOLO | None = None
-        self.model_path = Path(settings.yolo_model_path)
+        self._model: YOLO | None = None
+        self.model_path = Path(
+            settings.yolo_model_path
+        ).expanduser()
 
-    def _load_model(self) -> YOLO:
-        if self.model is None:
-            if not self.model_path.exists():
-                raise FileNotFoundError(f"YOLO model not found: {self.model_path}")
+    @property
+    def model_loaded(self) -> bool:
+        return self._model is not None
 
-            self.model = YOLO(str(self.model_path))
+    def load_model(self) -> YOLO:
+        if self._model is not None:
+            return self._model
 
-        return self.model
+        if not self.model_path.exists():
+            raise FileNotFoundError(
+                f"YOLO model not found: {self.model_path}"
+            )
 
-    def _severity_for_class(self, class_name: str) -> str:
+        self._model = YOLO(str(self.model_path))
+        return self._model
+
+    def get_model_info(self) -> dict[str, Any]:
+        model = self.load_model()
+
+        class_names = {
+            int(class_id): str(class_name)
+            for class_id, class_name in model.names.items()
+        }
+
+        return {
+            "model_path": str(self.model_path),
+            "model_filename": self.model_path.name,
+            "model_loaded": self.model_loaded,
+            "confidence_threshold": (
+                settings.yolo_confidence_threshold
+            ),
+            "classes": class_names,
+            "class_count": len(class_names),
+        }
+
+    @staticmethod
+    def _severity_for_class(class_name: str) -> str:
         mapping = {
             "fire": "critical",
             "weapon": "critical",
-            "intruder": "critical",
-            "smoke": "high",
-            "liquid_spill": "medium",
             "person": "informational",
+            "container": "informational",
         }
-        return mapping.get(class_name, "unknown")
 
-    def run_on_image_bytes(self, image_bytes: bytes) -> InferenceResult:
-        model = self._load_model()
+        return mapping.get(
+            class_name.strip().lower(),
+            "unknown",
+        )
 
-        np_image = np.frombuffer(image_bytes, dtype=np.uint8)
-        frame = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
+    def run_on_image_bytes(
+        self,
+        image_bytes: bytes,
+    ) -> InferenceResult:
+        if not image_bytes:
+            raise ValueError("Inference image is empty")
+
+        model = self.load_model()
+
+        np_image = np.frombuffer(
+            image_bytes,
+            dtype=np.uint8,
+        )
+
+        frame = cv2.imdecode(
+            np_image,
+            cv2.IMREAD_COLOR,
+        )
 
         if frame is None:
-            raise ValueError("Could not decode uploaded image for inference")
+            raise ValueError(
+                "Could not decode uploaded image for inference"
+            )
 
         start_time = time.perf_counter()
 
@@ -78,37 +125,66 @@ class InferenceService:
             for box in result.boxes:
                 class_id = int(box.cls[0].item())
                 confidence = float(box.conf[0].item())
-                xyxy = box.xyxy[0].tolist()
-                class_name = model.names[class_id]
+                coordinates = box.xyxy[0].tolist()
+                class_name = str(model.names[class_id])
 
                 detections.append(
                     {
                         "class_id": class_id,
                         "class_name": class_name,
                         "confidence": round(confidence, 4),
-                        "confidence_percent": round(confidence * 100, 2),
-                        "severity": self._severity_for_class(class_name),
+                        "confidence_percent": round(
+                            confidence * 100,
+                            2,
+                        ),
+                        "severity": self._severity_for_class(
+                            class_name
+                        ),
                         "bounding_box": {
-                            "x_min": round(float(xyxy[0]), 2),
-                            "y_min": round(float(xyxy[1]), 2),
-                            "x_max": round(float(xyxy[2]), 2),
-                            "y_max": round(float(xyxy[3]), 2),
+                            "x_min": round(
+                                float(coordinates[0]),
+                                2,
+                            ),
+                            "y_min": round(
+                                float(coordinates[1]),
+                                2,
+                            ),
+                            "x_max": round(
+                                float(coordinates[2]),
+                                2,
+                            ),
+                            "y_max": round(
+                                float(coordinates[3]),
+                                2,
+                            ),
                         },
                     }
                 )
 
-        annotation_diff_pixels = int(np.count_nonzero(cv2.absdiff(frame, annotated_frame)))
+        annotation_diff_pixels = int(
+            np.count_nonzero(
+                cv2.absdiff(
+                    frame,
+                    annotated_frame,
+                )
+            )
+        )
 
         annotated_image_bytes: bytes | None = None
         annotation_saved = False
 
         if detections:
-            success, encoded = cv2.imencode(".jpg", annotated_frame)
+            success, encoded_image = cv2.imencode(
+                ".jpg",
+                annotated_frame,
+            )
 
             if not success:
-                raise RuntimeError("Failed to encode annotated image")
+                raise RuntimeError(
+                    "Failed to encode annotated image"
+                )
 
-            annotated_image_bytes = encoded.tobytes()
+            annotated_image_bytes = encoded_image.tobytes()
             annotation_saved = True
 
         return InferenceResult(
