@@ -111,7 +111,8 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-
+              Infrastructure Architecture
+            
           </span>
         </div>
       </div>
@@ -592,7 +593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../#prometheus-metrics" class="md-nav__link">
+      <a href="../prometheus.md" class="md-nav__link">
         
   
   
@@ -620,7 +621,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../#grafana-dashboards" class="md-nav__link">
+      <a href="../grafana.md" class="md-nav__link">
         
   
   
@@ -1504,270 +1505,28 @@
             <div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
+                
+                  
 
-<h1 id="infrastructure-architecture">Infrastructure Architecture</h1>
 
-<p>
-  The monitoring platform observes the health of the Raspberry Pi edge cluster.
-  It uses Prometheus for metrics collection, Node Exporter for machine-level metrics,
-  Ansible for automated installation, and Grafana for dashboard visualization.
-</p>
 
-<p>
-  Prometheus and Grafana run on the Raspberry Pi 5 master node. Node Exporter runs on
-  the Raspberry Pi 3 worker nodes and exposes metrics on port <code>9100</code>.
-</p>
+  <h1>Infrastructure Architecture</h1>
 
-<hr />
 
-<h2 id="monitoring-architecture">Monitoring Architecture</h2>
 
-<div class="language-text highlight"><pre><code>RP3 Worker Nodes
-└── Node Exporter :9100
-        ↓
-RP5 Master Node
-└── Prometheus :9090
-        ↓
-RP5 Master Node
-└── Grafana :3000</code></pre></div>
 
-<p>
-  This architecture gives a central view of CPU usage, memory usage, disk usage,
-  uptime, network activity, and node availability across the cluster.
-</p>
 
-<table>
-  <thead>
-    <tr>
-      <th>Component</th>
-      <th>Location</th>
-      <th>Purpose</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Node Exporter</td>
-      <td>RP3 worker nodes</td>
-      <td>Exposes host metrics such as CPU, memory, disk, network, and uptime</td>
-    </tr>
-    <tr>
-      <td>Prometheus</td>
-      <td>RP5 master node</td>
-      <td>Scrapes and stores metrics from all Node Exporter targets</td>
-    </tr>
-    <tr>
-      <td>Grafana</td>
-      <td>RP5 master node</td>
-      <td>Displays the collected metrics through dashboards</td>
-    </tr>
-    <tr>
-      <td>Ansible</td>
-      <td>RP5 master node</td>
-      <td>Automates Node Exporter installation on the RP3 nodes</td>
-    </tr>
-  </tbody>
-</table>
 
-<hr />
 
-<h2 id="node-exporter-deployment">Node Exporter Deployment</h2>
 
-<p>
-  Node Exporter was deployed to the RP3 worker nodes using Ansible. This avoids manually
-  logging into each Raspberry Pi and installing the package one by one.
-</p>
 
-<p>Inventory used for the RP3 worker nodes:</p>
 
-<div class="language-ini highlight"><pre><code>[rp3_nodes]
-rpi3-01 ansible_host=192.168.50.101
-rpi3-02 ansible_host=192.168.50.102
-rpi3-03 ansible_host=192.168.50.103
-rpi3-04 ansible_host=192.168.50.104
-rpi3-05 ansible_host=192.168.50.105
-rpi3-06 ansible_host=192.168.50.106
-rpi3-07 ansible_host=192.168.50.107
-rpi3-08 ansible_host=192.168.50.108
 
-[rp3_nodes:vars]
-ansible_user=pi
-ansible_python_interpreter=/usr/bin/python3</code></pre></div>
 
-<p>Playbook used to install and start Node Exporter:</p>
 
-<div class="language-yaml highlight"><pre><code>---
-- name: Install Prometheus Node Exporter on all RP3 nodes
-  hosts: rp3_nodes
-  become: yes
 
-  tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-
-    - name: Install Node Exporter
-      apt:
-        name: prometheus-node-exporter
-        state: present
-
-    - name: Enable and start Node Exporter
-      systemd:
-        name: prometheus-node-exporter
-        enabled: yes
-        state: started</code></pre></div>
-
-<p>Verification from RP5:</p>
-
-<div class="language-bash highlight"><pre><code>for ip in 101 102 103 104 105 106 107 108; do
-  printf "192.168.50.%s: " "$ip"
-  curl --connect-timeout 2 -s -o /dev/null \
-    -w "%{http_code}\n" \
-    "http://192.168.50.$ip:9100/metrics"
-done</code></pre></div>
-
-<p>
-  A <code>200</code> response confirms that the exporter is running and reachable on that node.
-</p>
-
-<hr />
-
-<h1 id="prometheus-metrics">Prometheus Metrics</h1>
-
-<p>
-  Prometheus runs on the RP5 master node and scrapes all Node Exporter endpoints.
-  It stores the metrics as time-series data and provides them to Grafana.
-</p>
-
-<p>Prometheus local access:</p>
-
-<div class="language-text highlight"><pre><code>http://localhost:9090</code></pre></div>
-
-<p>Prometheus targets page:</p>
-
-<div class="language-text highlight"><pre><code>http://localhost:9090/classic/targets</code></pre></div>
-
-<h2 id="prometheus-targets">Prometheus Targets</h2>
-
-<div class="language-yaml highlight"><pre><code>scrape_configs:
-  - job_name: prometheus
-    static_configs:
-      - targets: ['localhost:9090']
-
-  - job_name: node
-    static_configs:
-      - targets:
-          - '192.168.50.101:9100'
-          - '192.168.50.102:9100'
-          - '192.168.50.103:9100'
-          - '192.168.50.104:9100'
-          - '192.168.50.105:9100'
-          - '192.168.50.106:9100'
-          - '192.168.50.107:9100'
-          - '192.168.50.108:9100'</code></pre></div>
-
-<h2 id="useful-promql-queries">Useful PromQL Queries</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th>Metric</th>
-      <th>Query</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Node status</td>
-      <td><code>up{job="node"}</code></td>
-    </tr>
-    <tr>
-      <td>CPU usage</td>
-      <td><code>100 - (avg by(instance) (rate(node_cpu_seconds_total{job="node",mode="idle"}[5m])) * 100)</code></td>
-    </tr>
-    <tr>
-      <td>Memory usage</td>
-      <td><code>100 - ((node_memory_MemAvailable_bytes{job="node"} / node_memory_MemTotal_bytes{job="node"}) * 100)</code></td>
-    </tr>
-    <tr>
-      <td>Disk usage</td>
-      <td><code>100 - ((node_filesystem_avail_bytes{job="node",mountpoint="/"} / node_filesystem_size_bytes{job="node",mountpoint="/"}) * 100)</code></td>
-    </tr>
-    <tr>
-      <td>Uptime</td>
-      <td><code>(node_time_seconds{job="node"} - node_boot_time_seconds{job="node"}) / 3600</code></td>
-    </tr>
-    <tr>
-      <td>System information</td>
-      <td><code>node_uname_info{job="node"}</code></td>
-    </tr>
-  </tbody>
-</table>
-
-<p>
-  In the <code>up{job="node"}</code> query, <code>1</code> means the node is reachable and
-  <code>0</code> means the node is configured but unreachable.
-</p>
-
-<hr />
-
-<h1 id="grafana-dashboards">Grafana Dashboards</h1>
-
-<p>
-  Grafana is used as the monitoring user interface. It connects to Prometheus as a data
-  source and visualizes the Raspberry Pi cluster metrics.
-</p>
-
-<h2 id="grafana-data-source">Grafana Data Source</h2>
-
-<p>The Prometheus data source inside Grafana uses:</p>
-
-<div class="language-text highlight"><pre><code>http://localhost:9090</code></pre></div>
-
-<p>
-  This works because Grafana and Prometheus are both running on the Raspberry Pi 5.
-</p>
-
-<h2 id="dashboard-used">Dashboard Used</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th>Dashboard</th>
-      <th>ID</th>
-      <th>Purpose</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Node Exporter Full</td>
-      <td>1860</td>
-      <td>Displays CPU, memory, disk, network, uptime, and node metrics</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="how-to-use-grafana">How to Use Grafana</h2>
-
-<ol>
-  <li>Open Grafana on RP5.</li>
-  <li>Go to <strong>Dashboards</strong>.</li>
-  <li>Open <strong>Node Exporter Full</strong>.</li>
-  <li>Select <code>Job: node</code>.</li>
-  <li>Select the required Raspberry Pi from the <code>Nodename</code> dropdown.</li>
-  <li>Set time range to <code>Last 15 minutes</code>.</li>
-  <li>Set refresh interval to <code>10s</code>.</li>
-</ol>
-
-<h2 id="dashboard-status">Dashboard Status</h2>
-
-<ul>
-  <li>Grafana is installed and running on RP5.</li>
-  <li>Prometheus is connected as the data source.</li>
-  <li>The Node Exporter Full dashboard is imported.</li>
-  <li>Live metrics are visible for the monitored Raspberry Pi nodes.</li>
-  <li>Some panels may show <code>N/A</code> if that exact metric is not exposed by Raspberry Pi OS.</li>
-</ul>
-
-</article>
+                
+              </article>
             </div>
           
           

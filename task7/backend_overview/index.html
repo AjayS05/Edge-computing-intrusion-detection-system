@@ -1505,173 +1505,28 @@
             <div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
+                
+                  
 
-<h1 id="service-overview">Service Overview</h1>
 
-<p>
-  The backend service is the central API layer of PiWatch. It receives camera frames,
-  runs or coordinates AI inference, stores images and metadata, exposes events to the
-  frontend, and provides monitoring data for the dashboard.
-</p>
 
-<hr />
+  <h1>Service Overview</h1>
 
-<h2 id="backend-role">Backend Role</h2>
 
-<div class="language-text highlight"><pre><code>RP4 Camera Sender
-      ↓
-FastAPI Backend on RP5
-      ↓
-YOLO Inference + Event Processing
-      ↓
-SeaweedFS Storage
-      ↓
-Frontend Dashboard</code></pre></div>
 
-<p>
-  The backend connects the camera system, AI detection model, object storage,
-  monitoring stack, and frontend dashboard.
-</p>
 
-<hr />
 
-<h2 id="main-responsibilities">Main Responsibilities</h2>
 
-<ul>
-  <li>Receive uploaded frames from the Raspberry Pi camera node.</li>
-  <li>Run YOLO-based object detection on uploaded frames.</li>
-  <li>Store raw frames and annotated images.</li>
-  <li>Create event metadata for detected threats.</li>
-  <li>Serve event history and image URLs to the frontend.</li>
-  <li>Expose monitoring overview data for the frontend monitoring page.</li>
-</ul>
 
-<hr />
 
-<h2 id="backend-services">Backend Services</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>Service</th>
-      <th>Purpose</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Frame Upload API</td>
-      <td>Receives image frames from the RP4 camera sender</td>
-    </tr>
-    <tr>
-      <td>Inference Service</td>
-      <td>Runs YOLO detection on uploaded frames</td>
-    </tr>
-    <tr>
-      <td>Event Service</td>
-      <td>Creates event records with class, confidence, timestamp, and image references</td>
-    </tr>
-    <tr>
-      <td>Image Service</td>
-      <td>Serves raw and annotated images to the frontend</td>
-    </tr>
-    <tr>
-      <td>Storage Service</td>
-      <td>Stores images and metadata in SeaweedFS S3-compatible storage</td>
-    </tr>
-    <tr>
-      <td>Monitoring API</td>
-      <td>Returns backend, service, and cluster health information</td>
-    </tr>
-  </tbody>
-</table>
 
-<hr />
 
-<h2 id="detection-classes">Detection Classes</h2>
 
-<p>The latest YOLO model supports these classes:</p>
 
-<ul>
-  <li>fire</li>
-  <li>intruder</li>
-  <li>liquid_spill</li>
-  <li>person</li>
-  <li>smoke</li>
-  <li>weapon</li>
-</ul>
 
-<hr />
-
-<h2 id="rest-api-reference">REST API Reference</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th>Endpoint</th>
-      <th>Method</th>
-      <th>Purpose</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>/api/v1/frames</code></td>
-      <td>POST</td>
-      <td>Uploads frames from the camera node</td>
-    </tr>
-    <tr>
-      <td><code>/api/v1/events</code></td>
-      <td>GET</td>
-      <td>Returns detection event history</td>
-    </tr>
-    <tr>
-      <td><code>/api/v1/images/raw/{image_id}</code></td>
-      <td>GET</td>
-      <td>Returns the original uploaded image</td>
-    </tr>
-    <tr>
-      <td><code>/api/v1/images/annotated/{image_id}</code></td>
-      <td>GET</td>
-      <td>Returns the annotated detection image</td>
-    </tr>
-    <tr>
-      <td><code>/api/v1/monitoring/overview</code></td>
-      <td>GET</td>
-      <td>Returns backend, service, and cluster health data</td>
-    </tr>
-  </tbody>
-</table>
-
-<hr />
-
-<h2 id="event-response-example">Event Response Example</h2>
-
-<div class="language-json highlight"><pre><code>{
-  "count": 1,
-  "events": [
-    {
-      "id": "event-id",
-      "label": "weapon",
-      "confidence": 0.91,
-      "timestamp": "2026-07-14T12:00:00Z",
-      "raw_image_url": "/api/v1/images/raw/image-id",
-      "annotated_image_url": "/api/v1/images/annotated/image-id"
-    }
-  ]
-}</code></pre></div>
-
-<hr />
-
-<h2 id="current-status">Current Status</h2>
-
-<ul>
-  <li>Backend API receives uploaded frames.</li>
-  <li>YOLO inference integration is available.</li>
-  <li>Raw and annotated image flow is supported.</li>
-  <li>Event history API is available for the frontend.</li>
-  <li>Monitoring overview API is connected to the monitoring UI.</li>
-</ul>
-
-</article>
+                
+              </article>
             </div>
           
           

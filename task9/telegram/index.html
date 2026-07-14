@@ -1505,202 +1505,28 @@
             <div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
+                
+                  
 
-<h1 id="telegram-bot-architecture">Telegram Bot Architecture</h1>
 
-<p>
-  The alerts and notifications layer is responsible for informing users when the system
-  detects threats or infrastructure problems. Telegram is planned as the external
-  notification channel for important security events.
-</p>
 
-<hr />
+  <h1>Telegram Bot Architecture</h1>
 
-<h2 id="alert-types">Alert Types</h2>
 
-<p>The project has two main alert categories:</p>
 
-<ul>
-  <li>Infrastructure alerts from Prometheus and Grafana</li>
-  <li>Security alerts from backend detection events</li>
-</ul>
 
-<div class="language-text highlight"><pre><code>Detection Event / Node Problem
-          ↓
-Backend or Prometheus Alert Rule
-          ↓
-Alert Message
-          ↓
-Dashboard / Telegram Notification</code></pre></div>
 
-<hr />
 
-<h2 id="infrastructure-alerts">Infrastructure Alerts</h2>
 
-<p>
-  Infrastructure alerts are based on Prometheus metrics collected from Node Exporter.
-</p>
 
-<table>
-  <thead>
-    <tr>
-      <th>Alert</th>
-      <th>Purpose</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>NodeDown</td>
-      <td>Detects when a Raspberry Pi is unreachable</td>
-    </tr>
-    <tr>
-      <td>HighCPUUsage</td>
-      <td>Detects sustained CPU overload</td>
-    </tr>
-    <tr>
-      <td>HighMemoryUsage</td>
-      <td>Detects memory pressure</td>
-    </tr>
-    <tr>
-      <td>HighDiskUsage</td>
-      <td>Detects low disk space</td>
-    </tr>
-    <tr>
-      <td>HighTemperature</td>
-      <td>Detects overheating Raspberry Pi nodes</td>
-    </tr>
-  </tbody>
-</table>
 
-<p>Example Prometheus alert rule:</p>
 
-<div class="language-yaml highlight"><pre><code>groups:
-  - name: raspberry_pi_cluster_alerts
-    rules:
-      - alert: RaspberryPiNodeDown
-        expr: up{job="node"} == 0
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: "Raspberry Pi node is down"
-          description: "{{ $labels.instance }} is not reachable by Prometheus."</code></pre></div>
 
-<p>Prometheus alerts can be checked at:</p>
 
-<div class="language-text highlight"><pre><code>http://localhost:9090/classic/alerts</code></pre></div>
 
-<hr />
 
-<h2 id="security-event-alerts">Security Event Alerts</h2>
-
-<p>
-  Security alerts are generated when the YOLO model detects important classes.
-</p>
-
-<ul>
-  <li>fire</li>
-  <li>intruder</li>
-  <li>smoke</li>
-  <li>weapon</li>
-  <li>liquid_spill</li>
-</ul>
-
-<p>Each detection alert can include:</p>
-
-<ul>
-  <li>detected class</li>
-  <li>confidence score</li>
-  <li>timestamp</li>
-  <li>camera or node source</li>
-  <li>annotated image link</li>
-</ul>
-
-<hr />
-
-<h2 id="telegram-notification-flow">Telegram Notification Flow</h2>
-
-<div class="language-text highlight"><pre><code>Backend Event Service
-      ↓
-Alert Formatter
-      ↓
-Telegram Bot API
-      ↓
-Team Telegram Chat</code></pre></div>
-
-<p>Example Telegram message:</p>
-
-<div class="language-text highlight"><pre><code>PiWatch Alert
-Type: weapon
-Confidence: 91%
-Node: camera-rp4
-Time: 2026-07-14 12:00
-Image: &lt;annotated image link&gt;</code></pre></div>
-
-<hr />
-
-<h2 id="notification-priority">Notification Priority</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th>Event Type</th>
-      <th>Notification Level</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Weapon</td>
-      <td>Critical Telegram alert and dashboard alert</td>
-    </tr>
-    <tr>
-      <td>Fire</td>
-      <td>Critical Telegram alert and dashboard alert</td>
-    </tr>
-    <tr>
-      <td>Intruder</td>
-      <td>Warning or critical alert depending on confidence</td>
-    </tr>
-    <tr>
-      <td>Smoke</td>
-      <td>Warning alert</td>
-    </tr>
-    <tr>
-      <td>Person</td>
-      <td>Dashboard event only</td>
-    </tr>
-    <tr>
-      <td>Node down</td>
-      <td>Critical infrastructure alert</td>
-    </tr>
-  </tbody>
-</table>
-
-<hr />
-
-<h2 id="security-notes">Security Notes</h2>
-
-<p>
-  Telegram bot tokens must not be committed to GitHub. They should be stored as environment
-  variables or Kubernetes secrets.
-</p>
-
-<div class="language-text highlight"><pre><code>TELEGRAM_BOT_TOKEN=&lt;token&gt;
-TELEGRAM_CHAT_ID=&lt;chat_id&gt;</code></pre></div>
-
-<hr />
-
-<h2 id="current-status">Current Status</h2>
-
-<ul>
-  <li>Monitoring metrics are available through Prometheus.</li>
-  <li>Grafana dashboard shows node health.</li>
-  <li>Backend detection event flow is available.</li>
-  <li>Frontend Alerts page exists in the UI structure.</li>
-  <li>Telegram bot integration is planned for final alert delivery.</li>
-</ul>
-
-</article>
+                
+              </article>
             </div>
           
           
