@@ -5,7 +5,7 @@ import {
   type MonitoringOverview,
   type MonitoringNode,
   type TemperatureStatus,
-} from "../lib/api";
+} from "../../services/api";
 
 type UiNode = {
   name: string;

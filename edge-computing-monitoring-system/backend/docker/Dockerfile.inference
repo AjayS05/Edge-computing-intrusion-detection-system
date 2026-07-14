@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1
+
+FROM python:3.13-slim
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_CACHE_DIR=/pip-cache
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglib2.0-0 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements/inference.txt /tmp/requirements.txt
+
+# This deliberately reuses the cache ID from the old full backend build,
+# so a previously downloaded Torch wheel can be reused.
+RUN --mount=type=cache,id=edge-backend-pip-cache,target=/pip-cache \
+    python -m pip install -r /tmp/requirements.txt
+
+COPY app ./app
+COPY inference_app ./inference_app
+
+EXPOSE 8001
+
+CMD ["uvicorn", "inference_app.main:app", "--host", "0.0.0.0", "--port", "8001"]

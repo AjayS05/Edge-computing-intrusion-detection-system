@@ -3,7 +3,7 @@ import {
   getMonitoringOverview,
   type MonitoringAlert,
   type MonitoringOverview,
-} from "../lib/api";
+} from "../../services/api";
 
 export function AlertsPage() {
   const [data, setData] = useState<MonitoringOverview | null>(null);
