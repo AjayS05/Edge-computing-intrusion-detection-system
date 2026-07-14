@@ -35,8 +35,30 @@ class Settings(BaseSettings):
     max_upload_size_bytes: int = 5 * 1024 * 1024
     
     run_inference_on_upload: bool = True
-    yolo_model_path: str = "../object_detection/training/best_k.pt"
+    yolo_model_path: str = "models/best_final.pt"
     yolo_confidence_threshold: float = 0.55
+   
+    # Dedicated inference service
+    inference_service_url: str = "http://127.0.0.1:8001"
+    inference_request_timeout_seconds: float = 60.0
+   
+   # Distributed Pi3 image processing
+    distributed_processing_enabled: bool = True
+
+    # Comma-separated worker URLs for local testing.
+    worker_urls: str = (
+        "http://127.0.0.1:8002,"
+        "http://127.0.0.1:8003"
+    )
+
+    # Kubernetes headless-service discovery.
+    worker_service_host: str | None = None
+    worker_service_port: int = 8002
+
+    worker_health_timeout_seconds: float = 2.0
+    worker_request_timeout_seconds: float = 30.0
+
+    worker_tile_overlap_pixels: int = 32
 
     model_config = SettingsConfigDict(
         env_file=".env",
