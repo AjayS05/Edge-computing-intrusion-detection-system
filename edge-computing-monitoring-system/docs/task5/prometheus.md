@@ -21,7 +21,7 @@ kubectl version --client
 Confirm that the Raspberry Pi Node Exporters respond before installing Prometheus:
 
 ```bash
-for ip in 192.168.50.1 192.168.50.144 192.168.50.{101..108}; do
+for ip in 192.168.178.200 192.168.50.144 192.168.50.{101..108}; do
   if curl -sf --connect-timeout 3 "http://$ip:9100/metrics" >/dev/null; then
     echo "$ip UP"
   else
@@ -75,7 +75,7 @@ prometheus:
         scrape_timeout: 10s
         static_configs:
           - targets:
-              - 192.168.50.1:9100
+              - 192.168.178.200:9100
               - 192.168.50.144:9100
               - 192.168.50.101:9100
               - 192.168.50.102:9100
@@ -89,6 +89,11 @@ prometheus:
 grafana:
   enabled: true
   replicas: 1
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 3000
+    nodePort: 30300
 
 alertmanager:
   enabled: true
@@ -167,12 +172,14 @@ Access pages:
 | Rules | `http://192.168.178.200:30090/rules` |
 | Alerts | `http://192.168.178.200:30090/alerts` |
 
-> **IMAGE PLACEHOLDER — Prometheus pods**  
-> Suggested file: `images/monitoring/prometheus-pods.png`
+> **IMAGE REQUIRED — Healthy Prometheus pods**  
+> Save as: `images/monitoring/prometheus-pods-healthy.png`  
+> Capture a fresh `kubectl get pods -n monitoring` result in which every current monitoring pod is `Running`. Do not use an image containing stale `ContainerStatusUnknown` pods. Replace this placeholder with:  
+> `![Healthy monitoring pods](images/monitoring/prometheus-pods-healthy.png)`
 
-> **IMAGE PLACEHOLDER — Prometheus targets**  
-> Suggested file: `images/monitoring/prometheus-targets-up.png`  
-> Show Pi5, Pi4, and all Pi3 targets.
+![Raspberry Pi Node Exporter targets reporting UP](images/monitoring/prometheus-targets.png)
+
+The screenshot confirms that the visible `raspberry-pi-nodes` targets are `UP`. Because only nine rows are visible, capture one additional screenshot showing the remaining target if all ten nodes must be demonstrated in the final submission.
 
 ---
 
@@ -189,7 +196,10 @@ up{job="raspberry-pi-nodes"}
 ```promql
 100 - (
   avg by(instance) (
-    rate(node_cpu_seconds_total{mode="idle"}[2m])
+    rate(node_cpu_seconds_total{
+      job="raspberry-pi-nodes",
+      mode="idle"
+    }[2m])
   ) * 100
 )
 ```
@@ -199,9 +209,9 @@ up{job="raspberry-pi-nodes"}
 ```promql
 100 * (
   1 - (
-    node_memory_MemAvailable_bytes
+    node_memory_MemAvailable_bytes{job="raspberry-pi-nodes"}
     /
-    node_memory_MemTotal_bytes
+    node_memory_MemTotal_bytes{job="raspberry-pi-nodes"}
   )
 )
 ```
@@ -212,11 +222,13 @@ up{job="raspberry-pi-nodes"}
 100 * (
   1 - (
     node_filesystem_avail_bytes{
+      job="raspberry-pi-nodes",
       mountpoint="/",
       fstype!~"tmpfs|overlay|squashfs"
     }
     /
     node_filesystem_size_bytes{
+      job="raspberry-pi-nodes",
       mountpoint="/",
       fstype!~"tmpfs|overlay|squashfs"
     }
@@ -227,13 +239,17 @@ up{job="raspberry-pi-nodes"}
 ### Temperature
 
 ```promql
-max by(instance) (node_hwmon_temp_celsius)
+max by(instance) (
+  node_hwmon_temp_celsius{job="raspberry-pi-nodes"}
+)
 ```
 
 Alternative metric:
 
 ```promql
-max by(instance) (node_thermal_zone_temp)
+max by(instance) (
+  node_thermal_zone_temp{job="raspberry-pi-nodes"}
+)
 ```
 
 ### Network receive
@@ -241,6 +257,7 @@ max by(instance) (node_thermal_zone_temp)
 ```promql
 sum by(instance) (
   rate(node_network_receive_bytes_total{
+    job="raspberry-pi-nodes",
     device!~"lo|veth.*|docker.*|cni.*|flannel.*"
   }[2m])
 )
@@ -251,13 +268,16 @@ sum by(instance) (
 ```promql
 sum by(instance) (
   rate(node_network_transmit_bytes_total{
+    job="raspberry-pi-nodes",
     device!~"lo|veth.*|docker.*|cni.*|flannel.*"
   }[2m])
 )
 ```
 
-> **IMAGE PLACEHOLDER — PromQL result**  
-> Suggested file: `images/monitoring/prometheus-query-result.png`
+> **IMAGE REQUIRED — PromQL result**  
+> Save as: `images/monitoring/prometheus-query-result.png`  
+> Run `up{job="raspberry-pi-nodes"}` on the Prometheus Query page and capture the result showing every configured instance with value `1`. Replace this placeholder with:  
+> `![PromQL node availability result](images/monitoring/prometheus-query-result.png)`
 
 ---
 
@@ -399,8 +419,9 @@ curl -s http://192.168.178.200:30090/api/v1/rules \
   | sort -u
 ```
 
-> **IMAGE PLACEHOLDER — Custom alert rules**  
-> Suggested file: `images/monitoring/raspberry-pi-alert-rules.png`
+![Loaded Raspberry Pi alert rules](images/monitoring/raspberry-pi-alert-rules.png)
+
+The screenshot is valid evidence that the `raspberry-pi-cluster` rule group loaded successfully and that all displayed rules were evaluated with status `OK`. The temperature-rule names include the `Hwmon` suffix in the running configuration; this naming difference does not change their purpose.
 
 > **IMAGE PLACEHOLDER — Firing alert**  
 > Suggested file: `images/monitoring/node-down-alert-firing.png`
@@ -415,13 +436,13 @@ curl -s http://192.168.178.200:30090/api/v1/rules \
 Kubernetes workloads access Prometheus through its internal service:
 
 ```text
-http://prometheus-operated.monitoring.svc.cluster.local:9090
+http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
 ```
 
 ```bash
 kubectl set env deployment/backend \
   -n edge-monitoring \
-  PROMETHEUS_URL=http://prometheus-operated.monitoring.svc.cluster.local:9090
+  PROMETHEUS_URL=http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
 ```
 
 ---
@@ -437,4 +458,3 @@ kubectl set env deployment/backend \
 - [x] PromQL returns host metrics.
 - [x] Custom alert rules are loaded.
 - [x] Backend can access the internal Prometheus service.
-
