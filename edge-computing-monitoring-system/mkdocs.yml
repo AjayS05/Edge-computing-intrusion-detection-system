@@ -77,7 +77,6 @@ nav:
       - Grafana Dashboards: task5/grafana.md
 
   - AI Threat Detection:
-      - Dataset Collection: task6/dataset.md
       - Model Training: task6/training.md
       - Model Architecture: task6/model.md
       - Detection Results: task6/results.md
