@@ -12,7 +12,14 @@ import {
   User,
   X,
 } from "lucide-react";
-import "./EventHistoryPage.css"
+import {
+  getAnnotatedImageUrl,
+  getEvents,
+  getRawImageUrl,
+  type EventItem,
+} from "../../services/api";
+import "./EventHistoryPage.css";
+
 type Severity = "normal" | "warning" | "critical";
 type TelegramStatus = "sent" | "skipped" | "failed" | "pending";
 
@@ -29,86 +36,14 @@ type DetectionEvent = {
   annotated_image_url?: string | null;
 };
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-
-const demoEvents: DetectionEvent[] = [
-  {
-    event_id: "evt_2f8a91",
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    camera: "Pi4 Camera",
-    processing: "8/8 chunks",
-    class_names: ["intruder", "person"],
-    confidence: 0.94,
-    severity: "critical",
-    telegram_status: "sent",
-    raw_image_url: "#",
-    annotated_image_url: "#",
-  },
-  {
-    event_id: "evt_1d4c7b",
-    timestamp: new Date(Date.now() - 4.1 * 60 * 60 * 1000).toISOString(),
-    camera: "Pi4 Camera",
-    processing: "8/8 chunks",
-    class_names: ["person"],
-    confidence: 0.79,
-    severity: "warning",
-    telegram_status: "sent",
-    raw_image_url: "#",
-    annotated_image_url: "#",
-  },
-  {
-    event_id: "evt_9a3e12",
-    timestamp: new Date(Date.now() - 4.2 * 60 * 60 * 1000).toISOString(),
-    camera: "Pi4 Camera",
-    processing: "7/8 chunks",
-    class_names: ["fire", "smoke"],
-    confidence: 0.82,
-    severity: "critical",
-    telegram_status: "sent",
-    raw_image_url: "#",
-    annotated_image_url: "#",
-  },
-  {
-    event_id: "evt_5c7f04",
-    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    camera: "Pi4 Camera",
-    processing: "8/8 chunks",
-    class_names: ["person"],
-    confidence: 0.66,
-    severity: "normal",
-    telegram_status: "skipped",
-    raw_image_url: "#",
-    annotated_image_url: "#",
-  },
-  {
-    event_id: "evt_8b2a55",
-    timestamp: new Date(Date.now() - 5.3 * 60 * 60 * 1000).toISOString(),
-    camera: "Pi4 Camera",
-    processing: "8/8 chunks",
-    class_names: ["weapon", "person"],
-    confidence: 0.91,
-    severity: "critical",
-    telegram_status: "sent",
-    raw_image_url: "#",
-    annotated_image_url: "#",
-  },
-  {
-    event_id: "evt_3e9d17",
-    timestamp: new Date(Date.now() - 5.6 * 60 * 60 * 1000).toISOString(),
-    camera: "Pi4 Camera",
-    processing: "8/8 chunks",
-    class_names: ["liquid_spill"],
-    confidence: 0.68,
-    severity: "warning",
-    telegram_status: "sent",
-    raw_image_url: "#",
-    annotated_image_url: "#",
-  },
-];
-
 function formatTime(value: string) {
-  return new Date(value).toLocaleTimeString("en-GB", {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown";
+  }
+
+  return date.toLocaleTimeString("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -116,7 +51,13 @@ function formatTime(value: string) {
 }
 
 function formatRelativeTime(value: string) {
-  const diffMs = Date.now() - new Date(value).getTime();
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "unknown";
+  }
+
+  const diffMs = Date.now() - date.getTime();
   const diffMin = Math.floor(diffMs / 60000);
 
   if (diffMin < 1) return "just now";
@@ -128,85 +69,125 @@ function formatRelativeTime(value: string) {
   return `${Math.floor(diffHours / 24)}d ago`;
 }
 
-function getSeverity(event: any): Severity {
+function getClassNames(event: EventItem): string[] {
+  if (Array.isArray(event.class_names) && event.class_names.length > 0) {
+    return event.class_names;
+  }
+
+  if (Array.isArray(event.classes) && event.classes.length > 0) {
+    return event.classes;
+  }
+
+  if (Array.isArray(event.detections) && event.detections.length > 0) {
+    const names = event.detections
+      .map((detection) => {
+        return (
+          detection.class_name ||
+          detection.label ||
+          detection.class ||
+          detection.name
+        );
+      })
+      .filter((name): name is string => Boolean(name));
+
+    if (names.length > 0) {
+      return names;
+    }
+  }
+
+  if (event.event_type) return [event.event_type];
+  if (event.threat_type) return [event.threat_type];
+  if (event.class_name) return [event.class_name];
+  if (event.label) return [event.label];
+
+  return ["unknown"];
+}
+
+function getConfidence(event: EventItem) {
+  if (typeof event.confidence === "number") {
+    return event.confidence;
+  }
+
+  if (Array.isArray(event.detections) && event.detections.length > 0) {
+    const scores = event.detections
+      .map((detection) => detection.confidence)
+      .filter((value): value is number => typeof value === "number");
+
+    if (scores.length > 0) {
+      return Math.max(...scores);
+    }
+  }
+
+  return 0;
+}
+
+function getSeverity(event: EventItem): Severity {
   const severity = String(event.severity || "").toLowerCase();
 
   if (severity === "critical") return "critical";
   if (severity === "warning") return "warning";
   if (severity === "normal") return "normal";
 
-  const classes = getClassNames(event);
+  const classes = getClassNames(event).map((name) => name.toLowerCase());
 
   if (
     classes.some((name) =>
-      ["weapon", "fire", "smoke", "intruder"].includes(name.toLowerCase())
+      ["weapon", "fire", "smoke", "intruder"].includes(name),
     )
   ) {
     return "critical";
   }
 
-  if (classes.some((name) => ["liquid_spill"].includes(name.toLowerCase()))) {
+  if (classes.some((name) => ["liquid_spill", "container"].includes(name))) {
     return "warning";
   }
 
   return "normal";
 }
 
-function getClassNames(event: any): string[] {
-  if (Array.isArray(event.class_names)) return event.class_names;
+function getTelegramStatus(event: EventItem): TelegramStatus {
+  const status = String(event.telegram_status || "").toLowerCase();
 
-  if (Array.isArray(event.classes)) return event.classes;
+  if (status === "sent") return "sent";
+  if (status === "skipped") return "skipped";
+  if (status === "failed") return "failed";
+  if (status === "pending") return "pending";
 
-  if (Array.isArray(event.detections)) {
-    return event.detections
-      .map((d: any) => d.class_name || d.label || d.class || d.name)
-      .filter(Boolean);
-  }
+  if (event.telegram_sent === true) return "sent";
+  if (event.telegram_sent === false) return "skipped";
 
-  if (event.event_type) return [event.event_type];
-
-  if (event.detected_class) return [event.detected_class];
-
-  return ["unknown"];
+  return "pending";
 }
 
-function getConfidence(event: any) {
-  if (typeof event.confidence === "number") return event.confidence;
-
-  if (Array.isArray(event.detections) && event.detections.length > 0) {
-    const scores = event.detections
-      .map((d: any) => d.confidence)
-      .filter((value: any) => typeof value === "number");
-
-    if (scores.length > 0) return Math.max(...scores);
-  }
-
-  return 0;
-}
-
-function normalizeEvent(event: any, index: number): DetectionEvent {
+function normalizeEvent(event: EventItem, index: number): DetectionEvent {
   const rawImageUrl =
     event.raw_image_url ||
     event.raw_url ||
-    (event.raw_image_id
-      ? `${API_BASE_URL}/api/v1/images/raw/${event.raw_image_id}`
+    (event.raw_image_id !== undefined && event.raw_image_id !== null
+      ? getRawImageUrl(event.raw_image_id)
       : null);
 
   const annotatedImageUrl =
     event.annotated_image_url ||
     event.annotated_url ||
-    (event.annotated_image_id
-      ? `${API_BASE_URL}/api/v1/images/annotated/${event.annotated_image_id}`
+    (event.annotated_image_id !== undefined &&
+    event.annotated_image_id !== null
+      ? getAnnotatedImageUrl(event.annotated_image_id)
       : null);
 
   return {
-    event_id: event.event_id || event.id || `evt_${index + 1}`,
+    event_id: String(event.event_id || event.id || `event_${index + 1}`),
     timestamp:
       event.timestamp ||
       event.created_at ||
       event.time ||
       new Date().toISOString(),
-    camera: event.camera || event.node_name || event.node || "Pi4 Camera",
+    camera:
+      event.camera ||
+      event.node_name ||
+      event.node ||
+      event.sensor_node_id ||
+      "Pi4 Camera",
     processing:
       event.processing ||
       event.chunk_status ||
@@ -214,13 +195,7 @@ function normalizeEvent(event: any, index: number): DetectionEvent {
     class_names: getClassNames(event),
     confidence: getConfidence(event),
     severity: getSeverity(event),
-    telegram_status:
-      event.telegram_status ||
-      (event.telegram_sent === true
-        ? "sent"
-        : event.telegram_sent === false
-        ? "skipped"
-        : "pending"),
+    telegram_status: getTelegramStatus(event),
     raw_image_url: rawImageUrl,
     annotated_image_url: annotatedImageUrl,
   };
@@ -245,37 +220,44 @@ function classIcon(classes: string[]) {
 }
 
 function openImage(url?: string | null) {
-  if (!url || url === "#") return;
+  if (!url) return;
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
 export function EventHistoryPage() {
-  const [events, setEvents] = useState<DetectionEvent[]>(demoEvents);
+  const [events, setEvents] = useState<DetectionEvent[]>([]);
   const [search, setSearch] = useState("");
   const [criticalOnly, setCriticalOnly] = useState(false);
-  const [apiNotice, setApiNotice] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadEvents() {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/events`);
+        setLoading(true);
+        setApiError(null);
 
-        if (!response.ok) {
-          throw new Error("Events API not available");
-        }
+        const response = await getEvents({ limit: 50 });
+        const eventList = Array.isArray(response.events)
+          ? response.events
+          : [];
 
-        const data = await response.json();
-        const eventList = Array.isArray(data) ? data : data.events || [];
-
-        setEvents(eventList.map(normalizeEvent));
-        setApiNotice(null);
-      } catch {
-        setEvents(demoEvents);
-        setApiNotice("Showing demo data because the events API is not available yet.");
+        const normalizedEvents = eventList.map(normalizeEvent);
+        setEvents(normalizedEvents);
+      } catch (error) {
+        console.error("Events API error:", error);
+        setEvents([]);
+        setApiError(
+          error instanceof Error
+            ? error.message
+            : "Failed to load events from backend.",
+        );
+      } finally {
+        setLoading(false);
       }
     }
 
-    loadEvents();
+    void loadEvents();
   }, []);
 
   const filteredEvents = useMemo(() => {
@@ -324,7 +306,10 @@ export function EventHistoryPage() {
       ]),
     ];
 
-    const csv = rows.map((row) => row.map(String).join(",")).join("\n");
+    const csv = rows
+      .map((row) => row.map((value) => `"${String(value)}"`).join(","))
+      .join("\n");
+
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
 
@@ -352,23 +337,30 @@ export function EventHistoryPage() {
           <button
             className={criticalOnly ? "event-action active" : "event-action"}
             onClick={() => setCriticalOnly((value) => !value)}
+            type="button"
           >
             <Filter size={18} />
             {criticalOnly ? "Critical only" : "Filter"}
           </button>
 
-          <button className="event-action primary" onClick={exportCsv}>
+          <button
+            className="event-action primary"
+            onClick={exportCsv}
+            type="button"
+          >
             <Download size={18} />
             Export CSV
           </button>
         </div>
       </div>
 
-      {apiNotice && <div className="event-api-notice">{apiNotice}</div>}
+      {apiError && <div className="event-api-notice">{apiError}</div>}
 
       <div className="event-history-card">
         <div className="event-card-top">
-          <h2>{filteredEvents.length} events</h2>
+          <h2>
+            {loading ? "Loading events..." : `${filteredEvents.length} events`}
+          </h2>
 
           <div className="event-search">
             <Search size={18} />
@@ -428,7 +420,7 @@ export function EventHistoryPage() {
                   </td>
 
                   <td className="event-confidence">
-                    {Math.round(event.confidence * 100)}.0%
+                    {Math.round(event.confidence * 100)}%
                   </td>
 
                   <td>
@@ -450,13 +442,19 @@ export function EventHistoryPage() {
 
                   <td>
                     <div className="event-evidence-buttons">
-                      <button onClick={() => openImage(event.raw_image_url)}>
+                      <button
+                        type="button"
+                        onClick={() => openImage(event.raw_image_url)}
+                        disabled={!event.raw_image_url}
+                      >
                         <Image size={15} />
                         Raw
                       </button>
 
                       <button
+                        type="button"
                         onClick={() => openImage(event.annotated_image_url)}
+                        disabled={!event.annotated_image_url}
                       >
                         <Eye size={15} />
                         Annotated
@@ -466,10 +464,18 @@ export function EventHistoryPage() {
                 </tr>
               ))}
 
-              {filteredEvents.length === 0 && (
+              {!loading && filteredEvents.length === 0 && (
                 <tr>
                   <td colSpan={9} className="event-empty">
-                    No events found for this search/filter.
+                    No events found from backend.
+                  </td>
+                </tr>
+              )}
+
+              {loading && (
+                <tr>
+                  <td colSpan={9} className="event-empty">
+                    Loading event history from backend...
                   </td>
                 </tr>
               )}

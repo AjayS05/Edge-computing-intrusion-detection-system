@@ -14,7 +14,9 @@ import {
   ImageIcon,
   Boxes,
 } from "lucide-react";
-import "./ModelDatasetPage.css"
+import { getModelInfo, type ModelInfoResponse } from "../../services/api";
+import "./ModelDatasetPage.css";
+
 type ClassItem = {
   name: string;
   count: number;
@@ -35,9 +37,6 @@ type ModelInfo = {
   validation_images: number;
   classes: ClassItem[];
 };
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 const demoModel: ModelInfo = {
   model_name: "Custom YOLOv8 Threat Detector",
@@ -60,6 +59,70 @@ const demoModel: ModelInfo = {
     { name: "liquid_spill", count: 1248, percentage: 10 },
   ],
 };
+
+function normalizeClasses(classes: ModelInfoResponse["classes"]): ClassItem[] {
+  if (!Array.isArray(classes) || classes.length === 0) {
+    return demoModel.classes;
+  }
+
+  if (typeof classes[0] === "string") {
+    const classNames = classes as string[];
+    const percentage = Math.round(100 / classNames.length);
+
+    return classNames.map((name) => ({
+      name,
+      count: 0,
+      percentage,
+    }));
+  }
+
+  const classItems = classes as {
+    name?: string;
+    count?: number;
+    percentage?: number;
+  }[];
+
+  const totalCount = classItems.reduce(
+    (sum, item) => sum + Number(item.count ?? 0),
+    0,
+  );
+
+  return classItems.map((item) => {
+    const count = Number(item.count ?? 0);
+
+    return {
+      name: item.name ?? "unknown",
+      count,
+      percentage:
+        typeof item.percentage === "number"
+          ? item.percentage
+          : totalCount > 0
+          ? Math.round((count / totalCount) * 100)
+          : 0,
+    };
+  });
+}
+
+function normalizeModelInfo(data: ModelInfoResponse): ModelInfo {
+  return {
+    model_name: data.model_name || demoModel.model_name,
+    model_file: data.model_file || demoModel.model_file,
+    architecture: data.architecture || demoModel.architecture,
+    framework: data.framework || demoModel.framework,
+    runtime: data.runtime || demoModel.runtime,
+    confidence_threshold:
+      data.confidence_threshold ?? demoModel.confidence_threshold,
+    inference_time_ms: data.inference_time_ms ?? demoModel.inference_time_ms,
+    map50: data.map50 ?? data.map_score ?? demoModel.map50,
+    map5095: data.map5095 ?? demoModel.map5095,
+    training_images: data.training_images ?? demoModel.training_images,
+    validation_images:
+      data.validation_images ??
+      data.validation_images_count ??
+      demoModel.validation_images,
+    classes: normalizeClasses(data.classes),
+  };
+}
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
@@ -106,45 +169,41 @@ function MetricCard({
 
 export function ModelDatasetPage() {
   const [model, setModel] = useState<ModelInfo>(demoModel);
+  const [loading, setLoading] = useState(true);
   const [apiNotice, setApiNotice] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadModelInfo() {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/model/info`);
+        const data = await getModelInfo();
 
-        if (!response.ok) {
-          throw new Error("Model API not available");
-        }
-
-        const data = await response.json();
-
-        setModel({
-          model_name: data.model_name || demoModel.model_name,
-          model_file: data.model_file || demoModel.model_file,
-          architecture: data.architecture || demoModel.architecture,
-          framework: data.framework || demoModel.framework,
-          runtime: data.runtime || demoModel.runtime,
-          confidence_threshold:
-            data.confidence_threshold ?? demoModel.confidence_threshold,
-          inference_time_ms: data.inference_time_ms ?? demoModel.inference_time_ms,
-          map50: data.map50 ?? data.map_score ?? demoModel.map50,
-          map5095: data.map5095 ?? demoModel.map5095,
-          training_images: data.training_images ?? demoModel.training_images,
-          validation_images:
-            data.validation_images ?? data.validation_images_count ?? demoModel.validation_images,
-          classes: data.classes || demoModel.classes,
-        });
-
+        setModel(normalizeModelInfo(data));
         setApiNotice(null);
-      } catch {
+      } catch (error) {
+        console.error("Model info API error:", error);
         setModel(demoModel);
-        setApiNotice("Showing demo data because the model info API is not available yet.");
+        setApiNotice(
+          "Showing demo data because the model info API is not available yet.",
+        );
+      } finally {
+        setLoading(false);
       }
     }
 
-    loadModelInfo();
+    void loadModelInfo();
   }, []);
+
+  if (loading) {
+    return (
+      <section className="model-page">
+        <div className="model-panel">
+          <div className="model-panel-header">
+            <h2>Loading model and dataset information...</h2>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="model-page">
@@ -274,7 +333,9 @@ export function ModelDatasetPage() {
                 </div>
 
                 <span className="class-percent">{item.percentage}%</span>
-                <span className="class-count">{formatNumber(item.count)}</span>
+                <span className="class-count">
+                  {item.count > 0 ? formatNumber(item.count) : "N/A"}
+                </span>
               </div>
             ))}
           </div>
