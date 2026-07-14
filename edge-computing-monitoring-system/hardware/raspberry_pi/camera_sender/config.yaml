@@ -1,4 +1,4 @@
-backend_url: "http://192.168.50.1:8000"
+backend_url: "http://192.168.50.1:30080"
 
 sensor_node_id: "rpi4-camera-01"
 camera_location: "lab-entry"

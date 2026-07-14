@@ -4,6 +4,8 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { EventHistoryPage } from "./pages/EventHistoryPage";
 import { AlertsPage } from "./pages/AlertsPage";
 import { Sidebar, type PageKey } from "./components/Sidebar";
+import { LiveDetectionPage } from "./pages/LiveDetectionPage";
+import { ModelDatasetPage } from "./pages/ModelDatasetPage";
 import "./App.css";
 function App() {
   const [activePage, setActivePage] = useState<PageKey>("dashboard");
@@ -20,12 +22,7 @@ function App() {
       <main className="app-main">
         {activePage === "dashboard" && <DashboardPage />}
 
-        {activePage === "liveDetection" && (
-          <>
-            <h2>Live Detection</h2>
-            <p>Live Detection page is ready.</p>
-          </>
-        )}
+        {activePage === "liveDetection" && <LiveDetectionPage />}
 
         {activePage === "eventHistory" && <EventHistoryPage />}
 
@@ -47,12 +44,7 @@ function App() {
           </>
         )}
 
-        {activePage === "modelDataset" && (
-          <>
-            <h2>Model & Dataset</h2>
-            <p>Model and dataset page is ready.</p>
-          </>
-        )}
+        {activePage === "modelDataset" && <ModelDatasetPage />}
 
         {activePage === "clusterPerformance" && (
           <>
