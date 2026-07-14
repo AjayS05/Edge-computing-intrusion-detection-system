@@ -4,7 +4,7 @@ This page describes how PiWatch processes an image from capture to visualization
 
 ---
 
-# Overview
+## Overview
 
 The processing pipeline consists of six stages:
 
@@ -17,7 +17,7 @@ The processing pipeline consists of six stages:
 
 ---
 
-# Step 1 – Image Capture
+## Step 1 – Image Capture
 
 The Raspberry Pi AI Camera is connected directly to the Raspberry Pi 4 through the CSI interface.
 
@@ -42,7 +42,7 @@ Raspberry Pi 4
 
 ---
 
-# Step 2 – Image Transmission
+## Step 2 – Image Transmission
 
 The Raspberry Pi 4 sends the captured image over the local Gigabit Ethernet network.
 
@@ -59,7 +59,7 @@ Backend Service
 
 ---
 
-# Step 3 – Kubernetes Routing
+## Step 3 – Kubernetes Routing
 
 The Backend Service forwards the request to the FastAPI backend pod.
 
@@ -74,7 +74,7 @@ The backend receives the uploaded image and begins the inference pipeline.
 
 ---
 
-# Step 4 – AI Inference Pipeline
+## Step 4 – AI Inference Pipeline
 
 The backend performs several processing stages.
 
@@ -102,7 +102,7 @@ The inference produces:
 
 ---
 
-# Step 5 – Persistent Storage
+## Step 5 – Persistent Storage
 
 The generated data is stored using SeaweedFS.
 
@@ -129,7 +129,7 @@ Critical data may also be replicated to the backup storage attached to the Raspb
 
 ---
 
-# Step 6 – Alert Generation
+## Step 6 – Alert Generation
 
 If a detected object matches a configured alert rule, the backend generates a notification.
 
@@ -157,7 +157,7 @@ User Notification
 
 ---
 
-# Step 7 – Dashboard Update
+## Step 7 – Dashboard Update
 
 After processing completes, the backend updates the frontend.
 
@@ -181,7 +181,7 @@ Users
 
 ---
 
-# Monitoring Pipeline
+## Monitoring Pipeline
 
 Every Raspberry Pi continuously exports hardware metrics.
 
@@ -212,42 +212,7 @@ These metrics help monitor the health of the cluster.
 
 ---
 
-# Worker Node Boot Process
-
-Unlike the Raspberry Pi 4 and Raspberry Pi 5, the Raspberry Pi 3 nodes do not boot from local storage.
-
-Instead, they use PXE network boot.
-
-```
-Power On
-    │
-    ▼
-DHCP Request
-    │
-    ▼
-Pi5 DHCP Server
-    │
-    ▼
-TFTP Boot Files
-    │
-    ▼
-Linux Kernel
-    │
-    ▼
-NFS Root Filesystem
-    │
-    ▼
-K3s Agent Starts
-    │
-    ▼
-Join Kubernetes Cluster
-```
-
-This centralized boot process allows all worker nodes to share the same operating system image while simplifying maintenance and updates.
-
----
-
-# End-to-End Processing Flow
+## End-to-End Processing Flow
 
 ```
 AI Camera
@@ -279,7 +244,7 @@ FastAPI + YOLO
 
 ---
 
-# Request Lifecycle Summary
+## Request Lifecycle Summary
 
 | Stage | Component | Output |
 |--------|-----------|--------|

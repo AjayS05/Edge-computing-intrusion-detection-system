@@ -1,6 +1,6 @@
-# System Architecture
+# System Architecture - A Holistic Overview
 
-PiWatch is a distributed edge AI surveillance platform built on a Raspberry Pi cluster. The system combines edge image acquisition, Kubernetes orchestration, distributed storage, and monitoring to perform real-time object detection while minimizing network bandwidth usage.
+The system combines edge image acquisition, Kubernetes orchestration, distributed storage, and monitoring to perform real-time object detection while minimizing network bandwidth usage.
 
 The architecture is organized into three layers:
 
@@ -8,10 +8,10 @@ The architecture is organized into three layers:
 - Network Architecture
 - Software Architecture
 
-![System Architecture](images/system_architecture.png)
 ---
+## Hardware Architecture
 
-# Hardware Architecture
+![Hardware Architecture](images/hardware_architecture.png)
 
 The cluster consists of eleven Raspberry Pi devices connected through a dedicated Gigabit Ethernet network.
 
@@ -22,15 +22,25 @@ The cluster consists of eleven Raspberry Pi devices connected through a dedicate
 | Raspberry Pi 3 Model B | 8 | Raspberry Pi OS (64-bit) | AArch64 | Kubernetes worker nodes and distributed computing |
 | Raspberry Pi AI Camera | 1 | — | — | Image capture |
 
-All Raspberry Pi devices run the 64-bit version of Raspberry Pi OS (Debian-based) on the ARM AArch64 architecture.
+In addition to the devices above, following are also an important part of the architecture:
+
+| Device | Quantity | Storage | Size | Purpose |
+|----------|---------:|-----------------|-----------------|---------|
+| SSD | 1 | Yes | 500GB | Main storage device |
+| Pendrive | 1 | Yes | 128GB | Backup Device |
+| AI Hat | 1 | No | - | Additional AI Power |
 
 The Raspberry Pi 5 is connected to an external SSD that serves as the primary persistent storage for the Kubernetes cluster. A USB flash drive attached to the Raspberry Pi 4 is used for backup replication.
 
+This is our hardware setup:
+
+![Hardware Setup](images/hardware_setup.jpeg)
+
 ---
 
-# Hardware Responsibilities
+### Hardware Responsibilities
 
-## Raspberry Pi 5
+#### Raspberry Pi 5
 
 The Raspberry Pi 5 is the central server of the cluster and performs multiple infrastructure roles.
 
@@ -51,7 +61,7 @@ The Pi5 also exports the shared root filesystem used by all Raspberry Pi 3 worke
 
 ---
 
-## Raspberry Pi 4
+#### Raspberry Pi 4
 
 The Raspberry Pi 4 acts as the edge sensing device.
 
@@ -66,7 +76,7 @@ The Pi4 does **not** perform AI inference. Instead, it forwards captured images 
 
 ---
 
-## Raspberry Pi 3 Worker Nodes
+#### Raspberry Pi 3 Worker Nodes
 
 Eight Raspberry Pi 3 devices form the Kubernetes worker layer.
 
@@ -76,13 +86,13 @@ Each worker node runs
 - K3s Agent
 - Node Exporter
 - MPI/HPL benchmark software
-- Future Task Distributor worker pods
+- Task Distributor workers
 
 These nodes are diskless and boot entirely over the network using PXE.
 
 ---
 
-# Network Architecture
+## Network Architecture
 
 All Raspberry Pi devices are connected through a dedicated Gigabit Ethernet switch, forming a private local area network.
 
@@ -95,9 +105,28 @@ Network services include
 - TFTP
 - NFS
 
----
+```text
+                         Internet
+                            |
+                     WiFi Connection
+                            |
+              +-------------+-------------+
+              |                           |
+        Raspberry Pi 5             Raspberry Pi 4
+      (SD Card Boot - Boot Server)       (SD Card Boot)
+              |                           
+              |                      
+              |
+        Gigabit Ethernet Switch
+              |
+   +----------+----------+----------+----------+
+   |          |          |          |          |
+ RP3-01     RP3-02    RP3-03   ...       RP3-08
+ Worker     Worker    Worker             Worker
+(PXE Boot) (PXE Boot)(PXE Boot)         (PXE Boot)
+```
 
-## PXE Boot Process
+### PXE Boot Process
 
 The Raspberry Pi 3 worker nodes boot without local storage.
 
@@ -116,7 +145,7 @@ This allows centralized operating system management and eliminates SD card maint
 
 ---
 
-# Software Architecture
+## Software Architecture
 
 The software stack is deployed on a K3s Kubernetes cluster.
 
@@ -134,7 +163,7 @@ The software architecture consists of
 
 ---
 
-# Frontend
+### Frontend
 
 The frontend is deployed as a Kubernetes Deployment containing a React application served through Nginx.
 
@@ -152,7 +181,7 @@ The dashboard provides
 
 ---
 
-# Backend
+### Backend
 
 The backend is implemented using FastAPI.
 
@@ -171,7 +200,7 @@ Only lightweight event information is transmitted to users instead of continuous
 
 ---
 
-# Storage
+### Storage
 
 Persistent data is managed using SeaweedFS.
 
@@ -188,7 +217,7 @@ Critical data is periodically replicated to external USB storage attached to the
 
 ---
 
-# Monitoring
+### Monitoring
 
 Cluster monitoring is implemented using Prometheus and Grafana.
 
@@ -208,7 +237,7 @@ Alertmanager generates infrastructure alerts when predefined thresholds are exce
 
 ---
 
-# Configuration Management
+### Configuration Management
 
 Application configuration is managed through Kubernetes resources.
 
@@ -220,57 +249,7 @@ Configuration includes
 This separates configuration data from application code while allowing secure management of sensitive information.
 
 ---
+## The Complete Story
+After combining all above, we get the complete system architecture of PiWatch. 
 
-# Data Flow
-
-The image processing pipeline is shown below.
-
-```
-Raspberry Pi AI Camera
-        │
-        ▼
-Raspberry Pi 4
-(Image Capture)
-        │
- JPEG + Metadata
-        ▼
-Backend Service
-        │
-        ▼
-FastAPI + YOLO
-        │
- ├── Object Detection
- ├── Event Generation
- ├── Alert Generation
- ├── Image Annotation
- └── Storage
-        │
-        ├────────► SeaweedFS
-        ├────────► Telegram Bot API
-        └────────► Frontend Dashboard
-```
-
----
-
-# Monitoring Flow
-
-```
-All Raspberry Pi Nodes
-        │
- Node Exporter
-        │
-        ▼
- Prometheus
-        │
-        ▼
- Grafana
-        │
-        ▼
- Frontend Monitoring Dashboard
-```
-
----
-
-# Summary
-
-The architecture combines edge computing with lightweight Kubernetes orchestration on ARM-based hardware. Camera acquisition is separated from AI inference, allowing compute-intensive workloads to run centrally on the Kubernetes cluster while maintaining low network bandwidth. PXE booting simplifies management of the Raspberry Pi 3 worker nodes, SeaweedFS provides distributed persistent storage, and Prometheus with Grafana enables comprehensive monitoring of the entire platform.
+![System Architecture](images/system_architecture.png)

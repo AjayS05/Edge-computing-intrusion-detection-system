@@ -53,11 +53,8 @@ markdown_extensions:
   - attr_list
   - md_in_html
 
-# Cleaned up, semantic navigation structure
 nav:
-  # - Home: index.md
-
-  - Home: task1/index.md
+  - Home: index.md
 
   - Hardware & Infrastructure:
         # - Hardware Components: task1/hardware.md
@@ -100,11 +97,7 @@ nav:
   - Alerts & Notifications:
       - Telegram Bot Architecture: task9/telegram.md
 
-  - Deployment Guide:
-      - Installation Steps: deployment/installation.md
-      - Running the System: deployment/running.md
-      - Troubleshooting Guide: deployment/troubleshooting.md
-
   - Results & Analysis:
       - Performance Summary: results/performance.md
       - Future Work: results/future_work.md
+  - The Team: team.md
