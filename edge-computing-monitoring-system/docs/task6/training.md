@@ -1,4 +1,4 @@
-# Part 2: Model Training
+# Model Training
 
 This section outlines our cloud-based training execution environment, physical hardware acceleration, execution lifecycle, and weights optimization workflow.
 
