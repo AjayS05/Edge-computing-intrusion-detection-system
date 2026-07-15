@@ -1,4 +1,4 @@
-prometheus-node-exporter:
+nodeExporter:
   enabled: false
 
 prometheus:
@@ -25,7 +25,8 @@ prometheus:
         scrape_timeout: 10s
         static_configs:
           - targets:
-              - "192.168.178.200:9100"
+              - "192.168.50.1:9100"
+              - "192.168.50.144:9100"
               - "192.168.50.101:9100"
               - "192.168.50.102:9100"
               - "192.168.50.103:9100"
@@ -38,6 +39,12 @@ prometheus:
 grafana:
   enabled: true
   replicas: 1
+
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 3000
+    nodePort: 30300
 
 alertmanager:
   enabled: true

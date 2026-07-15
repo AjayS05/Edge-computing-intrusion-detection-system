@@ -1,0 +1,91 @@
+/shared/output/lockfile has been created.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+convert: unable to open image '/tmp/worker1/blob.png': No such file or directory @ error/blob.c/OpenBlob/3701.
+convert: no images defined `/tmp/worker1/blob.png' @ error/deprecate.c/ConvertImageCommand/3371.
+mv: cannot stat '/tmp/worker1/blob.png': No such file or directory
+rpi3-01 has been finished.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+Wait for rpi3-02 in lockfile.
+rpi3-02 has been finished.
+Image parts have been composed.
+Required time to process the 1st sequential part:    0.003s
+Required time to process the parallel part:          81.143s
+Required time to process the 2nd sequential part:    0.952s

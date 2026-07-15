@@ -57,14 +57,14 @@ IMAGE_PARTS_PATH=
 CLEAN_UP=0
 
 # Path of the remote script which executes POV-Ray on the nodes
-REMOTE_SCRIPT='/home/pi/task-distributor-worker.sh'
+REMOTE_SCRIPT='/shared/task-distributor/task-distributor-worker.sh'
 
-USERNAME_SSH=pi
-IMG_PATH=/opt/povray/share/povray-3.7/scenes/objects/
+USERNAME_SSH=pi3
+IMG_PATH=/shared/task-distributor/
 IMG_FILE=blob.pov
 OUTPUT_DIR=/tmp/
 # Array with the hostnames (the first entry has index number 1 here)
-HOSTS_ARRAY=([1]=pi110 pi111 pi112 pi113 pi114 pi115 pi116 pi117)
+HOSTS_ARRAY=([1]=rpi3-01 rpi3-02 rpi3-03 rpi3-04 rpi3-05 rpi3-06 rpi3-07 rpi3-08)
 
 while getopts "hn:x:y:fcp:" Arg ; do
   case $Arg in
@@ -122,7 +122,19 @@ PARALLEL_TIME_START=`date +%s.%N`
 
 for ((i=1; i<=${NUM_NODES}; i+=1))
 do
-  ssh ${USERNAME_SSH}@${HOSTS_ARRAY[$i]} ${REMOTE_SCRIPT} ${NUM_NODES} ${IMG_PATH} ${IMG_FILE} +FN +W${IMG_WIDTH} +H${IMG_HEIGHT} +O${OUTPUT_DIR} +SR${START} +ER${END} ${IMAGE_PARTS_PATH} ${LOCKFILE} &
+  ssh ${USERNAME_SSH}@${HOSTS_ARRAY[$i]} ${REMOTE_SCRIPT} \
+  ${NUM_NODES} \
+  ${IMG_PATH} \
+  ${IMG_FILE} \
+  +FN \
+  +W${IMG_WIDTH} \
+  +H${IMG_HEIGHT} \
+  +O${OUTPUT_DIR} \
+  +SR${START} \
+  +ER${END} \
+  ${IMAGE_PARTS_PATH} \
+  ${LOCKFILE} \
+  worker${i} &
   START=`expr ${START} + ${IMG_HEIGHT} / ${NUM_NODES}`
   END=`expr ${END} + ${IMG_HEIGHT} / ${NUM_NODES}`
 done
@@ -132,7 +144,7 @@ for ((i=1; i<=${NUM_NODES}; i+=1))
 do
   while true
   do
-    if [ -f ${LOCKFILE} ] && grep ${HOSTS_ARRAY[$i]} /${LOCKFILE} ; then
+    if [ -f ${IMAGE_PARTS_PATH}/worker${i}.done ] ; then
       echo "${HOSTS_ARRAY[$i]} has been finished." && break
     else
       echo "Wait for ${HOSTS_ARRAY[$i]} in lockfile." 
@@ -157,7 +169,7 @@ SEQUENTIAL_TIME2_START=`date +%s.%N`
 if [ "$NUM_NODES" -eq 1 ] ; then
   # Only a single node was be used => no image parts need to be composed.
   # Just copy the final image.
-  if cp ${IMAGE_PARTS_PATH}/*pi*.png /tmp/output_${IMG_WIDTH}x${IMG_HEIGHT}_${NUM_NODES}_nodes_`date +%Y_%m_%d_%H:%M:%S`.png ; then
+  if cp ${IMAGE_PARTS_PATH}/*worker*.png /tmp/output_${IMG_WIDTH}x${IMG_HEIGHT}_${NUM_NODES}_nodes_`date +%Y_%m_%d_%H:%M:%S`.png ; then
     echo "Image has been copied."
   else
     echo "Unable to copy the image." && exit 1
@@ -166,7 +178,7 @@ if [ "$NUM_NODES" -eq 1 ] ; then
 elif [ "$NUM_NODES" -gt 1 ] ; then
   # More than a single node was used 
   # Compose image parts to create the final image
-  if convert -set colorspace RGB `ls ${IMAGE_PARTS_PATH}/*pi*.png` -append /tmp/output_${IMG_WIDTH}x${IMG_HEIGHT}_${NUM_NODES}_nodes_`date +%Y_%m_%d_%H:%M:%S`.png ; then
+  if convert -set colorspace RGB `ls ${IMAGE_PARTS_PATH}/*worker*.png` -append /tmp/output_${IMG_WIDTH}x${IMG_HEIGHT}_${NUM_NODES}_nodes_`date +%Y_%m_%d_%H:%M:%S`.png ; then
     echo "Image parts have been composed."
   else
     echo "Unable to compose the image parts." && exit 1

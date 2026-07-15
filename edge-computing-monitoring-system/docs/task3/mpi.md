@@ -1,5 +1,5 @@
 
-# Prerequisites
+## Prerequisites
 
 Install the required development tools and OpenMPI on each and every Raspberry Pi (Raspberry Pi OS / Debian):
 

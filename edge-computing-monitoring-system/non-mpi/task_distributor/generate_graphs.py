@@ -6,7 +6,7 @@ import numpy as np
 from collections import defaultdict
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-RESULT_DIR = os.path.join(BASE_DIR, "results")
+RESULT_DIR = os.path.join(BASE_DIR, "task_distributor_32_cores_results")
 OUTPUT_DIR = os.path.join(BASE_DIR, "graphs")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -90,7 +90,7 @@ for image in data:
 # Generate Layout Grid
 # -----------------------------
 num_cols = len(resolutions)
-fig, axes = plt.subplots(2, num_cols, figsize=(20, 8), sharex=False)
+fig, axes = plt.subplots(2, num_cols, figsize=(13, 8))
 
 if num_cols == 1:
     axes = np.expand_dims(axes, axis=1)
@@ -161,8 +161,14 @@ for col_idx, image in enumerate(resolutions):
             fontsize=8
         )
 
-plt.tight_layout(rect=[0, 0, 1, 0.95])
-output_path = os.path.join(OUTPUT_DIR, "combined_performance_grid2.png")
+fig.suptitle(
+    "Non-MPI Task Distributor Performance (Average of Multiple Runs)",
+    fontsize=18,
+    y=0.98
+)
+
+plt.tight_layout(rect=[0, 0, 1, 0.96])
+output_path = os.path.join(OUTPUT_DIR, "combined_performance_grid3.png")
 plt.savefig(output_path, dpi=300, bbox_inches="tight")
 plt.close()
 

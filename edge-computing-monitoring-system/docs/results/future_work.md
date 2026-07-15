@@ -1,6 +1,6 @@
 ## Lessons we learned and what we would do differently the next time
 
-### High Availability part
+### Multiple Control Planes - High Availability
 Have two control planes - we thought of doing it half way through the project but for that we'd have to change the boot startup of 2 of the 8 rp3 to SD rather than PXE because we plan to make them control plane of the k3s along with rp5. now, k3s HA uses embedded etcd, which is a quorum-based system. Quorum = majority of members.
 
 | Control-plane nodes | Fault tolerance |

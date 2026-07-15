@@ -215,7 +215,7 @@ export type LatestEventResponse =
     };
 
 /* ================================
-   MODEL / DATASET TYPES
+   MODEL TYPES
 ================================ */
 
 export type ModelClassItem = {
@@ -246,6 +246,180 @@ export type ModelInfoResponse = {
   validation_images_count?: number;
 
   classes?: ModelClassItem[] | string[];
+};
+ /* ================================
+    KUBERNETES TYPES
+  ================================ */
+
+export type KubernetesPod = {
+  name: string;
+  namespace: string;
+  status: string;
+  ready: string;
+  ready_bool: boolean;
+  restarts: number;
+  node: string | null;
+  age_seconds: number | null;
+  app: string;
+  labels?: Record<string, string>;
+};
+
+export type KubernetesPodsResponse = {
+  namespace: string;
+  total_pods: number;
+  running_pods: number;
+  yolo_status: "online" | "offline" | "warning" | "unknown";
+  yolo_pods: KubernetesPod[];
+  pods: KubernetesPod[];
+  error?: string;
+};
+/* ================================
+   STORAGE TYPES
+================================ */
+
+export type StorageHealthItem = {
+  name: string;
+  status: "online" | "offline" | "warning" | "unknown";
+  value?: string;
+};
+
+export type StorageUploadItem = {
+  id: string;
+  filename: string;
+  path: string;
+  uploaded_at: string;
+  type?: "raw" | "annotated" | "metadata";
+};
+
+export type StorageStatusResponse = {
+  provider: string;
+  compatibility: string;
+  bucket: string;
+
+  raw_images: number;
+  annotated_images: number;
+  metadata_records: number;
+
+  used_gb: number;
+  total_gb: number;
+  usage_percent: number;
+
+  status: "online" | "offline" | "warning" | "unknown";
+  last_upload: string | null;
+  replication: string;
+  upload_throughput_mbps: number;
+
+  health: StorageHealthItem[];
+  recent_uploads: StorageUploadItem[];
+};
+
+/* ================================
+   TELEGRAM TYPES
+================================ */
+
+export type TelegramServiceStatus = "online" | "offline" | "unknown";
+
+export type TelegramStatusResponse = {
+  status: TelegramServiceStatus;
+  mode: "webhook" | "long_polling" | "unknown";
+  bot_name: string;
+  subscribers: number;
+  sent_today: number;
+  failed_today: number;
+  retries_24h: number;
+  average_latency_ms: number;
+  last_alert_sent: string | null;
+  last_error?: string | null;
+};
+
+export type TelegramDeliveryResponse = {
+  event_id: string;
+  camera: string;
+  frame_id: string;
+  event_type: string;
+  severity: "normal" | "warning" | "critical";
+  confidence: number;
+  chunks_processed: number;
+  total_chunks: number;
+  telegram_status:
+    | "sent"
+    | "failed"
+    | "skipped"
+    | "retrying"
+    | "sent_with_warning";
+  timestamp: string;
+  reason?: string | null;
+  workers: {
+    chunk_id: number;
+    worker_node: string;
+    status: "completed" | "failed" | "pending" | "retrying";
+    processing_ms: number | null;
+  }[];
+};
+
+/* ================================
+   CLUSTER PERFORMANCE TYPES
+================================ */
+export type ClusterPerformanceNode = {
+  name: string;
+  instance: string;
+  status: string;
+  cpu_percent: number | null;
+  memory_percent: number | null;
+  disk_percent: number | null;
+  load1: number | null;
+  temperature_c: number | null;
+};
+
+export type ClusterPerformancePod = {
+  name: string;
+  namespace: string;
+  app: string;
+  status: string;
+  ready: string;
+  ready_bool: boolean;
+  restarts: number;
+  node: string | null;
+  age_seconds: number | null;
+  labels?: Record<string, string>;
+};
+
+export type ClusterPerformanceOverview = {
+  timestamp: string;
+  status: "healthy" | "degraded" | "critical" | string;
+  cluster_score: number;
+  prometheus_url: string;
+  namespace: string;
+  summary: {
+    total_nodes: number;
+    online_nodes: number;
+    offline_nodes: number;
+    total_pods: number;
+    running_pods: number;
+    ready_pods: number;
+    total_restarts: number;
+  };
+  resources: {
+    avg_cpu_percent: number | null;
+    avg_memory_percent: number | null;
+    avg_disk_percent: number | null;
+    avg_load1: number | null;
+    max_temperature_c: number | null;
+  };
+  workloads: {
+    backend_pods: number;
+    inference_pods: number;
+    image_worker_pods: number;
+    telegram_pods: number;
+    storage_pods: number;
+  };
+  nodes: ClusterPerformanceNode[];
+  pods: ClusterPerformancePod[];
+  hottest_nodes: ClusterPerformanceNode[];
+  most_restarted_pods: ClusterPerformancePod[];
+  errors: {
+    kubernetes: string | null;
+  };
 };
 
 /* ================================
@@ -288,7 +462,7 @@ export function getMonitoringOverview() {
 }
 
 /* ================================
-   EVENTS API
+   EVENTS / LIVE DETECTION API
 ================================ */
 
 export function getEvents(filters: EventFilters = {}) {
@@ -319,10 +493,6 @@ export function getLatestEvent() {
   return apiGet<LatestEventResponse>("/api/v1/events/latest");
 }
 
-/* ================================
-   IMAGE API
-================================ */
-
 export function getRawImageUrl(id: string | number) {
   return `${API_BASE_URL}/api/v1/images/raw/${id}`;
 }
@@ -339,6 +509,40 @@ export function getModelInfo() {
   return apiGet<ModelInfoResponse>("/api/v1/model/info");
 }
 
+/* ================================
+   STORAGE API
+================================ */
+
+export function getStorageStatus() {
+  return apiGet<StorageStatusResponse>("/api/v1/storage/status");
+}
+
+/* ================================
+   TELEGRAM API
+================================ */
+
+export function getTelegramStatus() {
+  return apiGet<TelegramStatusResponse>("/api/v1/telegram/status");
+}
+
+export function getTelegramDeliveries() {
+  return apiGet<TelegramDeliveryResponse[]>("/api/v1/telegram/deliveries");
+}
+
+ /* ================================
+    KUBERNETES API
+  ================================ */
+export function getKubernetesPods(namespace = "edge-monitoring") {
+  return apiGet<KubernetesPodsResponse>(
+    `/api/v1/kubernetes/pods?namespace=${encodeURIComponent(namespace)}`,
+  );
+}
+
+export function getClusterPerformanceOverview() {
+  return apiGet<ClusterPerformanceOverview>(
+    "/api/v1/cluster-performance/overview",
+  );
+}
 /* ================================
    EXPORT BASE URL
 ================================ */

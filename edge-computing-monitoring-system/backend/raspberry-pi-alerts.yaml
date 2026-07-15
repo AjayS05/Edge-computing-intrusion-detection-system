@@ -1,0 +1,102 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: raspberry-pi-alerts
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: raspberry-pi-cluster
+      rules:
+        - alert: RaspberryPiNodeDown
+          expr: up{job="raspberry-pi-nodes"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Raspberry Pi node is down"
+            description: "{{ $labels.instance }} has been unreachable for more than one minute."
+
+        - alert: RaspberryPiHighCPU
+          expr: |
+            100 - (
+              avg by(instance) (
+                rate(node_cpu_seconds_total{
+                  job="raspberry-pi-nodes",
+                  mode="idle"
+                }[5m])
+              ) * 100
+            ) > 85
+          for: 3m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage"
+            description: "{{ $labels.instance }} CPU usage has exceeded 85%."
+
+        - alert: RaspberryPiHighMemory
+          expr: |
+            100 * (
+              1 -
+              (
+                node_memory_MemAvailable_bytes{job="raspberry-pi-nodes"}
+                /
+                node_memory_MemTotal_bytes{job="raspberry-pi-nodes"}
+              )
+            ) > 85
+          for: 3m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage"
+            description: "{{ $labels.instance }} memory usage has exceeded 85%."
+
+        - alert: RaspberryPiHighDisk
+          expr: |
+            100 * (
+              1 -
+              (
+                node_filesystem_avail_bytes{
+                  job="raspberry-pi-nodes",
+                  mountpoint="/",
+                  fstype!~"tmpfs|overlay|squashfs"
+                }
+                /
+                node_filesystem_size_bytes{
+                  job="raspberry-pi-nodes",
+                  mountpoint="/",
+                  fstype!~"tmpfs|overlay|squashfs"
+                }
+              )
+            ) > 80
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High disk usage"
+            description: "{{ $labels.instance }} root disk usage has exceeded 80%."
+
+        - alert: RaspberryPiHighTemperatureHwmon
+          expr: |
+            max by(instance) (
+              node_hwmon_temp_celsius{job="raspberry-pi-nodes"}
+            ) > 60
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High Raspberry Pi temperature"
+            description: "{{ $labels.instance }} temperature is above 60°C."
+
+        - alert: RaspberryPiCriticalTemperatureHwmon
+          expr: |
+            max by(instance) (
+              node_hwmon_temp_celsius{job="raspberry-pi-nodes"}
+            ) > 70
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Critical Raspberry Pi temperature"
+            description: "{{ $labels.instance }} temperature is above 70°C."

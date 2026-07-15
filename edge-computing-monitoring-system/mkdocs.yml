@@ -53,11 +53,8 @@ markdown_extensions:
   - attr_list
   - md_in_html
 
-# Cleaned up, semantic navigation structure
 nav:
-  # - Home: index.md
-
-  - Home: task1/index.md
+  - Home: index.md
 
   - Hardware & Infrastructure:
         # - Hardware Components: task1/hardware.md
@@ -80,7 +77,6 @@ nav:
       - Grafana Dashboards: task5/grafana.md
 
   - AI Threat Detection:
-      - Dataset Collection: task6/dataset.md
       - Model Training: task6/training.md
       - Model Architecture: task6/model.md
       - Detection Results: task6/results.md
@@ -91,6 +87,7 @@ nav:
       - REST API Reference: task7/backend_api.md
       - SeaweedFS Storage: task7/seaweedfs.md
       - Kubernetes Deployment: task7/kubernetes.md
+      - High Availability Approaches: task7/high_availability.md
 
   - Frontend Dashboard:
       - UI Architecture: task8/frontend_architecture.md
@@ -100,11 +97,7 @@ nav:
   - Alerts & Notifications:
       - Telegram Bot Architecture: task9/telegram.md
 
-  - Deployment Guide:
-      - Installation Steps: deployment/installation.md
-      - Running the System: deployment/running.md
-      - Troubleshooting Guide: deployment/troubleshooting.md
-
   - Results & Analysis:
       - Performance Summary: results/performance.md
       - Future Work: results/future_work.md
+  - The Team: team.md

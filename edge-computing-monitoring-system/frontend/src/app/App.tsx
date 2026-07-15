@@ -9,7 +9,7 @@ import { LiveDetectionPage } from "../pages/live-detection/LiveDetectionPage";
 import { ModelDatasetPage } from "../pages/model-dataset/ModelDatasetPage";
 import { ClusterPerformancePage } from "../pages/cluster-performance/ClusterPerformancePage";
 import { Topbar } from "../components/layout/Topbar";
-
+import { StoragePage } from "../pages/storage/StoragePage";
 import "./App.css";
 import { TelegramPage } from "../pages/Telegram/TelegramPage";
 
@@ -22,7 +22,6 @@ const PAGE_TITLES: Record<PageKey, string> = {
   monitoring: "Monitoring",
   alerts: "Alerts",
   storage: "Storage",
-  telegram: "Telegram",
   modelDataset: "Model & Dataset",
   clusterPerformance: "Cluster Performance",
 };
@@ -71,14 +70,8 @@ function App() {
 
           {activePage === "alerts" && <AlertsPage />}
 
-          {activePage === "storage" && (
-            <section className="placeholder-page">
-              <h2>Storage</h2>
-              <p>Storage page is ready.</p>
-            </section>
-          )}
-
-          {activePage === "telegram" && <TelegramPage/>}
+          {activePage === "storage" && <StoragePage/>
+          }
           {activePage === "modelDataset" && <ModelDatasetPage />}
           {activePage === "clusterPerformance" && (
             <ClusterPerformancePage />
