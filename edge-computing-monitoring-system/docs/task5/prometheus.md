@@ -10,7 +10,110 @@
 
 ---
 
-## 1. Prerequisites
+## 1. Monitoring preparation before K3s deployment
+
+Before Prometheus was deployed inside K3s, Node Exporter was already installed directly on the Raspberry Pi hosts. This existing setup was retained because it exposes complete host-level metrics and was already working on port `9100`.
+
+### 1.1 Confirm the Node Exporter service
+
+On Pi5, Pi4, or an individual Pi3, check the Debian service:
+
+```bash
+systemctl is-enabled prometheus-node-exporter
+systemctl is-active prometheus-node-exporter
+```
+
+Expected output:
+
+```text
+enabled
+active
+```
+
+The correct service name is `prometheus-node-exporter`. A command such as `systemctl status node_exporter` may return `Unit node_exporter.service could not be found` even when the Debian package service is working.
+
+Confirm that the exporter listens on port `9100`:
+
+```bash
+sudo ss -lntp | grep ':9100'
+```
+
+Test its metrics endpoint locally:
+
+```bash
+curl -s http://127.0.0.1:9100/metrics | head
+```
+
+### 1.2 Verify every exporter from Pi5
+
+Run this read-only check from Pi5:
+
+```bash
+for ip in 192.168.178.200 192.168.50.144 192.168.50.{101..108}; do
+  if curl -sf --connect-timeout 3 "http://$ip:9100/metrics" >/dev/null; then
+    echo "$ip:9100 UP"
+  else
+    echo "$ip:9100 DOWN"
+  fi
+done
+```
+
+The expected result is ten `UP` entries: Pi5, Pi4, and eight Pi3 workers. The complete Ansible installation and verification procedure is documented in [Monitoring overview](monitoring.md).
+
+### 1.3 Check the previous local Prometheus instance
+
+Prometheus may previously have been running directly on Pi5. Check its state without modifying it:
+
+```bash
+systemctl is-active prometheus 2>/dev/null || true
+sudo ss -lntp | grep ':9090' || true
+```
+
+A locally running Prometheus can be accessed from Pi5, but a Kubernetes backend cannot use `127.0.0.1:9090` to reach it because `127.0.0.1` inside a pod refers to that pod itself. Prometheus was therefore deployed inside K3s and exposed through Kubernetes service discovery.
+
+The K3s deployment uses:
+
+| Purpose | Address or port |
+|---|---|
+| Host Node Exporters | `<node-ip>:9100` |
+| Prometheus inside Kubernetes | service port `9090` |
+| Prometheus local-network access | NodePort `30090` |
+| Grafana local-network access | NodePort `30300` |
+
+The old local Prometheus service does not need to be removed merely to deploy the K3s version because the Kubernetes deployment uses its own pod network and NodePort `30090`. Disable or remove a legacy service only after confirming that no other project component depends on it.
+
+### 1.4 Prevent the Node Exporter port conflict
+
+The `kube-prometheus-stack` chart normally creates a Kubernetes Node Exporter DaemonSet. That DaemonSet cannot bind host port `9100` while the existing systemd exporters are using it. The resulting pods fail with an error similar to:
+
+```text
+listen tcp 0.0.0.0:9100: bind: address already in use
+```
+
+For this architecture, keep the host exporters and disable the chart component:
+
+```yaml
+nodeExporter:
+  enabled: false
+```
+
+Do not change the working host exporters to a different port. Prometheus will scrape their existing port `9100` through the static target configuration.
+
+### 1.5 Confirm the selected NodePorts are available
+
+Check that no existing Kubernetes service is using NodePorts `30090` or `30300`:
+
+```bash
+kubectl get svc -A \
+  -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,NODEPORTS:.spec.ports[*].nodePort' \
+  | grep -E '30090|30300' || true
+```
+
+Before the first deployment, no conflicting service should be listed. During an upgrade, the existing `prometheus` release services are expected to appear.
+
+---
+
+## 2. K3s and tooling prerequisites
 
 Run the following commands from Pi5. Confirm that the K3s cluster is reachable and that Helm and kubectl are installed:
 
@@ -38,7 +141,7 @@ All ten addresses must report `UP` before Prometheus is configured to scrape the
 
 ---
 
-## 2. Add the Helm repository
+## 3. Add the Helm repository
 
 ```bash
 helm repo add prometheus-community \
@@ -55,7 +158,7 @@ helm search repo prometheus-community/kube-prometheus-stack
 
 ---
 
-## 3. Helm values
+## 4. Helm values
 
 Create `prometheus-k3s-values.yaml` in the working directory:
 
@@ -126,7 +229,7 @@ The configuration also:
 
 ---
 
-## 4. Validate and install
+## 5. Validate and install
 
 Validate the generated Kubernetes resources without modifying the cluster:
 
@@ -161,7 +264,7 @@ helm upgrade --install prometheus \
 
 ---
 
-## 5. Verify the deployment
+## 6. Verify the deployment
 
 Verify the Helm release:
 
@@ -268,7 +371,7 @@ Expected output:
 
 ---
 
-## 6. PromQL queries
+## 7. PromQL queries
 
 ### Node availability
 
@@ -381,7 +484,7 @@ Online Raspberry Pi targets: 10
 
 ---
 
-## 7. Alert rules
+## 8. Alert rules
 
 Store the following resource at `k8s/monitoring/raspberry-pi-alerts.yaml`:
 
@@ -535,7 +638,7 @@ Screenshots of a firing node-down alert or Alertmanager notification are optiona
 
 ---
 
-## 8. Backend service discovery
+## 9. Backend service discovery
 
 Kubernetes workloads access Prometheus through its internal service:
 
@@ -581,7 +684,7 @@ Prometheus Server is Ready.
 
 ---
 
-## 9. Required screenshots
+## 10. Required screenshots
 
 The following screenshots provide sufficient evidence without disrupting the working cluster:
 
@@ -598,7 +701,7 @@ Do not include screenshots containing passwords, tokens, failed installation att
 
 ---
 
-## 10. Files to commit to GitHub
+## 11. Files to commit to GitHub
 
 Commit the following documentation and configuration files:
 
@@ -644,6 +747,6 @@ Add `images/monitoring/prometheus-query-result.png` to the `git add` command onl
 
 ---
 
-## 11. Result
+## 12. Result
 
 Prometheus is deployed through `kube-prometheus-stack` in the K3s `monitoring` namespace. It scrapes the ten host Node Exporters, stores seven days of metrics, evaluates the Raspberry Pi alert rules, supplies Grafana dashboards, and provides monitoring data to the FastAPI backend through Kubernetes service discovery.
