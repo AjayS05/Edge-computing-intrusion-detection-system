@@ -281,8 +281,7 @@ Verification:
 5. Confirm HTTP `200`.
 6. Confirm automatic refresh and the manual refresh button.
 
-> **IMAGE PLACEHOLDER — React Monitoring page**  
-> Suggested file: `images/monitoring/react-monitoring-page.png`
+![Raspberry Pi cluster monitoring architecture](images/react-monitoring-page.png)
 
 > **IMAGE PLACEHOLDER — React Alerts page**  
 > Suggested file: `images/monitoring/react-alerts-page.png`
