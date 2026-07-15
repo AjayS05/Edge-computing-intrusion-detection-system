@@ -65,15 +65,48 @@ The existing Ansible-installed Node Exporters are retained as Linux services on 
 | FastAPI | Converts Prometheus data into frontend-ready JSON. |
 | React frontend | Displays cluster health, node metrics, and alerts. |
 
-![Raspberry Pi cluster monitoring architecture](images/monitoring/monitoring-architecture.svg)
+![Raspberry Pi cluster monitoring architecture](images/monitoring/monitoring-architecture.png)
 
 ---
 
 ## 3. Node Exporter deployment with Ansible
 
-Ansible is run from Pi5 to install and start Node Exporter on the Pi3 workers.
+Node Exporter runs directly on each Raspberry Pi as a Linux systemd service and exposes host metrics on port `9100`. Ansible is run from Pi5 to install and configure the exporter consistently on the eight Pi3 workers.
 
-### 3.1 Inventory
+The Kubernetes Node Exporter component remains disabled because the host-level exporters already occupy port `9100`.
+
+> **Safety note:** Do not rerun the installation playbook merely to create documentation evidence when the exporters are already working. Use the read-only verification commands in Section 3.5. Run the playbook only when provisioning a new node, repairing a missing installation, or intentionally applying the configuration again.
+
+### 3.1 Prerequisites
+
+Install Ansible on Pi5:
+
+```bash
+sudo apt update
+sudo apt install -y ansible
+```
+
+Confirm that Ansible is available:
+
+```bash
+ansible --version
+```
+
+From Pi5, verify SSH access to one Pi3 worker before running the playbook:
+
+```bash
+ssh pi@192.168.50.101
+```
+
+Exit the remote session after confirming access:
+
+```bash
+exit
+```
+
+### 3.2 Create the Ansible inventory
+
+Create `inventory.ini` in the same directory as the playbook:
 
 ```ini
 [rp3_nodes]
@@ -91,14 +124,69 @@ ansible_user=pi
 ansible_python_interpreter=/usr/bin/python3
 ```
 
-### 3.2 Playbook responsibilities
+Confirm that Ansible can parse the inventory:
 
-The playbook performs the following steps:
+```bash
+ansible-inventory -i inventory.ini --graph
+```
 
-1. Updates the apt package cache.
-2. Installs `prometheus-node-exporter`.
-3. Enables the service at boot.
-4. Starts the service.
+The output must contain the `rp3_nodes` group and all eight Pi3 hosts. If Ansible reports `No inventory was parsed` or `no hosts matched`, stop and correct the inventory path before continuing.
+
+Test connectivity without changing the nodes:
+
+```bash
+ansible rp3_nodes -i inventory.ini -m ping --ask-pass
+```
+
+Each node should return `SUCCESS` and `ping: pong`.
+
+### 3.3 Create the Node Exporter playbook
+
+Create `install-node-exporter.yml` beside `inventory.ini`:
+
+```yaml
+---
+- name: Install Prometheus Node Exporter on all RP3 nodes
+  hosts: rp3_nodes
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Update apt package cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Prometheus Node Exporter
+      ansible.builtin.apt:
+        name: prometheus-node-exporter
+        state: present
+
+    - name: Enable and start Prometheus Node Exporter
+      ansible.builtin.systemd:
+        name: prometheus-node-exporter
+        enabled: true
+        state: started
+```
+
+The playbook:
+
+1. Updates the apt package cache when required.
+2. Installs the `prometheus-node-exporter` package.
+3. Enables the `prometheus-node-exporter` service at boot.
+4. Starts the service if it is not already running.
+
+Validate the playbook syntax without changing any node:
+
+```bash
+ansible-playbook -i inventory.ini \
+  install-node-exporter.yml \
+  --syntax-check
+```
+
+### 3.4 Deploy Node Exporter on new or unconfigured Pi3 nodes
+
+Only run this command when deployment or repair is actually required:
 
 ```bash
 ansible-playbook -i inventory.ini install-node-exporter.yml \
@@ -106,24 +194,30 @@ ansible-playbook -i inventory.ini install-node-exporter.yml \
   --ask-become-pass
 ```
 
-### 3.3 Verify the exporters
+After deployment, confirm the service on a Pi3 worker:
+
+```bash
+ssh pi@192.168.50.101 \
+  "systemctl is-enabled prometheus-node-exporter && systemctl is-active prometheus-node-exporter"
+```
+
+Expected output:
+
+```text
+enabled
+active
+```
+
+The correct Debian service name is `prometheus-node-exporter`. A command such as `systemctl status node_exporter` may report that the unit does not exist.
+
+### 3.5 Verify the existing exporters safely
+
+The following commands are read-only and do not restart, reinstall, or modify the working exporters.
 
 Test one Pi3:
 
 ```bash
 curl -s http://192.168.50.101:9100/metrics | head
-```
-
-Test all Pi3 workers:
-
-```bash
-for ip in 192.168.50.{101..108}; do
-  if curl -sf --connect-timeout 3 "http://$ip:9100/metrics" >/dev/null; then
-    echo "$ip UP"
-  else
-    echo "$ip DOWN"
-  fi
-done
 ```
 
 Test Pi4:
@@ -132,26 +226,48 @@ Test Pi4:
 curl -s http://192.168.50.144:9100/metrics | head
 ```
 
-Test Pi5:
+Test Pi5 locally:
 
 ```bash
 sudo ss -lntp | grep ':9100'
 curl -s http://127.0.0.1:9100/metrics | head
 ```
 
+Test Pi5, Pi4, and all eight Pi3 workers together:
+
+```bash
+for ip in 192.168.178.200 192.168.50.144 192.168.50.{101..108}; do
+  if curl -sf --connect-timeout 3 "http://$ip:9100/metrics" >/dev/null; then
+    echo "$ip:9100 UP"
+  else
+    echo "$ip:9100 DOWN"
+  fi
+done
+```
+
+All ten addresses should report `UP`.
+
 The final monitoring addresses are:
 
 | Device | Node Exporter address |
 |---|---|
-| Pi5 control plane | `192.168.50.1:9100` |
+| Pi5 control plane | `192.168.178.200:9100` |
 | Pi4 sensor node | `192.168.50.144:9100` |
 | Pi3-01 to Pi3-08 | `192.168.50.101:9100` to `192.168.50.108:9100` |
 
-Only `192.168.50.1:9100` is used for Pi5 so the same device is not counted twice through another network address.
+Only `192.168.178.200:9100` is used for Pi5 so the same device is not counted twice through another network address.
 
-![Successful Ansible Node Exporter deployment on Raspberry Pi workers](images/ansible-node_exporter-success.png)
+The following screenshot may be used as read-only availability evidence. Crop out any failed Ansible attempt and retain only the command and ten `UP` results.
 
-![Node Exporter metrics returned from the Raspberry Pi 4](images/node_exporter-metrics.png)
+> **IMAGE PLACEHOLDER — All Node Exporters available**  
+> Suggested file: `images/monitoring/node-exporters-all-up.png`  
+> Replace this placeholder with:  
+> `![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/monitoring/node-exporters-all-up.png)`
+
+> **IMAGE PLACEHOLDER — Exporter metrics**  
+> Suggested file: `images/monitoring/node-exporter-metrics.png`  
+> Add terminal output from `curl -s http://192.168.50.144:9100/metrics | head`. Replace this placeholder with:  
+> `![Node Exporter metrics returned from Raspberry Pi 4](images/monitoring/node-exporter-metrics.png)`
 
 ---
 
@@ -227,7 +343,10 @@ Expected result:
 HTTP/1.1 200 OK
 ```
 
-![Successful FastAPI monitoring overview response](images/monitoring/monitoring-api-response.png)
+> **IMAGE PLACEHOLDER — Monitoring API**  
+> Suggested file: `images/monitoring/monitoring-api-response.png`  
+> Add a successful JSON response from `/api/v1/monitoring/overview`.
+
 ---
 
 ## 5. Backend health thresholds
@@ -274,9 +393,11 @@ Verification:
 5. Confirm HTTP `200`.
 6. Confirm automatic refresh and the manual refresh button.
 
-![React monitoring dashboard showing cluster health and node metrics](images/react-monitoring-page.png)
+> **IMAGE PLACEHOLDER — React Monitoring page**  
+> Suggested file: `images/monitoring/react-monitoring-page.png`
 
-![React alerts page showing the current cluster alert status](images/react-alerts-page.png)
+> **IMAGE PLACEHOLDER — React Alerts page**  
+> Suggested file: `images/monitoring/react-alerts-page.png`
 
 ---
 
