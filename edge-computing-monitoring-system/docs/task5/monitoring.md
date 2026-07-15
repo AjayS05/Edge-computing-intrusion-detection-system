@@ -143,11 +143,11 @@ The final monitoring addresses are:
 
 | Device | Node Exporter address |
 |---|---|
-| Pi5 control plane | `192.168.178.200:9100` |
+| Pi5 control plane | `192.168.50.1:9100` |
 | Pi4 sensor node | `192.168.50.144:9100` |
 | Pi3-01 to Pi3-08 | `192.168.50.101:9100` to `192.168.50.108:9100` |
 
-Only `192.168.178.200:9100` is used for Pi5 so the same device is not counted twice through another network address.
+Only `192.168.50.1:9100` is used for Pi5 so the same device is not counted twice through another network address.
 
 ![Successful Ansible Node Exporter deployment on Raspberry Pi workers](images/ansible-node_exporter-success.png)
 
