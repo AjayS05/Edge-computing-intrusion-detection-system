@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import re
 from typing import Optional
 
 from fastapi import (
@@ -26,6 +28,10 @@ ALLOWED_IMAGE_TYPES = {
     "image/jpg",
     "image/png",
 }
+
+CAPTURE_ID_PATTERN = re.compile(r"^[a-f0-9]{32}$")
+SHA256_PATTERN = re.compile(r"^[a-f0-9]{64}$")
+ALLOWED_UPLOAD_SOURCES = {"live", "retry", "manual"}
 
 
 def _api_base_url(request: Request) -> str:
@@ -89,6 +95,56 @@ def _validate_upload(
     return normalized_content_type
 
 
+def _normalize_upload_source(value: str | None) -> str:
+    normalized = (value or "live").strip().lower()
+
+    if normalized not in ALLOWED_UPLOAD_SOURCES:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "upload_source must be one of: "
+                "live, retry, manual"
+            ),
+        )
+
+    return normalized
+
+
+def _resolve_capture_id(
+    *,
+    capture_id: str | None,
+    sensor_node_id: str,
+    captured_at: str,
+    sequence_number: int | None,
+    image_sha256: str,
+) -> str:
+    if capture_id:
+        normalized = capture_id.strip().lower()
+
+        if not CAPTURE_ID_PATTERN.fullmatch(normalized):
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "capture_id must contain exactly "
+                    "32 lowercase hexadecimal characters"
+                ),
+            )
+
+        return normalized
+
+    # Backward-compatible deterministic ID for older clients that do not
+    # yet send capture_id. Retrying the same image with the same metadata
+    # resolves to the same frame ID.
+    seed = (
+        f"{sensor_node_id}\0"
+        f"{captured_at}\0"
+        f"{sequence_number}\0"
+        f"{image_sha256}"
+    ).encode("utf-8")
+
+    return hashlib.sha256(seed).hexdigest()[:32]
+
+
 @router.post("")
 async def upload_frame(
     request: Request,
@@ -97,6 +153,9 @@ async def upload_frame(
     captured_at: str = Form(...),
     sequence_number: Optional[int] = Form(None),
     camera_location: Optional[str] = Form(None),
+    capture_id: Optional[str] = Form(None),
+    content_sha256: Optional[str] = Form(None),
+    upload_source: str = Form("live"),
 ):
     image_bytes = await image.read()
 
@@ -120,6 +179,41 @@ async def upload_frame(
             detail="captured_at cannot be empty",
         )
 
+    actual_sha256 = hashlib.sha256(image_bytes).hexdigest()
+
+    if content_sha256:
+        normalized_sha256 = content_sha256.strip().lower()
+
+        if not SHA256_PATTERN.fullmatch(normalized_sha256):
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "content_sha256 must contain exactly "
+                    "64 lowercase hexadecimal characters"
+                ),
+            )
+
+        if normalized_sha256 != actual_sha256:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "content_sha256 does not match the "
+                    "uploaded image bytes"
+                ),
+            )
+
+    resolved_capture_id = _resolve_capture_id(
+        capture_id=capture_id,
+        sensor_node_id=sensor_node_id,
+        captured_at=captured_at,
+        sequence_number=sequence_number,
+        image_sha256=actual_sha256,
+    )
+
+    normalized_upload_source = _normalize_upload_source(
+        upload_source
+    )
+
     processing_input = FrameProcessingInput(
         image_bytes=image_bytes,
         content_type=content_type,
@@ -132,12 +226,12 @@ async def upload_frame(
             else None
         ),
         api_base_url=_api_base_url(request),
+        capture_id=resolved_capture_id,
+        image_sha256=actual_sha256,
+        upload_source=normalized_upload_source,
     )
 
     try:
-        # Storage, worker HTTP calls, inference HTTP calls and Telegram are
-        # synchronous operations. Run the complete pipeline outside the
-        # FastAPI event loop.
         result = await run_in_threadpool(
             frame_processing_service.process,
             processing_input,
@@ -162,7 +256,13 @@ async def upload_frame(
         ) from exc
 
     return {
-        "message": "Frame uploaded and processed successfully",
+        "message": (
+            "Duplicate upload detected; existing result returned"
+            if result.duplicate
+            else "Frame uploaded and processed successfully"
+        ),
+        "duplicate": result.duplicate,
+        "capture_id": resolved_capture_id,
         "frame": result.frame,
         "metadata_key": result.metadata_key,
         "metadata_uri": result.metadata_uri,
@@ -243,6 +343,7 @@ def get_annotation_check(
 
     return {
         "frame_id": frame_id,
+        "capture_id": frame.get("capture_id"),
         "detections_count": len(
             frame.get("detections", [])
         ),
@@ -276,4 +377,3 @@ def get_annotation_check(
             "distributed_processing"
         ),
     }
-

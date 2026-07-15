@@ -17,12 +17,13 @@ spec:
       labels:
         app: edge-backend
     spec:
+      serviceAccountName: backend-kubernetes-reader
       nodeSelector:
         kubernetes.io/hostname: cloud
       terminationGracePeriodSeconds: 30
       containers:
         - name: backend
-          image: edge-backend:v3
+          image: edge-backend:20260715202058
           imagePullPolicy: Never
           ports:
             - name: http

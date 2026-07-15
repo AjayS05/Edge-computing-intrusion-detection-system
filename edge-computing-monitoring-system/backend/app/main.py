@@ -14,6 +14,10 @@ from app.api.monitoring import router as monitoring_router
 from app.core.config import settings
 from app.services.frame_repository import FrameRepository
 from app.services.storage_service import storage_service
+from app.api.kubernetes import router as kubernetes_router
+from app.api.model_dataset import router as model_router
+from app.api.cluster_performance import router as cluster_performance_router
+from app.api import events, storage
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     settings.raw_frames_directory.mkdir(parents=True, exist_ok=True)
@@ -47,6 +51,10 @@ app.include_router(images_router)
 app.include_router(monitoring_router)
 app.include_router(alerts_router)
 app.include_router(telegram_router)
-
+app.include_router(storage.router)
+app.include_router(kubernetes_router)
+app.include_router(model_router)
+app.include_router(cluster_performance_router)
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
+

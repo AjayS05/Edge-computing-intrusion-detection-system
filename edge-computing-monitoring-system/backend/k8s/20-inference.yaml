@@ -19,42 +19,52 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: cloud
+
       terminationGracePeriodSeconds: 30
+
       containers:
         - name: inference
           image: edge-inference:v1
           imagePullPolicy: Never
+
           ports:
             - name: http
               containerPort: 8001
+              protocol: TCP
+
           envFrom:
             - configMapRef:
                 name: backend-config
+
           volumeMounts:
             - name: yolo-model
               mountPath: /models
               readOnly: true
+
           startupProbe:
             httpGet:
               path: /health
               port: http
-            failureThreshold: 60
+            timeoutSeconds: 10
             periodSeconds: 5
-            timeoutSeconds: 3
+            failureThreshold: 60
+
           readinessProbe:
             httpGet:
               path: /health
               port: http
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 3
+            timeoutSeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+
           livenessProbe:
             httpGet:
               path: /health
               port: http
-            periodSeconds: 15
-            timeoutSeconds: 3
-            failureThreshold: 3
+            timeoutSeconds: 10
+            periodSeconds: 20
+            failureThreshold: 6
+
           resources:
             requests:
               cpu: "500m"
@@ -62,6 +72,7 @@ spec:
             limits:
               cpu: "4"
               memory: "4Gi"
+
       volumes:
         - name: yolo-model
           hostPath:
@@ -73,6 +84,8 @@ kind: Service
 metadata:
   name: inference
   namespace: edge-monitoring
+  labels:
+    app: edge-inference
 spec:
   type: ClusterIP
   selector:
@@ -81,3 +94,4 @@ spec:
     - name: http
       port: 8001
       targetPort: http
+      protocol: TCP

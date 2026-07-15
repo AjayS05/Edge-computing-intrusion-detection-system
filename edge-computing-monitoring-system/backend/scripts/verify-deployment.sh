@@ -1,44 +1,82 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
-echo "=== Nodes and labels ==="
-kubectl get nodes --show-labels
+NAMESPACE="edge-monitoring"
 
-echo
-echo "=== Edge-monitoring pods ==="
-kubectl get pods -n edge-monitoring -o wide
+echo "=== Edge-monitoring workloads ==="
+
+kubectl get pods \
+  -n "${NAMESPACE}" \
+  -o wide
 
 echo
 echo "=== Services and endpoints ==="
-kubectl get services -n edge-monitoring
-kubectl get endpointslices -n edge-monitoring
 
-echo
-echo "=== Inference health from backend pod ==="
+kubectl get services \
+  -n "${NAMESPACE}"
+
+kubectl get endpointslices \
+  -n "${NAMESPACE}"
+
 BACKEND_POD="$(
   kubectl get pods \
-    -n edge-monitoring \
+    -n "${NAMESPACE}" \
     -l app=edge-backend \
-    -o jsonpath='{.items[0].metadata.name}'
+    --field-selector=status.phase=Running \
+    --no-headers \
+  | awk '$2 == "1/1" {print $1; exit}'
 )"
 
-kubectl exec \
-  -n edge-monitoring \
-  "$BACKEND_POD" \
-  -- python - <<'PY'
-import requests
-
-for url in (
-    "http://inference.edge-monitoring.svc.cluster.local:8001/health",
-    "http://image-worker-headless.edge-monitoring.svc.cluster.local:8002/health",
-):
-    try:
-        response = requests.get(url, timeout=5)
-        print(url, response.status_code, response.text[:300])
-    except Exception as exc:
-        print(url, "ERROR", exc)
-PY
+if [[ -z "${BACKEND_POD}" ]]; then
+  echo "ERROR: No Ready backend pod was found."
+  exit 1
+fi
 
 echo
-echo "=== External backend health/socket check ==="
-curl -i --max-time 10 http://127.0.0.1:30080/ || true
+echo "=== Internal service communication ==="
+
+kubectl exec \
+  -n "${NAMESPACE}" \
+  "${BACKEND_POD}" \
+  -- python -c '
+import requests
+
+urls = [
+    "http://inference.edge-monitoring.svc.cluster.local:8001/health",
+    "http://image-worker-headless.edge-monitoring.svc.cluster.local:8002/health",
+]
+
+for url in urls:
+    try:
+        response = requests.get(url, timeout=10)
+        print(f"{url} -> HTTP {response.status_code}")
+        print(response.text[:300])
+    except Exception as exc:
+        print(f"{url} -> ERROR: {exc}")
+        raise
+'
+
+echo
+echo "=== External backend access ==="
+
+HTTP_STATUS="$(
+  curl \
+    -sS \
+    -o /dev/null \
+    -w '%{http_code}' \
+    --max-time 10 \
+    http://127.0.0.1:30080/docs
+)"
+
+echo "Backend /docs -> HTTP ${HTTP_STATUS}"
+
+if [[ "${HTTP_STATUS}" != "200" ]]; then
+  echo "ERROR: Backend NodePort did not return HTTP 200."
+  exit 1
+fi
+
+echo
+echo "========================================"
+echo "Kubernetes deployment verification passed"
+echo "========================================"

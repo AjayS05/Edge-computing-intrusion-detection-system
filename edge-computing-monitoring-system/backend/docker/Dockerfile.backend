@@ -9,6 +9,13 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_CACHE_DIR=/pip-cache
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libgl1 \
+        libglib2.0-0 \
+        libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements/backend.txt /tmp/requirements.txt
 
 RUN --mount=type=cache,id=edge-backend-pip-cache,target=/pip-cache \

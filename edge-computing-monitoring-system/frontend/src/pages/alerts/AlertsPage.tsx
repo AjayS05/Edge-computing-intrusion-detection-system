@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 import {
+  AlertTriangle,
+  Bell,
+  CheckCircle2,
+  RefreshCcw,
+  ShieldAlert,
+} from "lucide-react";
+import {
   getMonitoringOverview,
   type MonitoringAlert,
   type MonitoringOverview,
 } from "../../services/api";
+import "./AlertsPage.css";
 
 export function AlertsPage() {
   const [data, setData] = useState<MonitoringOverview | null>(null);
@@ -27,88 +35,119 @@ export function AlertsPage() {
   }
 
   useEffect(() => {
-    loadAlerts();
+    void loadAlerts();
 
     const interval = window.setInterval(() => {
-      loadAlerts();
+      void loadAlerts();
     }, 5000);
 
     return () => window.clearInterval(interval);
   }, []);
 
   const alerts = data?.alerts ?? [];
-  const criticalAlerts = alerts.filter((alert) => alert.severity === "critical").length;
-  const warningAlerts = alerts.filter((alert) => alert.severity === "warning").length;
+
+  const criticalAlerts = alerts.filter(
+    (alert) => alert.severity === "critical" || alert.severity === "error",
+  ).length;
+
+  const warningAlerts = alerts.filter(
+    (alert) => alert.severity === "warning",
+  ).length;
+
+  const infoAlerts = alerts.filter((alert) => alert.severity === "info").length;
 
   if (loading) {
     return (
-      <section style={styles.panel}>
-        <p style={styles.muted}>Loading alerts...</p>
+      <section className="alerts-page">
+        <div className="alerts-panel">
+          <p className="alerts-muted">Loading alerts from backend...</p>
+        </div>
       </section>
     );
   }
 
   return (
-    <div style={styles.page}>
-      <div style={styles.headerRow}>
+    <section className="alerts-page">
+      <div className="alerts-page-header">
         <div>
-          <p style={styles.eyebrow}>Live alerts</p>
-          <h2 style={styles.title}>Alerts</h2>
-          <p style={styles.description}>
-            Real-time warning and critical alerts from the monitoring backend.
-          </p>
+          <p>LIVE ALERTS</p>
+          <h1>Alerts</h1>
+          <span>
+            Real-time warning and critical alerts from Prometheus, node metrics,
+            backend health, and edge detection services.
+          </span>
         </div>
 
-        <button
-          type="button"
-          onClick={loadAlerts}
-          disabled={refreshing}
-          style={styles.refreshButton}
-        >
-          {refreshing ? "Refreshing..." : "Refresh"}
-        </button>
+        
       </div>
 
       {error && (
-        <div style={styles.errorBox}>
+        <div className="alerts-error-box">
           <strong>Alerts API Error</strong>
           <p>{error}</p>
         </div>
       )}
 
-      <div style={styles.metricGrid}>
-        <MetricCard title="Total Alerts" value={String(alerts.length)} status="warning" />
-        <MetricCard title="Critical" value={String(criticalAlerts)} status="critical" />
-        <MetricCard title="Warning" value={String(warningAlerts)} status="warning" />
+      <div className="alerts-metric-grid">
+        <MetricCard
+          title="Total alerts"
+          value={String(alerts.length)}
+          status={alerts.length > 0 ? "warning" : "normal"}
+          icon={<Bell size={22} />}
+        />
+
+        <MetricCard
+          title="Critical"
+          value={String(criticalAlerts)}
+          status={criticalAlerts > 0 ? "critical" : "normal"}
+          icon={<ShieldAlert size={22} />}
+        />
+
+        <MetricCard
+          title="Warning"
+          value={String(warningAlerts)}
+          status={warningAlerts > 0 ? "warning" : "normal"}
+          icon={<AlertTriangle size={22} />}
+        />
+
         <MetricCard
           title="Cluster"
           value={data?.cluster.status ?? "unknown"}
           status={data?.cluster.status ?? "unknown"}
+          icon={<CheckCircle2 size={22} />}
         />
       </div>
 
-      <section style={styles.panel}>
-        <div style={styles.panelHeader}>
-          <h3 style={styles.panelTitle}>Active Alerts</h3>
-          <p style={styles.panelDescription}>
-            Alerts are generated from backend monitoring rules.
-          </p>
+      <section className="alerts-panel">
+        <div className="alerts-panel-header">
+          <div>
+            <h2>Active Alerts</h2>
+            <p>
+              Alerts are generated from backend monitoring rules and refreshed
+              every 5 seconds.
+            </p>
+          </div>
+
+          <span className="alerts-count-pill">
+            {criticalAlerts} critical · {warningAlerts} warning · {infoAlerts} info
+          </span>
         </div>
 
         {alerts.length === 0 ? (
-          <div style={styles.emptyBox}>
-            <h3 style={{ marginTop: 0 }}>No active alerts</h3>
+          <div className="alerts-empty-box">
+            <CheckCircle2 size={34} />
+            <h3>No active alerts</h3>
             <p>Your cluster is currently healthy.</p>
           </div>
         ) : (
-          <div style={styles.alertList}>
+          <div className="alerts-list">
             {alerts.map((alert, index) => (
               <AlertCard key={`${alert.type}-${index}`} alert={alert} />
             ))}
           </div>
         )}
       </section>
-    </div>
+    </section>
   );
 }
 
@@ -116,258 +155,97 @@ function MetricCard({
   title,
   value,
   status,
+  icon,
 }: {
   title: string;
   value: string;
   status: string;
+  icon: React.ReactNode;
 }) {
   return (
-    <div style={styles.metricCard}>
-      <div style={styles.metricTop}>
-        <p style={styles.metricTitle}>{title}</p>
-        <span style={{ ...styles.dot, ...getDotStyle(status) }} />
+    <div className="alerts-metric-card">
+      <div>
+        <p>{title}</p>
+        <h3>{value}</h3>
       </div>
 
-      <h3 style={styles.metricValue}>{value}</h3>
+      <div className={`alerts-metric-icon ${getStatusClass(status)}`}>
+        {icon}
+      </div>
     </div>
   );
 }
 
 function AlertCard({ alert }: { alert: MonitoringAlert }) {
+  const severityClass = getStatusClass(alert.severity);
+
   return (
-    <article style={{ ...styles.alertCard, ...getAlertStyle(alert.severity) }}>
-      <div style={styles.alertTop}>
-        <div>
-          <strong style={styles.alertTitle}>{alert.type}</strong>
-          <p style={styles.alertMessage}>{alert.message}</p>
+    <article className={`alerts-alert-card ${severityClass}`}>
+      <div className="alerts-alert-top">
+        <div className="alerts-alert-title-wrap">
+          <div className={`alerts-alert-icon ${severityClass}`}>
+            {severityClass === "critical" ? (
+              <ShieldAlert size={20} />
+            ) : severityClass === "warning" ? (
+              <AlertTriangle size={20} />
+            ) : (
+              <Bell size={20} />
+            )}
+          </div>
+
+          <div>
+            <strong>{formatAlertType(alert.type)}</strong>
+            <p>{alert.message}</p>
+          </div>
         </div>
 
-        <span style={styles.alertSeverity}>{alert.severity}</span>
+        <span className={`alerts-severity-pill ${severityClass}`}>
+          {alert.severity}
+        </span>
       </div>
 
-      {alert.instance && (
-        <p style={styles.alertMeta}>Instance: {alert.instance}</p>
-      )}
+      <div className="alerts-alert-meta">
+        {alert.instance && <span>Instance: {alert.instance}</span>}
 
-      {alert.timestamp && (
-        <p style={styles.alertMeta}>
-          Time: {new Date(alert.timestamp * 1000).toLocaleString()}
-        </p>
-      )}
+        {alert.timestamp && (
+          <span>Time: {formatAlertTime(alert.timestamp)}</span>
+        )}
+      </div>
     </article>
   );
 }
 
-function getDotStyle(status: string): React.CSSProperties {
+function getStatusClass(status: string) {
   const value = status.toLowerCase();
 
-  if (value === "online" || value === "normal") {
-    return {
-      background: "#22c55e",
-      boxShadow: "0 0 14px rgba(34, 197, 94, 0.7)",
-    };
+  if (value === "online" || value === "normal" || value === "info") {
+    return "normal";
   }
 
   if (value === "critical" || value === "error" || value === "offline") {
-    return {
-      background: "#ef4444",
-      boxShadow: "0 0 14px rgba(239, 68, 68, 0.7)",
-    };
+    return "critical";
   }
 
-  return {
-    background: "#f59e0b",
-    boxShadow: "0 0 14px rgba(245, 158, 11, 0.7)",
-  };
+  if (value === "warning" || value === "degraded") {
+    return "warning";
+  }
+
+  return "unknown";
 }
 
-function getAlertStyle(severity: string): React.CSSProperties {
-  if (severity === "critical" || severity === "error") {
-    return {
-      borderColor: "rgba(239, 68, 68, 0.4)",
-      background: "rgba(239, 68, 68, 0.12)",
-      color: "#fca5a5",
-    };
-  }
-
-  if (severity === "warning") {
-    return {
-      borderColor: "rgba(245, 158, 11, 0.4)",
-      background: "rgba(245, 158, 11, 0.12)",
-      color: "#fcd34d",
-    };
-  }
-
-  return {
-    borderColor: "rgba(34, 211, 238, 0.4)",
-    background: "rgba(34, 211, 238, 0.1)",
-    color: "#67e8f9",
-  };
+function formatAlertType(value: string) {
+  return value.replace(/_/g, " ");
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    display: "grid",
-    gap: "22px",
-  },
+function formatAlertTime(timestamp: number) {
+  const timestampMs = timestamp > 1_000_000_000_000 ? timestamp : timestamp * 1000;
 
-  headerRow: {
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    gap: "24px",
-  },
-
-  eyebrow: {
-    margin: "0 0 8px",
-    color: "#22d3ee",
-    fontSize: "12px",
-    fontWeight: 700,
-    textTransform: "uppercase",
-    letterSpacing: "0.22em",
-  },
-
-  title: {
-    margin: 0,
-    fontSize: "34px",
-  },
-
-  description: {
-    margin: "10px 0 0",
-    color: "#94a3b8",
-    maxWidth: "780px",
-    lineHeight: 1.6,
-  },
-
-  refreshButton: {
-    border: "1px solid #243247",
-    borderRadius: "12px",
-    background: "rgba(34, 211, 238, 0.12)",
-    color: "#22d3ee",
-    padding: "10px 16px",
-    cursor: "pointer",
-  },
-
-  errorBox: {
-    border: "1px solid rgba(239, 68, 68, 0.35)",
-    background: "rgba(239, 68, 68, 0.1)",
-    color: "#fecaca",
-    borderRadius: "16px",
-    padding: "16px",
-  },
-
-  metricGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: "16px",
-  },
-
-  metricCard: {
-    border: "1px solid #243247",
-    borderRadius: "18px",
-    background: "#0f1b2d",
-    padding: "18px",
-  },
-
-  metricTop: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  metricTitle: {
-    margin: 0,
-    color: "#94a3b8",
-    fontSize: "14px",
-  },
-
-  metricValue: {
-    margin: "18px 0 0",
-    color: "#f8fafc",
-    fontSize: "30px",
-  },
-
-  dot: {
-    width: "11px",
-    height: "11px",
-    borderRadius: "999px",
-    display: "inline-block",
-  },
-
-  panel: {
-    border: "1px solid #243247",
-    borderRadius: "18px",
-    background: "#0f1b2d",
-    padding: "18px",
-  },
-
-  panelHeader: {
-    marginBottom: "16px",
-  },
-
-  panelTitle: {
-    margin: 0,
-    fontSize: "20px",
-  },
-
-  panelDescription: {
-    margin: "6px 0 0",
-    color: "#94a3b8",
-    fontSize: "13px",
-  },
-
-  muted: {
-    color: "#94a3b8",
-  },
-
-  emptyBox: {
-    border: "1px solid rgba(148, 163, 184, 0.15)",
-    borderRadius: "14px",
-    padding: "20px",
-    color: "#94a3b8",
-    background: "rgba(2, 9, 19, 0.35)",
-  },
-
-  alertList: {
-    display: "grid",
-    gap: "14px",
-  },
-
-  alertCard: {
-    border: "1px solid",
-    borderRadius: "16px",
-    padding: "16px",
-  },
-
-  alertTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "16px",
-  },
-
-  alertTitle: {
-    textTransform: "capitalize",
-  },
-
-  alertMessage: {
-    margin: "8px 0 0",
-    lineHeight: 1.6,
-  },
-
-  alertSeverity: {
-    height: "fit-content",
-    borderRadius: "999px",
-    border: "1px solid currentColor",
-    padding: "5px 10px",
-    fontSize: "12px",
-    fontWeight: 700,
-    textTransform: "capitalize",
-  },
-
-  alertMeta: {
-    margin: "10px 0 0",
-    fontFamily: "monospace",
-    fontSize: "13px",
-    opacity: 0.75,
-  },
-};
+  return new Date(timestampMs).toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}

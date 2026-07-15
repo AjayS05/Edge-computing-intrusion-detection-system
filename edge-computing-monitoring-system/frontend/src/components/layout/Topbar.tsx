@@ -59,11 +59,6 @@ export function Topbar({ pageTitle, onToggleSidebar }: TopbarProps) {
         >
           <PanelLeft size={18} />
         </button>
-
-        <div className="topbar-title-group">
-          <p>EDGE-SENTINEL / PROD</p>
-          <h1>{pageTitle}</h1>
-        </div>
       </div>
 
       <div className="topbar-status">

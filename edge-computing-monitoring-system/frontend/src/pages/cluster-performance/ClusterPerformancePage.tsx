@@ -1,129 +1,264 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
   AlertTriangle,
-  BarChart3,
+  CheckCircle2,
   Cpu,
-  Gauge,
-  GitMerge,
+  HardDrive,
   MemoryStick,
   Network,
+  RefreshCcw,
+  Server,
   Thermometer,
   Zap,
 } from "lucide-react";
-import "./ClusterPerformancePage.css"
+import {
+  getClusterPerformanceOverview,
+  type ClusterPerformanceNode,
+  type ClusterPerformanceOverview,
+  type ClusterPerformancePod,
+} from "../../services/api";
+import "./ClusterPerformancePage.css";
+
 type MetricTone = "cyan" | "green" | "red" | "yellow";
 
-type HplResult = {
-  label: string;
-  gflops: number;
-};
+export function ClusterPerformancePage() {
+  const [overview, setOverview] = useState<ClusterPerformanceOverview | null>(
+    null,
+  );
+  const [loading, setLoading] = useState(true);
+  const [apiNotice, setApiNotice] = useState<string | null>(null);
 
-type RuntimeResult = {
-  task: string;
-  serial: number;
-  mpi: number;
-};
+  async function loadClusterPerformance() {
+    try {
+      setApiNotice(null);
 
-type SpeedupPoint = {
-  processors: number;
-  speedup: number;
-};
+      const response = await getClusterPerformanceOverview();
+      setOverview(response);
+    } catch (error) {
+      console.error("Cluster performance API error:", error);
+      setOverview(null);
+      setApiNotice(
+        "Cluster performance API is not available. Check /api/v1/cluster-performance/overview.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
-type DistributorResult = {
-  strategy: string;
-  throughput: number;
-  latency: number;
-  score: number;
-};
+  useEffect(() => {
+    void loadClusterPerformance();
 
-type Bottleneck = {
-  name: string;
-  level: "low" | "moderate" | "high";
-  description: string;
-};
+    const interval = window.setInterval(() => {
+      void loadClusterPerformance();
+    }, 5000);
 
-type PerformanceData = {
-  peak_gflops: number;
-  amdahl_speedup: number;
-  gustafson_speedup: number;
-  main_bottleneck: string;
-  hpl_results: HplResult[];
-  runtime_results: RuntimeResult[];
-  amdahl_points: SpeedupPoint[];
-  gustafson_points: SpeedupPoint[];
-  distributor_results: DistributorResult[];
-  bottlenecks: Bottleneck[];
-};
+    return () => window.clearInterval(interval);
+  }, []);
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+  const nodes = useMemo(() => overview?.nodes ?? [], [overview]);
+  const pods = useMemo(() => overview?.pods ?? [], [overview]);
 
-const demoData: PerformanceData = {
-  peak_gflops: 31.2,
-  amdahl_speedup: 4.2,
-  gustafson_speedup: 7.1,
-  main_bottleneck: "Thermal",
-  hpl_results: [
-    { label: "1×Pi", gflops: 8.2 },
-    { label: "2×Pi", gflops: 15.1 },
-    { label: "3×Pi", gflops: 21.4 },
-    { label: "4×Pi", gflops: 26.8 },
-    { label: "5×Pi", gflops: 31.2 },
-  ],
-  runtime_results: [
-    { task: "YOLO batch", serial: 42, mpi: 12 },
-    { task: "Frame preprocess", serial: 18, mpi: 5 },
-    { task: "Annotation encode", serial: 9, mpi: 3 },
-    { task: "Metadata index", serial: 6, mpi: 2.5 },
-  ],
-  amdahl_points: [
-    { processors: 1, speedup: 1 },
-    { processors: 2, speedup: 1.8 },
-    { processors: 3, speedup: 2.5 },
-    { processors: 4, speedup: 3.1 },
-    { processors: 5, speedup: 3.5 },
-    { processors: 6, speedup: 3.8 },
-    { processors: 8, speedup: 4.2 },
-  ],
-  gustafson_points: [
-    { processors: 1, speedup: 1 },
-    { processors: 2, speedup: 1.9 },
-    { processors: 3, speedup: 2.9 },
-    { processors: 4, speedup: 3.8 },
-    { processors: 5, speedup: 4.7 },
-    { processors: 6, speedup: 5.5 },
-    { processors: 8, speedup: 7.1 },
-  ],
-  distributor_results: [
-    { strategy: "Round-robin", throughput: 48, latency: 210, score: 57 },
-    { strategy: "Least-loaded", throughput: 62, latency: 168, score: 74 },
-    { strategy: "Latency-aware", throughput: 71, latency: 142, score: 85 },
-    { strategy: "Custom ours", throughput: 84, latency: 118, score: 100 },
-  ],
-  bottlenecks: [
-    {
-      name: "CPU",
-      level: "moderate",
-      description: "Pi nodes saturate during YOLO batch processing",
-    },
-    {
-      name: "Network",
-      level: "low",
-      description: "LAN transfer overhead during chunk dispatch",
-    },
-    {
-      name: "Memory",
-      level: "low",
-      description: "Peak memory remains below critical limit",
-    },
-    {
-      name: "Thermal",
-      level: "high",
-      description: "Thermal throttling can reduce sustained performance",
-    },
-  ],
-};
+  const hottestNodes = useMemo(() => {
+    return [...nodes]
+      .filter((node) => typeof node.temperature_c === "number")
+      .sort(
+        (firstNode, secondNode) =>
+          (secondNode.temperature_c ?? 0) - (firstNode.temperature_c ?? 0),
+      );
+  }, [nodes]);
+
+  const mostRestartedPods = useMemo(() => {
+    return [...pods].sort(
+      (firstPod, secondPod) => secondPod.restarts - firstPod.restarts,
+    );
+  }, [pods]);
+
+  const clusterScore = overview?.cluster_score ?? 0;
+  const clusterTone = getClusterScoreTone(clusterScore);
+
+  return (
+    <section className="cluster-page">
+      <div className="cluster-page-header">
+        <div>
+          <p>K3S · PROMETHEUS · NODE EXPORTER</p>
+          <h1>Cluster Performance</h1>
+          <span>
+            Real-time cluster health based on Kubernetes pods, Raspberry Pi node
+            metrics, pod readiness, restarts, CPU, RAM, disk, and temperature.
+          </span>
+        </div>
+
+        <button
+          type="button"
+          className="cluster-refresh-button"
+          onClick={() => void loadClusterPerformance()}
+        >
+          <RefreshCcw size={17} />
+          Refresh
+        </button>
+      </div>
+
+      {loading && (
+        <div className="cluster-api-notice">
+          Loading cluster performance data...
+        </div>
+      )}
+
+      {apiNotice && <div className="cluster-api-notice">{apiNotice}</div>}
+
+      {overview?.errors.kubernetes && (
+        <div className="cluster-api-notice">
+          Kubernetes warning: {overview.errors.kubernetes}
+        </div>
+      )}
+
+      <div className="cluster-stat-grid">
+        <StatCard
+          label="Cluster score"
+          value={`${clusterScore}%`}
+          sub={overview ? formatStatus(overview.status) : "Waiting for API"}
+          tone={clusterTone}
+          icon={<CheckCircle2 size={24} />}
+        />
+
+        <StatCard
+          label="Nodes online"
+          value={`${overview?.summary.online_nodes ?? 0}/${
+            overview?.summary.total_nodes ?? 0
+          }`}
+          sub={`${overview?.summary.offline_nodes ?? 0} offline nodes`}
+          tone={
+            (overview?.summary.offline_nodes ?? 0) > 0 ? "yellow" : "green"
+          }
+          icon={<Server size={24} />}
+        />
+
+        <StatCard
+          label="Pods ready"
+          value={`${overview?.summary.ready_pods ?? 0}/${
+            overview?.summary.total_pods ?? 0
+          }`}
+          sub={`${overview?.summary.running_pods ?? 0} running pods`}
+          tone={getPodReadinessTone(overview)}
+          icon={<Activity size={24} />}
+        />
+
+        <StatCard
+          label="Pod restarts"
+          value={String(overview?.summary.total_restarts ?? 0)}
+          sub="Total container restarts"
+          tone={(overview?.summary.total_restarts ?? 0) > 0 ? "yellow" : "green"}
+          icon={<AlertTriangle size={24} />}
+        />
+
+        <StatCard
+          label="Average CPU"
+          value={formatPercent(overview?.resources.avg_cpu_percent)}
+          sub="Cluster average"
+          tone={getUsageTone(overview?.resources.avg_cpu_percent)}
+          icon={<Cpu size={24} />}
+        />
+
+        <StatCard
+          label="Average memory"
+          value={formatPercent(overview?.resources.avg_memory_percent)}
+          sub="Cluster average"
+          tone={getUsageTone(overview?.resources.avg_memory_percent)}
+          icon={<MemoryStick size={24} />}
+        />
+
+        <StatCard
+          label="Average disk"
+          value={formatPercent(overview?.resources.avg_disk_percent)}
+          sub="Root filesystem usage"
+          tone={getUsageTone(overview?.resources.avg_disk_percent)}
+          icon={<HardDrive size={24} />}
+        />
+
+        <StatCard
+          label="Max temperature"
+          value={formatTemperature(overview?.resources.max_temperature_c)}
+          sub="Hottest node"
+          tone={getTemperatureTone(overview?.resources.max_temperature_c)}
+          icon={<Thermometer size={24} />}
+        />
+      </div>
+
+      <div className="cluster-workload-grid">
+        <WorkloadCard
+          title="Backend"
+          value={overview?.workloads.backend_pods ?? 0}
+          icon={<Server size={22} />}
+        />
+
+        <WorkloadCard
+          title="Inference"
+          value={overview?.workloads.inference_pods ?? 0}
+          icon={<Zap size={22} />}
+        />
+
+        <WorkloadCard
+          title="Image workers"
+          value={overview?.workloads.image_worker_pods ?? 0}
+          icon={<Activity size={22} />}
+        />
+
+        <WorkloadCard
+          title="Telegram"
+          value={overview?.workloads.telegram_pods ?? 0}
+          icon={<Network size={22} />}
+        />
+
+        <WorkloadCard
+          title="Storage"
+          value={overview?.workloads.storage_pods ?? 0}
+          icon={<HardDrive size={22} />}
+        />
+      </div>
+
+      <div className="cluster-live-grid">
+        <div className="cluster-panel">
+          <div className="cluster-panel-header vertical">
+            <h2>Node resource performance</h2>
+            <p>Live Raspberry Pi metrics from Prometheus and Node Exporter.</p>
+          </div>
+
+          <NodeTable nodes={hottestNodes.length > 0 ? hottestNodes : nodes} />
+        </div>
+
+        <div className="cluster-panel">
+          <div className="cluster-panel-header vertical">
+            <h2>Pod reliability</h2>
+            <p>Readiness, status, restart count, and scheduling node.</p>
+          </div>
+
+          <PodTable pods={mostRestartedPods} />
+        </div>
+      </div>
+
+      <div className="cluster-live-grid">
+        <div className="cluster-panel">
+          <div className="cluster-panel-header vertical">
+            <h2>Deployment evidence</h2>
+            <p>Proof that the page is using live backend and K3s data.</p>
+          </div>
+
+          <EvidenceTable overview={overview} />
+        </div>
+
+        <div className="cluster-panel">
+          <div className="cluster-panel-header vertical">
+            <h2>Health signals</h2>
+            <p>Simple interpretation of current cluster condition.</p>
+          </div>
+
+          <HealthSignalTable overview={overview} />
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function StatCard({
   label,
@@ -136,7 +271,7 @@ function StatCard({
   value: string;
   sub: string;
   tone: MetricTone;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }) {
   return (
     <div className="cluster-stat-card">
@@ -151,343 +286,382 @@ function StatCard({
   );
 }
 
-function BarChart({
-  data,
-  max,
+function WorkloadCard({
+  title,
+  value,
+  icon,
 }: {
-  data: HplResult[];
-  max: number;
+  title: string;
+  value: number;
+  icon: ReactNode;
 }) {
   return (
-    <div className="cluster-chart">
-      <div className="chart-grid-lines">
-        <span>32</span>
-        <span>24</span>
-        <span>16</span>
-        <span>8</span>
-        <span>0</span>
-      </div>
+    <div className="cluster-workload-card">
+      <div className="cluster-workload-icon">{icon}</div>
 
-      <div className="bar-chart-bars">
-        {data.map((item) => (
-          <div className="bar-item" key={item.label}>
-            <div
-              className="bar-fill"
-              style={{ height: `${(item.gflops / max) * 100}%` }}
-            />
-            <span>{item.label}</span>
-          </div>
-        ))}
+      <div>
+        <span>{title}</span>
+        <strong>{value}</strong>
       </div>
     </div>
   );
 }
 
-function GroupedBarChart({ data }: { data: RuntimeResult[] }) {
-  const max = Math.max(...data.flatMap((item) => [item.serial, item.mpi]));
+function NodeTable({ nodes }: { nodes: ClusterPerformanceNode[] }) {
+  if (nodes.length === 0) {
+    return <div className="cluster-empty">No node metrics returned.</div>;
+  }
 
   return (
-    <div className="cluster-chart runtime-chart">
-      <div className="chart-grid-lines">
-        <span>60</span>
-        <span>45</span>
-        <span>30</span>
-        <span>15</span>
-        <span>0</span>
-      </div>
+    <div className="cluster-table-wrap">
+      <table className="cluster-table">
+        <thead>
+          <tr>
+            <th>Node</th>
+            <th>Status</th>
+            <th>CPU</th>
+            <th>Memory</th>
+            <th>Disk</th>
+            <th>Load</th>
+            <th>Temp</th>
+          </tr>
+        </thead>
 
-      <div className="runtime-bars">
-        {data.map((item) => (
-          <div className="runtime-group" key={item.task}>
-            <div className="runtime-bar-pair">
-              <div
-                className="runtime-bar serial"
-                style={{ height: `${(item.serial / max) * 100}%` }}
-              />
-              <div
-                className="runtime-bar mpi"
-                style={{ height: `${(item.mpi / max) * 100}%` }}
-              />
-            </div>
-            <span>{item.task}</span>
-          </div>
-        ))}
-      </div>
+        <tbody>
+          {nodes.map((node) => (
+            <tr key={node.instance}>
+              <td>
+                <strong>{node.name}</strong>
+                <small>{node.instance}</small>
+              </td>
 
-      <div className="runtime-legend">
-        <span>
-          <i className="serial" /> serial
-        </span>
-        <span>
-          <i className="mpi" /> mpi
-        </span>
-      </div>
+              <td>
+                <span className={`cluster-pill ${statusClass(node.status)}`}>
+                  {formatStatus(node.status)}
+                </span>
+              </td>
+
+              <td>{formatPercent(node.cpu_percent)}</td>
+              <td>{formatPercent(node.memory_percent)}</td>
+              <td>{formatPercent(node.disk_percent)}</td>
+              <td>{formatNumber(node.load1)}</td>
+              <td>
+                <span
+                  className={`cluster-pill ${temperatureStatusClass(
+                    node.temperature_c,
+                  )}`}
+                >
+                  {formatTemperature(node.temperature_c)}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
 
-function LineChart({
-  data,
-  color,
+function PodTable({ pods }: { pods: ClusterPerformancePod[] }) {
+  if (pods.length === 0) {
+    return <div className="cluster-empty">No pod data returned.</div>;
+  }
+
+  return (
+    <div className="cluster-table-wrap">
+      <table className="cluster-table">
+        <thead>
+          <tr>
+            <th>Pod</th>
+            <th>App</th>
+            <th>Ready</th>
+            <th>Status</th>
+            <th>Restarts</th>
+            <th>Node</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {pods.map((pod) => (
+            <tr key={`${pod.namespace}-${pod.name}`}>
+              <td>
+                <strong>{pod.name}</strong>
+                <small>{pod.namespace}</small>
+              </td>
+
+              <td>{pod.app}</td>
+
+              <td>
+                <span
+                  className={`cluster-pill ${
+                    pod.ready_bool ? "green" : "yellow"
+                  }`}
+                >
+                  {pod.ready}
+                </span>
+              </td>
+
+              <td>
+                <span className={`cluster-pill ${statusClass(pod.status)}`}>
+                  {formatStatus(pod.status)}
+                </span>
+              </td>
+
+              <td>{pod.restarts}</td>
+              <td>{pod.node ?? "N/A"}</td>
+              <td>{formatAge(pod.age_seconds)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function EvidenceTable({
+  overview,
 }: {
-  data: SpeedupPoint[];
-  color: "cyan" | "green";
+  overview: ClusterPerformanceOverview | null;
 }) {
-  const width = 680;
-  const height = 250;
-  const padding = 34;
-  const maxX = 8;
-  const maxY = 8;
+  return (
+    <div className="cluster-table-wrap">
+      <table className="cluster-table">
+        <tbody>
+          <tr>
+            <td>
+              <strong>Backend endpoint</strong>
+              <small>API route used by this page</small>
+            </td>
+            <td>/api/v1/cluster-performance/overview</td>
+          </tr>
 
-  const points = data.map((point) => {
-    const x = padding + (point.processors / maxX) * (width - padding * 2);
-    const y = height - padding - (point.speedup / maxY) * (height - padding * 2);
+          <tr>
+            <td>
+              <strong>Namespace</strong>
+              <small>Kubernetes namespace</small>
+            </td>
+            <td>{overview?.namespace ?? "N/A"}</td>
+          </tr>
 
-    return { x, y, ...point };
+          <tr>
+            <td>
+              <strong>Prometheus</strong>
+              <small>Metrics source</small>
+            </td>
+            <td>{overview?.prometheus_url ?? "N/A"}</td>
+          </tr>
+
+          <tr>
+            <td>
+              <strong>Last backend timestamp</strong>
+              <small>Returned by backend</small>
+            </td>
+            <td>{overview?.timestamp ? formatDate(overview.timestamp) : "N/A"}</td>
+          </tr>
+
+          <tr>
+            <td>
+              <strong>Refresh interval</strong>
+              <small>Frontend polling</small>
+            </td>
+            <td>5 seconds</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function HealthSignalTable({
+  overview,
+}: {
+  overview: ClusterPerformanceOverview | null;
+}) {
+  const signals = [
+    {
+      name: "Node availability",
+      value: `${overview?.summary.online_nodes ?? 0}/${
+        overview?.summary.total_nodes ?? 0
+      } online`,
+      status:
+        (overview?.summary.offline_nodes ?? 0) > 0 ? "yellow" : "green",
+    },
+    {
+      name: "Pod readiness",
+      value: `${overview?.summary.ready_pods ?? 0}/${
+        overview?.summary.total_pods ?? 0
+      } ready`,
+      status:
+        overview &&
+        overview.summary.ready_pods === overview.summary.total_pods
+          ? "green"
+          : "yellow",
+    },
+    {
+      name: "Restart pressure",
+      value: `${overview?.summary.total_restarts ?? 0} restarts`,
+      status:
+        (overview?.summary.total_restarts ?? 0) > 0 ? "yellow" : "green",
+    },
+    {
+      name: "Thermal condition",
+      value: formatTemperature(overview?.resources.max_temperature_c),
+      status: temperatureStatusClass(overview?.resources.max_temperature_c),
+    },
+    {
+      name: "Disk pressure",
+      value: formatPercent(overview?.resources.avg_disk_percent),
+      status: usageStatusClass(overview?.resources.avg_disk_percent),
+    },
+  ];
+
+  return (
+    <div className="cluster-table-wrap">
+      <table className="cluster-table">
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Value</th>
+            <th>State</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {signals.map((signal) => (
+            <tr key={signal.name}>
+              <td>
+                <strong>{signal.name}</strong>
+              </td>
+
+              <td>{signal.value}</td>
+
+              <td>
+                <span className={`cluster-pill ${signal.status}`}>
+                  {formatStatus(signal.status)}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function getClusterScoreTone(score: number): MetricTone {
+  if (score >= 85) return "green";
+  if (score >= 60) return "yellow";
+  return "red";
+}
+
+function getPodReadinessTone(
+  overview: ClusterPerformanceOverview | null,
+): MetricTone {
+  if (!overview || overview.summary.total_pods === 0) return "yellow";
+
+  if (overview.summary.ready_pods === overview.summary.total_pods) {
+    return "green";
+  }
+
+  return "yellow";
+}
+
+function getUsageTone(value: number | null | undefined): MetricTone {
+  if (typeof value !== "number") return "yellow";
+  if (value >= 90) return "red";
+  if (value >= 75) return "yellow";
+  return "green";
+}
+
+function getTemperatureTone(value: number | null | undefined): MetricTone {
+  if (typeof value !== "number") return "yellow";
+  if (value >= 70) return "red";
+  if (value >= 60) return "yellow";
+  return "green";
+}
+
+function statusClass(status: string) {
+  const value = status.toLowerCase();
+
+  if (["online", "running", "ready", "healthy", "normal"].includes(value)) {
+    return "green";
+  }
+
+  if (["warning", "degraded", "pending", "unknown"].includes(value)) {
+    return "yellow";
+  }
+
+  if (["critical", "offline", "failed", "error"].includes(value)) {
+    return "red";
+  }
+
+  return "yellow";
+}
+
+function usageStatusClass(value: number | null | undefined) {
+  if (typeof value !== "number") return "yellow";
+  if (value >= 90) return "red";
+  if (value >= 75) return "yellow";
+  return "green";
+}
+
+function temperatureStatusClass(value: number | null | undefined) {
+  if (typeof value !== "number") return "yellow";
+  if (value >= 70) return "red";
+  if (value >= 60) return "yellow";
+  return "green";
+}
+
+function formatPercent(value: number | null | undefined) {
+  if (typeof value !== "number") return "N/A";
+  return `${value.toFixed(1)}%`;
+}
+
+function formatTemperature(value: number | null | undefined) {
+  if (typeof value !== "number") return "N/A";
+  return `${value.toFixed(1)}°C`;
+}
+
+function formatNumber(value: number | null | undefined) {
+  if (typeof value !== "number") return "N/A";
+  return value.toFixed(2);
+}
+
+function formatStatus(value: string | null | undefined) {
+  if (!value) return "Unknown";
+
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatAge(value: number | null) {
+  if (value === null || value === undefined) return "N/A";
+
+  const days = Math.floor(value / 86400);
+  const hours = Math.floor((value % 86400) / 3600);
+  const minutes = Math.floor((value % 3600) / 60);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+
+  return `${minutes}m`;
+}
+
+function formatDate(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   });
-
-  const polyline = points.map((point) => `${point.x},${point.y}`).join(" ");
-
-  return (
-    <div className="line-chart-wrap">
-      <svg viewBox={`0 0 ${width} ${height}`} className="line-chart-svg">
-        {[0, 2, 4, 6, 8].map((line) => {
-          const y = height - padding - (line / maxY) * (height - padding * 2);
-          return (
-            <line
-              key={line}
-              x1={padding}
-              x2={width - padding}
-              y1={y}
-              y2={y}
-              className="chart-grid-line"
-            />
-          );
-        })}
-
-        <polyline
-          points={polyline}
-          className={`speed-line ${color}`}
-          fill="none"
-        />
-
-        {points.map((point) => (
-          <circle
-            key={point.processors}
-            cx={point.x}
-            cy={point.y}
-            r="4"
-            className={`speed-dot ${color}`}
-          />
-        ))}
-
-        {[1, 2, 3, 4, 5, 6, 8].map((value) => {
-          const x = padding + (value / maxX) * (width - padding * 2);
-          return (
-            <text key={value} x={x} y={height - 8} className="chart-axis-text">
-              {value}
-            </text>
-          );
-        })}
-
-        {[0, 2, 4, 6, 8].map((value) => {
-          const y = height - padding - (value / maxY) * (height - padding * 2);
-          return (
-            <text key={value} x="8" y={y + 4} className="chart-axis-text">
-              {value}
-            </text>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
-function BottleneckIcon({ name }: { name: string }) {
-  const value = name.toLowerCase();
-
-  if (value.includes("cpu")) return <Cpu size={24} />;
-  if (value.includes("network")) return <Network size={24} />;
-  if (value.includes("memory")) return <MemoryStick size={24} />;
-  if (value.includes("thermal")) return <Thermometer size={24} />;
-
-  return <AlertTriangle size={24} />;
-}
-
-export function ClusterPerformancePage() {
-  const [data, setData] = useState<PerformanceData>(demoData);
-  const [apiNotice, setApiNotice] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function loadPerformanceData() {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/performance/cluster`);
-
-        if (!response.ok) {
-          throw new Error("Cluster performance API not available");
-        }
-
-        const json = await response.json();
-
-        setData({
-          peak_gflops: json.peak_gflops ?? demoData.peak_gflops,
-          amdahl_speedup: json.amdahl_speedup ?? demoData.amdahl_speedup,
-          gustafson_speedup:
-            json.gustafson_speedup ?? demoData.gustafson_speedup,
-          main_bottleneck: json.main_bottleneck ?? demoData.main_bottleneck,
-          hpl_results: json.hpl_results ?? demoData.hpl_results,
-          runtime_results: json.runtime_results ?? demoData.runtime_results,
-          amdahl_points: json.amdahl_points ?? demoData.amdahl_points,
-          gustafson_points: json.gustafson_points ?? demoData.gustafson_points,
-          distributor_results:
-            json.distributor_results ?? demoData.distributor_results,
-          bottlenecks: json.bottlenecks ?? demoData.bottlenecks,
-        });
-
-        setApiNotice(null);
-      } catch {
-        setData(demoData);
-        setApiNotice(
-          "Showing demo data because the cluster performance API is not available yet."
-        );
-      }
-    }
-
-    loadPerformanceData();
-  }, []);
-
-  return (
-    <section className="cluster-page">
-      <div className="cluster-page-header">
-        <p>BENCHMARKS · HPL · MPI</p>
-        <h1>Cluster Performance</h1>
-        <span>
-          Parallel computing analysis of the Raspberry Pi cluster, MPI examples,
-          Amdahl’s Law, Gustafson’s Law, and custom task distribution.
-        </span>
-      </div>
-
-      {apiNotice && <div className="cluster-api-notice">{apiNotice}</div>}
-
-      <div className="cluster-stat-grid">
-        <StatCard
-          label="Peak GFLOPS"
-          value={data.peak_gflops.toFixed(1)}
-          sub="HPL benchmark"
-          tone="cyan"
-          icon={<Zap size={24} />}
-        />
-
-        <StatCard
-          label="Speedup Amdahl"
-          value={`${data.amdahl_speedup.toFixed(1)}×`}
-          sub="Fixed workload"
-          tone="green"
-          icon={<Gauge size={24} />}
-        />
-
-        <StatCard
-          label="Speedup Gustafson"
-          value={`${data.gustafson_speedup.toFixed(1)}×`}
-          sub="Scaled workload"
-          tone="green"
-          icon={<Activity size={24} />}
-        />
-
-        <StatCard
-          label="Bottleneck"
-          value={data.main_bottleneck}
-          sub="Current limiting factor"
-          tone="red"
-          icon={<AlertTriangle size={24} />}
-        />
-      </div>
-
-      <div className="cluster-chart-grid">
-        <div className="cluster-panel">
-          <div className="cluster-panel-header">
-            <h2>HPL — GFLOPS by configuration</h2>
-          </div>
-
-          <BarChart data={data.hpl_results} max={32} />
-        </div>
-
-        <div className="cluster-panel">
-          <div className="cluster-panel-header">
-            <h2>MPI runtime — serial vs parallel</h2>
-          </div>
-
-          <GroupedBarChart data={data.runtime_results} />
-        </div>
-
-        <div className="cluster-panel">
-          <div className="cluster-panel-header">
-            <h2>Amdahl’s Law — Speedup vs Processors</h2>
-          </div>
-
-          <LineChart data={data.amdahl_points} color="cyan" />
-        </div>
-
-        <div className="cluster-panel">
-          <div className="cluster-panel-header">
-            <h2>Gustafson’s Law — Scaled Speedup</h2>
-          </div>
-
-          <LineChart data={data.gustafson_points} color="green" />
-        </div>
-      </div>
-
-      <div className="cluster-panel distributor-panel">
-        <div className="cluster-panel-header vertical">
-          <h2>Task distributor comparison</h2>
-          <p>Throughput and end-to-end latency for non-MPI distribution.</p>
-        </div>
-
-        <div className="distributor-table">
-          <div className="distributor-head">
-            <span>Strategy</span>
-            <span>Throughput</span>
-            <span>Latency</span>
-            <span>Score</span>
-          </div>
-
-          {data.distributor_results.map((item) => (
-            <div className="distributor-row" key={item.strategy}>
-              <strong>{item.strategy}</strong>
-              <span>{item.throughput} req/s</span>
-              <span>{item.latency} ms</span>
-              <div className="score-cell">
-                <div className="score-bar">
-                  <i style={{ width: `${item.score}%` }} />
-                </div>
-                <span>{item.score}%</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="cluster-panel">
-        <div className="cluster-panel-header">
-          <h2>Bottlenecks</h2>
-        </div>
-
-        <div className="bottleneck-grid">
-          {data.bottlenecks.map((item) => (
-            <div className="bottleneck-card" key={item.name}>
-              <div className={`bottleneck-icon ${item.level}`}>
-                <BottleneckIcon name={item.name} />
-              </div>
-
-              <div>
-                <h3>{item.name}</h3>
-                <span className={item.level}>{item.level}</span>
-                <p>{item.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
 }

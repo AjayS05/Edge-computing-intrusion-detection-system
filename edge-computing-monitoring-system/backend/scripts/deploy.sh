@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
 PROJECT_ROOT="$(
@@ -7,13 +8,13 @@ PROJECT_ROOT="$(
 
 cd "$PROJECT_ROOT"
 
-echo "Applying namespace, configuration and Telegram credentials..."
+echo "Applying namespace, ConfigMap and Secret..."
 kubectl apply -f k8s/00-namespace-config.yaml
 
-echo "Deploying inference service..."
+echo "Deploying inference..."
 kubectl apply -f k8s/20-inference.yaml
 
-echo "Deploying image workers..."
+echo "Deploying workers..."
 kubectl apply -f k8s/30-workers.yaml
 
 echo "Deploying backend..."
