@@ -22,36 +22,11 @@ The monitoring system observes the health and performance of the Raspberry Pi cl
 
 The system provides infrastructure-level visualization through Grafana and application-ready monitoring data through the FastAPI backend and React frontend.
 
-> **IMAGE PLACEHOLDER — Monitoring overview**  
-> Suggested file: `images/monitoring/monitoring-overview.png`  
-> Add the final React Monitoring page showing status cards, charts, nodes, and alerts.
+![Raspberry Pi cluster monitoring architecture](images/monitoring-architecture.png)
 
 ---
 
 ## 2. Final architecture
-
-```text
-Pi5 + Pi4 + 8 × Pi3
-Host Node Exporter :9100
-        │
-        ▼
-Prometheus in K3s
-Namespace: monitoring
-Internal service: :9090
-External NodePort: :30090
-        │
-        ├────────► Grafana (:80 internal, :30300 external)
-        ├────────► Alertmanager
-        ├────────► Prometheus Operator
-        └────────► kube-state-metrics
-        │
-        ▼
-FastAPI backend
-Namespace: edge-monitoring
-        │
-        ▼
-React monitoring dashboard
-```
 
 The existing Ansible-installed Node Exporters are retained as Linux services on the Raspberry Pi hosts. The Node Exporter dependency included in `kube-prometheus-stack` is disabled to prevent two exporters from competing for port `9100`.
 
@@ -64,8 +39,6 @@ The existing Ansible-installed Node Exporters are retained as Linux services on 
 | kube-state-metrics | Exposes Kubernetes workload and object metrics. |
 | FastAPI | Converts Prometheus data into frontend-ready JSON. |
 | React frontend | Displays cluster health, node metrics, and alerts. |
-
-![Raspberry Pi cluster monitoring architecture](images/monitoring-architecture.png)
 
 ---
 
@@ -259,11 +232,15 @@ Only `192.168.178.200:9100` is used for Pi5 so the same device is not counted tw
 
 The following screenshot may be used as read-only availability evidence. Crop out any failed Ansible attempt and retain only the command and ten `UP` results.
 
+> **IMAGE PLACEHOLDER — All Node Exporters available**  
+> Suggested file: `images/monitoring/node-exporters-all-up.png`  
+> Replace this placeholder with:  
+> `![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/monitoring/node-exporters-all-up.png)`
 
-`![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/node_exporters-all-up.png)`
-
-
-`![Node Exporter metrics returned from Raspberry Pi 4](images/node_exporter-metrics.png)`
+> **IMAGE PLACEHOLDER — Exporter metrics**  
+> Suggested file: `images/monitoring/node-exporter-metrics.png`  
+> Add terminal output from `curl -s http://192.168.50.144:9100/metrics | head`. Replace this placeholder with:  
+> `![Node Exporter metrics returned from Raspberry Pi 4](images/monitoring/node_exporter-metrics.png)`
 
 ---
 
@@ -340,7 +317,7 @@ HTTP/1.1 200 OK
 ```
 
 > **IMAGE PLACEHOLDER — Monitoring API**  
-> Suggested file: `images/monitoring-api-response.png`  
+> Suggested file: `images/monitoring/monitoring-api-response.png`  
 > Add a successful JSON response from `/api/v1/monitoring/overview`.
 
 ---
@@ -389,33 +366,12 @@ Verification:
 5. Confirm HTTP `200`.
 6. Confirm automatic refresh and the manual refresh button.
 
-![React monitoring dashboard showing cluster health and node metrics](images/react-monitoring-page.png)
-
-![React alerts page showing the current cluster alert status](images/react-alerts-page.png)
-
----
-
-## 7. Repository guidance
-
-Recommended files:
-
-```text
-monitoring/
-├── monitoring.md
-├── prometheus.md
-├── grafana.md
-├── ansible/
-│   ├── inventory.example.ini
-│   └── install-node-exporter.yml
-├── prometheus/
-│   ├── prometheus-k3s-values.yaml
-│   └── raspberry-pi-alerts.yaml
-└── images/
-    └── monitoring/
-```
-
+![Raspberry Pi REACT MONITORING PAGE](images/react-monitoring-page.png)
+![Raspberry Pi ALERT PAGE](images/react-alerts-page.png)
 
 ---
+
+
 
 ## 8. Result
 
