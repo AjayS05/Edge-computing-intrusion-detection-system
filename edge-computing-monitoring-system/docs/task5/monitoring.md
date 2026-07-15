@@ -149,13 +149,9 @@ The final monitoring addresses are:
 
 Only `192.168.178.200:9100` is used for Pi5 so the same device is not counted twice through another network address.
 
-> **IMAGE PLACEHOLDER — Ansible result**  
-> Suggested file: `images/monitoring/ansible-node-exporter-success.png`  
-> Add the Ansible play recap showing successful deployment.
+![Successful Ansible Node Exporter deployment on Raspberry Pi workers](images/ansible-node_exporter-success.png)
 
-> **IMAGE PLACEHOLDER — Exporter metrics**  
-> Suggested file: `images/monitoring/node-exporter-metrics.png`  
-> Add terminal output from a successful `/metrics` request.
+![Node Exporter metrics returned from the Raspberry Pi 4](images/node_exporter-metrics.png)
 
 ---
 
@@ -231,10 +227,7 @@ Expected result:
 HTTP/1.1 200 OK
 ```
 
-> **IMAGE PLACEHOLDER — Monitoring API**  
-> Suggested file: `images/monitoring/monitoring-api-response.png`  
-> Add a successful JSON response from `/api/v1/monitoring/overview`.
-
+![Successful FastAPI monitoring overview response](images/monitoring/monitoring-api-response.png)
 ---
 
 ## 5. Backend health thresholds
