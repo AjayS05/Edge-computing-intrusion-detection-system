@@ -259,15 +259,11 @@ Only `192.168.178.200:9100` is used for Pi5 so the same device is not counted tw
 
 The following screenshot may be used as read-only availability evidence. Crop out any failed Ansible attempt and retain only the command and ten `UP` results.
 
-> **IMAGE PLACEHOLDER — All Node Exporters available**  
-> Suggested file: `images/monitoring/node-exporters-all-up.png`  
-> Replace this placeholder with:  
-> `![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/monitoring/node-exporters-all-up.png)`
 
-> **IMAGE PLACEHOLDER — Exporter metrics**  
-> Suggested file: `images/monitoring/node-exporter-metrics.png`  
-> Add terminal output from `curl -s http://192.168.50.144:9100/metrics | head`. Replace this placeholder with:  
-> `![Node Exporter metrics returned from Raspberry Pi 4](images/monitoring/node-exporter-metrics.png)`
+`![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/node_exporters-all-up.png)`
+
+
+`![Node Exporter metrics returned from Raspberry Pi 4](images/node_exporter-metrics.png)`
 
 ---
 
@@ -344,7 +340,7 @@ HTTP/1.1 200 OK
 ```
 
 > **IMAGE PLACEHOLDER — Monitoring API**  
-> Suggested file: `images/monitoring/monitoring-api-response.png`  
+> Suggested file: `images/monitoring-api-response.png`  
 > Add a successful JSON response from `/api/v1/monitoring/overview`.
 
 ---
@@ -393,11 +389,9 @@ Verification:
 5. Confirm HTTP `200`.
 6. Confirm automatic refresh and the manual refresh button.
 
-> **IMAGE PLACEHOLDER — React Monitoring page**  
-> Suggested file: `images/monitoring/react-monitoring-page.png`
+![React monitoring dashboard showing cluster health and node metrics](images/react-monitoring-page.png)
 
-> **IMAGE PLACEHOLDER — React Alerts page**  
-> Suggested file: `images/monitoring/react-alerts-page.png`
+![React alerts page showing the current cluster alert status](images/react-alerts-page.png)
 
 ---
 
@@ -420,7 +414,6 @@ monitoring/
     └── monitoring/
 ```
 
-Do not commit passwords, SSH private keys, real `.env` files, API tokens, or other credentials.
 
 ---
 
