@@ -235,12 +235,7 @@ The following screenshot may be used as read-only availability evidence. Crop ou
 > **IMAGE PLACEHOLDER — All Node Exporters available**  
 > Suggested file: `images/monitoring/node-exporters-all-up.png`  
 > Replace this placeholder with:  
-> `![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/monitoring/node-exporters-all-up.png)`
-
-> **IMAGE PLACEHOLDER — Exporter metrics**  
-> Suggested file: `images/monitoring/node-exporter-metrics.png`  
-> Add terminal output from `curl -s http://192.168.50.144:9100/metrics | head`. Replace this placeholder with:  
-> `![Node Exporter metrics returned from Raspberry Pi 4](images/monitoring/node_exporter-metrics.png)`
+`![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/node_exporters-metrics.png)`
 
 ---
 
