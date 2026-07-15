@@ -233,7 +233,7 @@ Only `192.168.178.200:9100` is used for Pi5 so the same device is not counted tw
 The following screenshot may be used as read-only availability evidence. Crop out any failed Ansible attempt and retain only the command and ten `UP` results.
 
 
-`![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/node_exporter-metrics.png)`
+![Pi5, Pi4, and eight Pi3 Node Exporters reporting UP](images/node_exporter-metrics.png)
 
 ---
 
