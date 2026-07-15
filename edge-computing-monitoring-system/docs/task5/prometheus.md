@@ -1,6 +1,6 @@
 # Prometheus Deployment and Configuration
 
-> Reproducible Prometheus and Alertmanager deployment guide for the Raspberry Pi K3s cluster.
+
 
 **Namespace:** `monitoring`  
 **Helm release:** `prometheus`  
