@@ -14,8 +14,6 @@
 
 The monitoring system was first validated directly on Pi5 before Prometheus was migrated into K3s. Node Exporter ran as a Linux service on every Raspberry Pi, while Prometheus and Alertmanager ran locally on Pi5.
 
-> **Current-system note:** This phase documents the original installation and provides a reproducible setup for a new environment. Do not reinstall or restart these services merely to collect screenshots from the current working K3s deployment.
-
 ### 1.1 Install Node Exporter on the Raspberry Pi hosts
 
 Node Exporter was installed on the Pi3 workers using Ansible. The complete inventory and playbook are documented in [Monitoring overview](monitoring.md). On an individual Debian-based Raspberry Pi, the equivalent package installation is:
