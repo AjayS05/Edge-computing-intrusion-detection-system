@@ -65,7 +65,7 @@ The existing Ansible-installed Node Exporters are retained as Linux services on 
 | FastAPI | Converts Prometheus data into frontend-ready JSON. |
 | React frontend | Displays cluster health, node metrics, and alerts. |
 
-![Raspberry Pi cluster monitoring architecture](images/monitoring/monitoring-architecture.png)
+![Raspberry Pi cluster monitoring architecture](images/monitoring-architecture.png)
 
 ---
 
