@@ -10,9 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://yourdomain.com/task7/extras/">
+        <link rel="canonical" href="https://yourdomain.com/task6/model/">
       
       
+        <link rel="prev" href="../training/">
+      
+      
+        <link rel="next" href="../results/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Extras - PiWatch</title>
+        <title>Model Architecture - PiWatch</title>
       
     
     
@@ -76,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#if-want-to-mention" class="md-skip">
+        <a href="#model-architecture" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Extras
+              Model Architecture
             
           </span>
         </div>
@@ -644,18 +648,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -676,7 +682,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -694,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../task6/training/" class="md-nav__link">
+      <a href="../training/" class="md-nav__link">
         
   
   
@@ -719,10 +725,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../task6/model/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -738,6 +771,37 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#edge-optimized-model-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edge-Optimized Model Design
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -750,7 +814,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../task6/results/" class="md-nav__link">
+      <a href="../results/" class="md-nav__link">
         
   
   
@@ -832,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../backend_overview/" class="md-nav__link">
+      <a href="../../task7/backend_overview/" class="md-nav__link">
         
   
   
@@ -860,7 +924,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../backend_architecture/" class="md-nav__link">
+      <a href="../../task7/backend_architecture/" class="md-nav__link">
         
   
   
@@ -888,7 +952,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../backend_api.md" class="md-nav__link">
+      <a href="../../task7/backend_api.md" class="md-nav__link">
         
   
   
@@ -916,7 +980,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../seaweedfs/" class="md-nav__link">
+      <a href="../../task7/seaweedfs/" class="md-nav__link">
         
   
   
@@ -944,7 +1008,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../kubernetes/" class="md-nav__link">
+      <a href="../../task7/kubernetes/" class="md-nav__link">
         
   
   
@@ -972,7 +1036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../high_availability/" class="md-nav__link">
+      <a href="../../task7/high_availability/" class="md-nav__link">
         
   
   
@@ -1374,6 +1438,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1382,32 +1448,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#if-want-to-mention" class="md-nav__link">
+  <a href="#edge-optimized-model-design" class="md-nav__link">
     <span class="md-ellipsis">
       
-        if want to mention
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Flow
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#monitoring-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Monitoring Flow
+        Edge-Optimized Model Design
       
     </span>
   </a>
@@ -1431,45 +1475,16 @@
 
 
 
-  <h1>Extras</h1>
-
-<h5 id="if-want-to-mention">if want to mention</h5>
-<h3 id="data-flow">Data Flow</h3>
-<p>The image processing pipeline is shown below.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Raspberry Pi AI Camera
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        │
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        ▼
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Raspberry Pi 4
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>(Image Capture)
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        │
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a> JPEG + Metadata
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        ▼
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>Backend Service
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        │
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        ▼
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>FastAPI + YOLO
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        │
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a> ├── Object Detection
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a> ├── Event Generation
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a> ├── Alert Generation
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a> ├── Image Annotation
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a> └── Storage
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        │
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        ├────────► SeaweedFS
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        ├────────► Telegram Bot API
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        └────────► Frontend Dashboard
-</span></code></pre></div>
-<h3 id="monitoring-flow">Monitoring Flow</h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>All Raspberry Pi Nodes
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>        │
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a> Node Exporter
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        │
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        ▼
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a> Prometheus
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        │
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        ▼
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a> Grafana
-</span></code></pre></div>
+<h1 id="model-architecture">Model Architecture</h1>
+<p>This section describes the structural characteristics of our final trained model, its optimization for low-power edge environments, and deployment-ready weight configurations.</p>
+<h2 id="edge-optimized-model-design">Edge-Optimized Model Design</h2>
+<p>Our final model is built with a highly compacted and fast-inferencing architecture designed specifically to execute deep learning tasks on resource-constrained edge hardware. </p>
+<ul>
+<li><strong>Base Architecture:</strong> The foundation of our solution relies on the highly efficient <strong>YOLO (You Only Look Once)</strong> architecture. It was selected specifically for its state-of-the-art balance between mean Average Precision (mAP) and real-time inference speed.</li>
+<li><strong>Input Dimension Target:</strong> Optimized to process frames at a fixed <strong>640x640 pixel resolution</strong>, matching our standardized dataset pipeline for consistent feature extraction while keeping memory consumption low.</li>
+<li><strong>Weight Compacting:</strong> Once training finished, the best-performing iteration weights were packaged into a compact, optimized output file named <strong><code>best_final.pt</code></strong>. </li>
+<li><strong>Deployment Profile &amp; Edge Inference:</strong> This compacted weight structure is optimized specifically for running fast object-detection pipelines on small embedded devices with limited thermal and processing overhead. By utilizing this architecture, the system achieves a high Frame Per Second (FPS) throughput without requiring high-end desktop GPUs, making it ideal for live security camera feeds.</li>
+</ul>
 
 
 

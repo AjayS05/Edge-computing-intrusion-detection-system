@@ -10,9 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://yourdomain.com/task7/extras/">
+        <link rel="canonical" href="https://yourdomain.com/task7/high_availability/">
       
       
+        <link rel="prev" href="../kubernetes/">
+      
+      
+        <link rel="next" href="../../task9/telegram/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Extras - PiWatch</title>
+        <title>High Availability Approaches - PiWatch</title>
       
     
     
@@ -76,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#if-want-to-mention" class="md-skip">
+        <a href="#high-availability-approaches" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Extras
+              High Availability Approaches
             
           </span>
         </div>
@@ -782,18 +786,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -814,7 +820,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -969,10 +975,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../high_availability/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -988,6 +1003,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1374,47 +1390,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#if-want-to-mention" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        if want to mention
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Flow
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#monitoring-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Monitoring Flow
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1431,45 +1408,132 @@
 
 
 
-  <h1>Extras</h1>
-
-<h5 id="if-want-to-mention">if want to mention</h5>
-<h3 id="data-flow">Data Flow</h3>
-<p>The image processing pipeline is shown below.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Raspberry Pi AI Camera
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        │
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        ▼
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Raspberry Pi 4
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>(Image Capture)
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        │
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a> JPEG + Metadata
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        ▼
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>Backend Service
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        │
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        ▼
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>FastAPI + YOLO
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        │
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a> ├── Object Detection
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a> ├── Event Generation
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a> ├── Alert Generation
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a> ├── Image Annotation
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a> └── Storage
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        │
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        ├────────► SeaweedFS
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        ├────────► Telegram Bot API
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        └────────► Frontend Dashboard
-</span></code></pre></div>
-<h3 id="monitoring-flow">Monitoring Flow</h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>All Raspberry Pi Nodes
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>        │
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a> Node Exporter
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        │
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        ▼
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a> Prometheus
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        │
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        ▼
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a> Grafana
-</span></code></pre></div>
+<h1 id="high-availability-approaches">High Availability Approaches</h1>
+<p>To improve the resilience and availability of the Kubernetes cluster, several high availability mechanisms were implemented. These approaches focus on data protection, workload availability, failure detection, and automatic recovery. Additionally, architectural limitations were identified where further improvements could reduce single points of failure.</p>
+<h1 id="implemented-approaches">Implemented Approaches</h1>
+<h2 id="1-backup-and-restoration">1. Backup and Restoration</h2>
+<p>A backup mechanism was implemented on the Raspberry Pi 5 (RP5) to preserve the critical state of the Kubernetes cluster. The backup script captures the required Kubernetes configuration, certificates, credentials, and persistent data required for disaster recovery.</p>
+<p>The following components are included in the backup:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Contents</th>
+<th>Included</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/var/lib/rancher/k3s/server/db</code></td>
+<td>SQLite datastore containing Kubernetes objects and cluster state</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>/var/lib/rancher/k3s/server/tls</code></td>
+<td>Cluster certificates required for secure communication</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>/var/lib/rancher/k3s/server/cred</code></td>
+<td>Node credentials and cluster join information</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>/var/lib/rancher/k3s/server/manifests</code></td>
+<td>Auto-deploy Kubernetes manifests</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>/var/lib/rancher/k3s/server/logs</code></td>
+<td>Kubernetes server logs</td>
+<td>No (not required for restoration)</td>
+</tr>
+<tr>
+<td><code>/etc/rancher/k3s/k3s.yaml</code></td>
+<td>Kubernetes administrator kubeconfig</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>/var/lib/rancher/k3s/storage</code></td>
+<td>Local persistent volume data</td>
+<td>Yes (stored separately)</td>
+</tr>
+</tbody>
+</table>
+<p>During the backup process, the Kubernetes service is temporarily stopped to ensure data consistency. The required files are compressed into an archive, after which the Kubernetes service is restarted. The backup archive is then transferred from the RP5 to the RP4 and stored on external storage.</p>
+<p>This allows the cluster to be restored in case of system failure, accidental deletion, or corruption of Kubernetes state.</p>
+<hr />
+<h2 id="2-multiple-replicas-of-critical-services">2. Multiple Replicas of Critical Services</h2>
+<p>To improve application availability, critical workloads were deployed with multiple replicas:</p>
+<ul>
+<li>Frontend service: 3 replicas</li>
+<li>Backend service: 3 replicas</li>
+<li>YOLO inference service: 3 replicas</li>
+</ul>
+<p>Running multiple instances ensures that if a Pod fails, Kubernetes can automatically restart it or redirect traffic to healthy replicas. This prevents temporary failures of individual containers from affecting overall service availability.</p>
+<hr />
+<h2 id="3-node-monitoring-and-failure-detection">3. Node Monitoring and Failure Detection</h2>
+<p>A monitoring stack using Grafana was deployed to monitor cluster health and resource utilization.</p>
+<p>The monitoring system provides visibility into:</p>
+<ul>
+<li>Node availability</li>
+<li>CPU and memory usage</li>
+<li>Application performance</li>
+<li>Resource consumption trends</li>
+</ul>
+<p>This helps identify unhealthy nodes and potential failures before they significantly impact the system.</p>
+<hr />
+<h2 id="4-kubernetes-health-checks">4. Kubernetes Health Checks</h2>
+<p>Kubernetes health checks were implemented to enable automatic detection and recovery of unhealthy applications.</p>
+<p>The following probes were configured:</p>
+<ul>
+<li><strong>Liveness Probe:</strong> Determines whether a container is still running correctly. If the check fails, Kubernetes automatically restarts the container.</li>
+<li><strong>Readiness Probe:</strong> Determines whether a container is ready to receive traffic. Failed containers are removed from service endpoints until they recover.</li>
+<li><strong>Startup Probe:</strong> Handles applications with longer initialization times by delaying other health checks until startup is completed.</li>
+</ul>
+<p>These mechanisms improve Kubernetes self-healing capabilities and reduce the need for manual intervention.</p>
+<hr />
+<h1 id="limitations-and-possible-improvements">Limitations and Possible Improvements</h1>
+<p>Although the implemented approaches improve system availability, some infrastructure-level single points of failure remain due to the initial cluster architecture and hardware limitations.</p>
+<h2 id="1-multiple-kubernetes-control-planes">1. Multiple Kubernetes Control Planes</h2>
+<p>The current architecture uses the RP5 as the only Kubernetes control-plane node. This creates a single point of failure because Kubernetes management operations depend entirely on the RP5.</p>
+<p>A more highly available architecture would use multiple control-plane nodes by converting additional Raspberry Pi 3 devices into control-plane nodes. This would allow the Kubernetes API server and cluster management components to remain available even if the RP5 fails.</p>
+<p>However, the initial architecture was designed around PXE booting all Raspberry Pi 3 nodes from the RP5. Later migration to a multi-control-plane setup would have required significant restructuring of the existing deployment, so the current architecture was maintained.</p>
+<hr />
+<h2 id="2-distributed-storage-across-all-raspberry-pi-nodes">2. Distributed Storage Across All Raspberry Pi Nodes</h2>
+<p>Currently, SeaweedFS uses the available SSD storage and SD cards from two Raspberry Pi 3 nodes.</p>
+<p>A more resilient design would include storage from all available Raspberry Pi nodes. Increasing storage distribution and replication would provide:</p>
+<ul>
+<li>Better fault tolerance against storage node failures.</li>
+<li>Improved availability of persistent data.</li>
+<li>Higher storage throughput through parallel access.</li>
+</ul>
+<p>This was not implemented due to the hardware allocation decisions made earlier in the project.</p>
+<hr />
+<h2 id="3-moving-monitoring-services-away-from-rp5">3. Moving Monitoring Services Away from RP5</h2>
+<p>Currently, the RP5 performs several critical roles:</p>
+<ul>
+<li>Kubernetes control plane</li>
+<li>PXE boot server</li>
+<li>Cluster management</li>
+<li>Monitoring services</li>
+</ul>
+<p>This increases the impact of RP5 failure because multiple essential services become unavailable simultaneously.</p>
+<p>A better approach would be to deploy monitoring services on an independent device, such as the RP4. This would allow the system to continue detecting and reporting failures even if the Kubernetes control plane becomes unavailable.</p>
+<hr />
+<h2 id="4-independent-alerting-service">4. Independent Alerting Service</h2>
+<p>Currently, Telegram-based alerting depends on services running inside Kubernetes.</p>
+<p>If the RP5 fails:</p>
+<ul>
+<li>The Kubernetes cluster becomes unavailable.</li>
+<li>Monitoring services may stop.</li>
+<li>Failure notifications cannot be generated.</li>
+</ul>
+<p>A more highly available approach would move the alerting service outside Kubernetes and run it independently on the RP4. This ensures that infrastructure failures can still trigger alerts even when the main cluster is offline.</p>
+<hr />
+<h1 id="summary">Summary</h1>
+<p>The implemented high availability mechanisms provide resilience at the application level through backup and restoration, service replication, monitoring, and Kubernetes self-healing features.</p>
+<p>However, the current architecture still contains infrastructure-level single points of failure, mainly the RP5 control plane and PXE boot server. Future improvements would focus on removing these dependencies by introducing multiple Kubernetes control planes, expanding distributed storage, and separating monitoring and alerting services from the main cluster infrastructure.</p>
 
 
 

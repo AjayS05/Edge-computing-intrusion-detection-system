@@ -49,6 +49,14 @@
          <lastmod>2026-07-15</lastmod>
     </url>
     <url>
+         <loc>https://yourdomain.com/task6/dataset/</loc>
+         <lastmod>2026-07-15</lastmod>
+    </url>
+    <url>
+         <loc>https://yourdomain.com/task6/model/</loc>
+         <lastmod>2026-07-15</lastmod>
+    </url>
+    <url>
          <loc>https://yourdomain.com/task6/results/</loc>
          <lastmod>2026-07-15</lastmod>
     </url>
@@ -70,6 +78,10 @@
     </url>
     <url>
          <loc>https://yourdomain.com/task7/extras/</loc>
+         <lastmod>2026-07-15</lastmod>
+    </url>
+    <url>
+         <loc>https://yourdomain.com/task7/high_availability/</loc>
          <lastmod>2026-07-15</lastmod>
     </url>
     <url>

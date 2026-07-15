@@ -726,7 +726,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../task6/model.md" class="md-nav__link">
+      <a href="../../task6/model/" class="md-nav__link">
         
   
   
@@ -1032,10 +1032,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#storage-architecture" class="md-nav__link">
+  <a href="#storage-architecture-initial-deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Storage Architecture
+        Storage Architecture (Initial Deployment)
       
     </span>
   </a>
@@ -1159,6 +1159,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#extending-to-true-node-local-distributed-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extending to True Node-Local Distributed Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extending to True Node-Local Distributed Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-add-local-disk-to-individual-pi-3-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Add local disk to individual Pi 3 nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-point-kubernetes-local-path-provisioner-at-the-real-disks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Point Kubernetes' local-path-provisioner at the real disks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-deploy-a-second-node-local-seaweedfs-volume-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Deploy a second, node-local SeaweedFS volume release
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Verify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1204,6 +1276,34 @@
     
   
     Kubernetes Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../high_availability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    High Availability Approaches
   
 
     
@@ -1658,10 +1758,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#storage-architecture" class="md-nav__link">
+  <a href="#storage-architecture-initial-deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Storage Architecture
+        Storage Architecture (Initial Deployment)
       
     </span>
   </a>
@@ -1785,6 +1885,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#extending-to-true-node-local-distributed-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extending to True Node-Local Distributed Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extending to True Node-Local Distributed Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-add-local-disk-to-individual-pi-3-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Add local disk to individual Pi 3 nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-point-kubernetes-local-path-provisioner-at-the-real-disks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Point Kubernetes' local-path-provisioner at the real disks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-deploy-a-second-node-local-seaweedfs-volume-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Deploy a second, node-local SeaweedFS volume release
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Verify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1876,8 +2048,8 @@
 <li>Official ARM64 Docker images are available.</li>
 </ul>
 <hr />
-<h2 id="storage-architecture">Storage Architecture</h2>
-<p>Since all Pi 3s are diskless (PXE boot), we could not use <code>local-path</code> storage. Instead:</p>
+<h2 id="storage-architecture-initial-deployment">Storage Architecture (Initial Deployment)</h2>
+<p>Since all Pi 3s are diskless (PXE boot), we could not use <code>local-path</code> storage at first. Instead:</p>
 <ol>
 <li>The 500GB SSD on the Pi 5 is partitioned logically into directories under <code>/srv/nfs/seaweedfs/</code>.</li>
 <li>Each directory is exported via NFS — one dedicated export per Pi 3 node (for volume data) plus two more for master and filer metadata.</li>
@@ -1893,6 +2065,7 @@
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>└── volume-08/     → nfs-rpi3-08 StorageClass           → seaweedfs-volume-7 on rpi3-08
 </span></code></pre></div>
 <p>SeaweedFS sees 8 separate volume servers across 8 nodes and replicates data across them.</p>
+<p><strong>Important note on "distributed" here:</strong> this setup is distributed at the <em>application layer</em> — SeaweedFS runs 8 independent volume server processes, each tracked separately by the master, each capable of holding its own replica set under <code>global.replicationPlacement</code>. From SeaweedFS's point of view, it genuinely sees 8 separate volume servers to place and replicate data across. But at the <em>physical layer</em>, all 8 of those "separate" volumes are really subdirectories on one underlying disk (the Pi 5's SSD), reached over NFS. So the failure domain is still a single point of failure — if that SSD or the Pi 5 itself goes down, every volume server loses its backing store simultaneously, regardless of how many "nodes" SeaweedFS thinks it's spread across. This is called out explicitly in the Known Limitations section further down, and is the exact gap the next section closes.</p>
 <hr />
 <h2 id="step-by-step-deployment">Step-by-Step Deployment</h2>
 <h3 id="prerequisites">Prerequisites</h3>
@@ -2160,33 +2333,195 @@
 </span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>Free headroom:                ~70GB
 </span></code></pre></div>
 <hr />
+<h2 id="extending-to-true-node-local-distributed-storage">Extending to True Node-Local Distributed Storage</h2>
+<p>The initial deployment above is distributed in the sense that SeaweedFS's master tracks 8 independent volume servers and can replicate across them — but as noted earlier, every one of those "independent" volumes physically lives on one SSD attached to the Pi 5, reached over NFS. That's a single physical failure domain wearing eight different hats.</p>
+<p>To make the storage genuinely distributed — physically, not just logically — we added local disks directly to individual Pi 3 nodes (and used the Pi 5's own local SSD too) and ran a second, node-local SeaweedFS volume deployment alongside the original one, joined to the same master.</p>
+<h3 id="step-1-add-local-disk-to-individual-pi-3-nodes">Step 1 — Add local disk to individual Pi 3 nodes</h3>
+<p>Each Pi 3 that PXE-boots its root filesystem over NFS still has a physical microSD card slot sitting unused. We partitioned and mounted a card on two of the nodes (<code>rpi3-01</code>, <code>rpi3-02</code>):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># check the card is present and unpartitioned</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>lsblk
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>sudo<span class="w"> </span>fdisk<span class="w"> </span>-l<span class="w"> </span>/dev/mmcblk0
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="c1"># partition and format</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>sudo<span class="w"> </span>parted<span class="w"> </span>/dev/mmcblk0<span class="w"> </span>--script<span class="w"> </span>mklabel<span class="w"> </span>gpt<span class="w"> </span>mkpart<span class="w"> </span>primary<span class="w"> </span>ext4<span class="w"> </span><span class="m">0</span>%<span class="w"> </span><span class="m">100</span>%
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>sudo<span class="w"> </span>mkfs.ext4<span class="w"> </span>/dev/mmcblk0p1
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="c1"># mount and persist across reboots</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/mnt/seaweed-data
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>sudo<span class="w"> </span>mount<span class="w"> </span>/dev/mmcblk0p1<span class="w"> </span>/mnt/seaweed-data
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;/dev/mmcblk0p1  /mnt/seaweed-data  ext4  defaults,noatime  0  2&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/fstab
+</span></code></pre></div>
+<p>Verify:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>lsblk
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>df<span class="w"> </span>-h<span class="w"> </span>/mnt/seaweed-data
+</span></code></pre></div>
+<p>Expected result — a real, local ~28G filesystem, not an NFS mount:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>mmcblk0     179:0    0 29.8G  0 disk
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>└─mmcblk0p1 179:1    0 29.8G  0 part /mnt/seaweed-data
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>Filesystem      Size  Used Avail Use% Mounted on
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>/dev/mmcblk0p1   30G  2.1M   28G   1% /mnt/seaweed-data
+</span></code></pre></div>
+<p>The Pi 5's own SSD needed no extra step here — it's already genuinely local to that node (it's the machine serving the NFS exports, not consuming them), so it acts as a third real disk in this scheme without any card or partitioning work.</p>
+<h3 id="step-2-point-kubernetes-local-path-provisioner-at-the-real-disks">Step 2 — Point Kubernetes' local-path-provisioner at the real disks</h3>
+<p>The cluster's default <code>local-path</code> StorageClass (from <code>local-path-provisioner</code>, already installed via K3s) supports a per-node path map, so different nodes can resolve <code>local-path</code> PVCs to different physical directories:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>kubectl<span class="w"> </span>edit<span class="w"> </span>cm<span class="w"> </span>local-path-config<span class="w"> </span>-n<span class="w"> </span>kube-system
+</span></code></pre></div>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">{</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="nt">&quot;nodePathMap&quot;</span><span class="p">:[</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">    </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="s2">&quot;DEFAULT_PATH_FOR_NON_LISTED_NODES&quot;</span><span class="p">,</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">    </span><span class="nt">&quot;paths&quot;</span><span class="p">:[</span><span class="s2">&quot;/var/lib/rancher/k3s/storage&quot;</span><span class="p">]</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">    </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="s2">&quot;rpi3-01&quot;</span><span class="p">,</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">    </span><span class="nt">&quot;paths&quot;</span><span class="p">:[</span><span class="s2">&quot;/mnt/seaweed-data&quot;</span><span class="p">]</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">    </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="s2">&quot;rpi3-02&quot;</span><span class="p">,</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="w">    </span><span class="nt">&quot;paths&quot;</span><span class="p">:[</span><span class="s2">&quot;/mnt/seaweed-data&quot;</span><span class="p">]</span>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Nodes not explicitly listed (the Pi 5 itself, and the remaining Pi 3s) fall through to the default path. On the Pi 5 that default path is genuinely local (its own root disk). On the remaining Pi 3s, that same default path is still inside their NFS-mounted root — so pods scheduled there transparently fall back to shared network storage, which is exactly the contrast we wanted for demonstration purposes.</p>
+<p>Restart the provisioner to pick up the change:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span>local-path-provisioner
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span>local-path-provisioner
+</span></code></pre></div>
+<h3 id="step-3-deploy-a-second-node-local-seaweedfs-volume-release">Step 3 — Deploy a second, node-local SeaweedFS volume release</h3>
+<p>Rather than migrating the existing 320GB of live data in the original 8 volume PVCs, we deployed a <strong>second Helm release containing only the volume component</strong>, pointed at the same existing master so it joins the same cluster rather than creating an isolated one.</p>
+<p>The chart derives the master address from the release name by default (<code>{{ .Release.Name }}-master</code>), which would break for a differently-named release. Inspecting <code>templates/shared/_helpers.tpl</code> showed an explicit override key intended for exactly this case:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>{{- define &quot;seaweedfs.masterServerArg&quot; -}}
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>{{- if .Values.global.seaweedfs.masterServer -}}
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>{{- .Values.global.seaweedfs.masterServer -}}
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>{{- else -}}
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>{{- include &quot;seaweedfs.masterServers&quot; . -}}
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>{{- end -}}
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>{{- end -}}
+</span></code></pre></div>
+<p>Setting <code>global.seaweedfs.masterServer</code> explicitly bypasses the auto-derived name entirely.</p>
+<p><strong><code>values-local.yml</code>:</strong></p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nt">global</span><span class="p">:</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">  </span><span class="nt">seaweedfs</span><span class="p">:</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">    </span><span class="nt">masterServer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;seaweedfs-master.seaweedfs.svc.cluster.local:9333&quot;</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="nt">master</span><span class="p">:</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="nt">filer</span><span class="p">:</span>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="nt">s3</span><span class="p">:</span>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="nt">volume</span><span class="p">:</span>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="w">  </span><span class="nt">dataDirs</span><span class="p">:</span>
+</span><span id="__span-20-16"><a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+</span><span id="__span-20-17"><a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a><span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25Gi</span>
+</span><span id="__span-20-18"><a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a><span class="w">    </span><span class="nt">storageClass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local-path</span>
+</span><span id="__span-20-19"><a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="w">    </span><span class="nt">maxVolumes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
+</span><span id="__span-20-20"><a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">persistentVolumeClaim</span>
+</span><span id="__span-20-21"><a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a><span class="w">  </span><span class="nt">affinity</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+</span></code></pre></div>
+<p>Notes on the values above:
+- <code>size: 25Gi</code> rather than 40Gi, since the physical SD cards are only 28G — a PVC request larger than the underlying disk would never bind.
+- <code>affinity: ""</code> (no node restriction) — this lets replicas schedule anywhere across the cluster. Only pods landing on <code>rpi3-01</code>, <code>rpi3-02</code>, or the Pi 5 (<code>cloud</code>) get real local-disk backing per the <code>nodePathMap</code>; pods landing on the remaining Pi 3s fall back to shared NFS storage, same as the original deployment.
+- <code>master</code>, <code>filer</code>, and <code>s3</code> are all disabled — this release only adds volume servers to the existing cluster.</p>
+<p><strong>ServiceAccount collision:</strong> the chart always creates a ServiceAccount named <code>seaweedfs</code> (fixed by <code>global.seaweedfs.serviceAccountName</code>, scoped per-namespace, not per-release):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>templates/serviceaccount.yaml:
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>  name: {{ include &quot;seaweedfs.serviceAccountName&quot; . }}
+</span></code></pre></div>
+<p>Installing a second release into the <em>same</em> namespace as the first fails with an ownership conflict, since that object already belongs to the original release. The clean fix was installing into a <strong>separate namespace</strong>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>seaweedfs-local
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>helm<span class="w"> </span>install<span class="w"> </span>seaweedfs-local<span class="w"> </span>seaweedfs/seaweedfs<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">  </span>--namespace<span class="w"> </span>seaweedfs-local<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">4</span>.35.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">  </span>-f<span class="w"> </span>values-local.yml
+</span></code></pre></div>
+<p>Since <code>masterServer</code> above already uses the fully-qualified cluster DNS name, cross-namespace communication with the master works without any further changes.</p>
+<h3 id="step-4-verify">Step 4 — Verify</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>seaweedfs-local<span class="w"> </span>-o<span class="w"> </span>wide
+</span></code></pre></div>
+<p>Confirm the new release's volume servers registered with the same master as the original release:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://192.168.50.1:9333/dir/status<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</span></code></pre></div>
+<p>To visibly prove the mixed physical backing (local SD card / local SSD / fallback NFS) in one screenshot-friendly table:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="k">for</span><span class="w"> </span>pod<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>seaweedfs-local<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[*].metadata.name}&#39;</span><span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== </span><span class="nv">$pod</span><span class="s2"> ===&quot;</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="w">  </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-n<span class="w"> </span>seaweedfs-local<span class="w"> </span><span class="nv">$pod</span><span class="w"> </span>--<span class="w"> </span>df<span class="w"> </span>-h<span class="w"> </span>/data<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-1
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="k">done</span>
+</span></code></pre></div>
+<p>Pods scheduled on <code>rpi3-01</code>/<code>rpi3-02</code> report <code>/dev/mmcblk0p1</code> as the filesystem source, the pod on the Pi 5 reports its own local SSD device, and pods scheduled on the remaining Pi 3s report <code>192.168.50.1:/srv/nfs/...</code> — a single command output demonstrating that the same SeaweedFS cluster is now backed by a genuine mix of physically distributed storage and network-shared fallback storage.</p>
+<h3 id="result">Result</h3>
+<p>The cluster now runs two coexisting SeaweedFS volume deployments under one master:</p>
+<table>
+<thead>
+<tr>
+<th>Deployment</th>
+<th>Namespace</th>
+<th>Volume count</th>
+<th>Physical backing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>seaweedfs</code> (original)</td>
+<td><code>seaweedfs</code></td>
+<td>8</td>
+<td>All on one SSD via NFS (per-node StorageClasses, same physical disk)</td>
+</tr>
+<tr>
+<td><code>seaweedfs-local</code> (new)</td>
+<td><code>seaweedfs-local</code></td>
+<td>8</td>
+<td>Mixed — 2 real SD cards (rpi3-01, rpi3-02), 1 real local SSD (Pi 5), remaining fall back to NFS</td>
+</tr>
+</tbody>
+</table>
+<p>This demonstrates the practical difference between application-layer distribution (SeaweedFS treating separate PVCs as separate volume servers) and physical-layer distribution (data actually living on separate physical disks with independent failure domains), while joining both under a single unified master and topology view.</p>
+<hr />
 <h2 id="known-limitations">Known Limitations</h2>
 <ul>
-<li><strong>Single physical disk</strong>: All NFS exports come from one SSD on the Pi 5. If the SSD fails, all storage is lost. For production, use RAID or replicated disks.</li>
-<li><strong>NFS bottleneck</strong>: All 8 Pi 3s share the Pi 5's USB bandwidth (~400MB/s). Heavy parallel writes may saturate this.</li>
-<li><strong>PVC distribution</strong>: In the current Helm chart version, all volume PVCs may bind to the same StorageClass (<code>nfs-rpi3-01</code>) instead of spreading across nodes. Topology-aware volume groups require additional chart configuration.</li>
+<li><strong>Single physical disk (original deployment)</strong>: All NFS exports in the original <code>seaweedfs</code> release come from one SSD on the Pi 5. If the SSD fails, all storage in that release is lost. The <code>seaweedfs-local</code> release addresses this partially by adding independent physical disks on a subset of nodes.</li>
+<li><strong>NFS bottleneck</strong>: All 8 Pi 3s share the Pi 5's USB bandwidth (~400MB/s) for anything still backed by NFS, including the fallback path used by non-mapped nodes in the local-path setup.</li>
+<li><strong>Only 2 Pi 3s currently have local disks</strong>: extending true physical distribution to the remaining 6 Pi 3s requires adding SD cards to each and mapping them in <code>local-path-config</code>'s <code>nodePathMap</code>.</li>
 <li><strong>No auth on S3</strong>: The current setup uses anonymous S3 access. For production, configure SeaweedFS IAM credentials.</li>
 </ul>
 <hr />
 <h2 id="useful-commands">Useful Commands</h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Check all SeaweedFS pods</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>seaweedfs<span class="w"> </span>-o<span class="w"> </span>wide
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Check PVC bindings</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pvc<span class="w"> </span>-n<span class="w"> </span>seaweedfs
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># Check NFS exports</span>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>sudo<span class="w"> </span>exportfs<span class="w"> </span>-v
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="c1"># Check SSD usage</span>
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>df<span class="w"> </span>-h<span class="w"> </span>/srv/nfs
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>du<span class="w"> </span>-sh<span class="w"> </span>/srv/nfs/seaweedfs/*
-</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>
-</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="c1"># Restart SeaweedFS</span>
-</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>seaweedfs<span class="w"> </span>seaweedfs/seaweedfs<span class="w"> </span>-n<span class="w"> </span>seaweedfs<span class="w"> </span>-f<span class="w"> </span>~/seaweedfs/values-pi.yaml
-</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>
-</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="c1"># Uninstall SeaweedFS (PVCs are Retain — data is preserved)</span>
-</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>helm<span class="w"> </span>uninstall<span class="w"> </span>seaweedfs<span class="w"> </span>-n<span class="w"> </span>seaweedfs
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># Check all SeaweedFS pods (original + local-path releases)</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>seaweedfs<span class="w"> </span>-o<span class="w"> </span>wide
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>seaweedfs-local<span class="w"> </span>-o<span class="w"> </span>wide
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="c1"># Check PVC bindings</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pvc<span class="w"> </span>-n<span class="w"> </span>seaweedfs
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pvc<span class="w"> </span>-n<span class="w"> </span>seaweedfs-local
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a><span class="c1"># Check NFS exports</span>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a>sudo<span class="w"> </span>exportfs<span class="w"> </span>-v
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a><span class="c1"># Check SSD / SD card usage</span>
+</span><span id="__span-26-13"><a id="__codelineno-26-13" name="__codelineno-26-13" href="#__codelineno-26-13"></a>df<span class="w"> </span>-h<span class="w"> </span>/srv/nfs
+</span><span id="__span-26-14"><a id="__codelineno-26-14" name="__codelineno-26-14" href="#__codelineno-26-14"></a>df<span class="w"> </span>-h<span class="w"> </span>/mnt/seaweed-data
+</span><span id="__span-26-15"><a id="__codelineno-26-15" name="__codelineno-26-15" href="#__codelineno-26-15"></a>du<span class="w"> </span>-sh<span class="w"> </span>/srv/nfs/seaweedfs/*
+</span><span id="__span-26-16"><a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a>
+</span><span id="__span-26-17"><a id="__codelineno-26-17" name="__codelineno-26-17" href="#__codelineno-26-17"></a><span class="c1"># Check local-path-provisioner node mapping</span>
+</span><span id="__span-26-18"><a id="__codelineno-26-18" name="__codelineno-26-18" href="#__codelineno-26-18"></a>kubectl<span class="w"> </span>get<span class="w"> </span>cm<span class="w"> </span>local-path-config<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span>-o<span class="w"> </span>yaml
+</span><span id="__span-26-19"><a id="__codelineno-26-19" name="__codelineno-26-19" href="#__codelineno-26-19"></a>
+</span><span id="__span-26-20"><a id="__codelineno-26-20" name="__codelineno-26-20" href="#__codelineno-26-20"></a><span class="c1"># Restart SeaweedFS (original release)</span>
+</span><span id="__span-26-21"><a id="__codelineno-26-21" name="__codelineno-26-21" href="#__codelineno-26-21"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>seaweedfs<span class="w"> </span>seaweedfs/seaweedfs<span class="w"> </span>-n<span class="w"> </span>seaweedfs<span class="w"> </span>-f<span class="w"> </span>~/seaweedfs/values-pi.yaml
+</span><span id="__span-26-22"><a id="__codelineno-26-22" name="__codelineno-26-22" href="#__codelineno-26-22"></a>
+</span><span id="__span-26-23"><a id="__codelineno-26-23" name="__codelineno-26-23" href="#__codelineno-26-23"></a><span class="c1"># Update node-local release (e.g. after adding more SD cards)</span>
+</span><span id="__span-26-24"><a id="__codelineno-26-24" name="__codelineno-26-24" href="#__codelineno-26-24"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>seaweedfs-local<span class="w"> </span>seaweedfs/seaweedfs<span class="w"> </span>-n<span class="w"> </span>seaweedfs-local<span class="w"> </span>--version<span class="w"> </span><span class="m">4</span>.35.0<span class="w"> </span>-f<span class="w"> </span>values-local.yml
+</span><span id="__span-26-25"><a id="__codelineno-26-25" name="__codelineno-26-25" href="#__codelineno-26-25"></a>
+</span><span id="__span-26-26"><a id="__codelineno-26-26" name="__codelineno-26-26" href="#__codelineno-26-26"></a><span class="c1"># View unified cluster topology across both releases</span>
+</span><span id="__span-26-27"><a id="__codelineno-26-27" name="__codelineno-26-27" href="#__codelineno-26-27"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://192.168.50.1:9333/dir/status<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</span><span id="__span-26-28"><a id="__codelineno-26-28" name="__codelineno-26-28" href="#__codelineno-26-28"></a>
+</span><span id="__span-26-29"><a id="__codelineno-26-29" name="__codelineno-26-29" href="#__codelineno-26-29"></a><span class="c1"># Uninstall (PVCs are Retain — data is preserved)</span>
+</span><span id="__span-26-30"><a id="__codelineno-26-30" name="__codelineno-26-30" href="#__codelineno-26-30"></a>helm<span class="w"> </span>uninstall<span class="w"> </span>seaweedfs<span class="w"> </span>-n<span class="w"> </span>seaweedfs
+</span><span id="__span-26-31"><a id="__codelineno-26-31" name="__codelineno-26-31" href="#__codelineno-26-31"></a>helm<span class="w"> </span>uninstall<span class="w"> </span>seaweedfs-local<span class="w"> </span>-n<span class="w"> </span>seaweedfs-local
 </span></code></pre></div>
 
 

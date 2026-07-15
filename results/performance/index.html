@@ -79,6 +79,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#performance-summary" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -721,7 +726,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../task6/model.md" class="md-nav__link">
+      <a href="../../task6/model/" class="md-nav__link">
         
   
   
@@ -951,6 +956,34 @@
     
   
     Kubernetes Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task7/high_availability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    High Availability Approaches
   
 
     
@@ -1253,6 +1286,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Summary
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -1270,6 +1323,170 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#non-mpi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-MPI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-MPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-pov-ray-task-distributor-8-workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. POV-Ray Task Distributor (8 Workers)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. POV-Ray Task Distributor (8 Workers)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-modified-task-distributor-32-logical-workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Modified Task Distributor (32 Logical Workers)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Modified Task Distributor (32 Logical Workers)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-observations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#main-bottlenecks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main bottlenecks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-celery-redis-monte-carlo-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Celery + Redis Monte Carlo Benchmark
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Celery + Redis Monte Carlo Benchmark">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-observations_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#main-bottlenecks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main bottlenecks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overall-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overall Comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1355,6 +1572,161 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#non-mpi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-MPI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-MPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-pov-ray-task-distributor-8-workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. POV-Ray Task Distributor (8 Workers)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. POV-Ray Task Distributor (8 Workers)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-modified-task-distributor-32-logical-workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Modified Task Distributor (32 Logical Workers)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Modified Task Distributor (32 Logical Workers)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-observations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#main-bottlenecks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main bottlenecks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-celery-redis-monte-carlo-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Celery + Redis Monte Carlo Benchmark
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Celery + Redis Monte Carlo Benchmark">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-observations_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#main-bottlenecks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main bottlenecks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overall-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overall Comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1371,9 +1743,108 @@
 
 
 
-  <h1>Performance Summary</h1>
-
-
+<h1 id="performance-summary">Performance Summary</h1>
+<h2 id="non-mpi">Non-MPI</h2>
+<p>Three different benchmark implementations were evaluated on the Raspberry Pi cluster:</p>
+<ol>
+<li><strong>POV-Ray Task Distributor (8 Workers)</strong></li>
+<li><strong>Modified Task Distributor (32 Logical Workers)</strong></li>
+<li><strong>Celery + Redis Monte Carlo Benchmark</strong></li>
+</ol>
+<p>Although all three are non-MPI approaches, they exhibit different scalability characteristics because of their communication models and workload distributions.</p>
+<hr />
+<h3 id="1-pov-ray-task-distributor-8-workers">1. POV-Ray Task Distributor (8 Workers)</h3>
+<p>The original task distributor demonstrates both <strong>Amdahl's Law</strong> and <strong>Gustafson's Law</strong>, depending on the workload size.</p>
+<p>For small images (200×150 to 800×600), communication and coordination overhead dominate the execution time. Establishing SSH connections, coordinating workers, and assembling the final image consume more time than the rendering itself, resulting in little or no speedup.</p>
+<p>As image size increases (1600×1200 and 3200×2400), rendering becomes the dominant cost. The parallel portion of the workload grows significantly while the sequential overhead remains relatively constant, leading to measurable speedup.</p>
+<h4 id="key-observations">Key observations</h4>
+<ul>
+<li>Small workloads become slower with additional workers.</li>
+<li>Large workloads benefit from parallel execution.</li>
+<li>Best measured speedup: <strong>~2×</strong> at 3200×2400 using 8 workers.</li>
+<li>Main bottlenecks:</li>
+<li>SSH startup overhead</li>
+<li>NFS synchronization</li>
+<li>Sequential image composition</li>
+<li>Background k3s processes</li>
+</ul>
+<hr />
+<h3 id="2-modified-task-distributor-32-logical-workers">2. Modified Task Distributor (32 Logical Workers)</h3>
+<h4 id="summary">Summary</h4>
+<p>The scheduler was extended to support multiple logical workers per Raspberry Pi, allowing all CPU cores to participate in rendering.</p>
+<p>Instead of assigning one rendering task per machine, each physical Raspberry Pi executes multiple rendering processes simultaneously.</p>
+<p>This increases hardware utilization but also introduces additional process scheduling overhead and CPU contention.</p>
+<h4 id="key-observations_1">Key observations</h4>
+<ul>
+<li>Small workloads remain dominated by overhead.</li>
+<li>Medium and large workloads improve significantly up to approximately <strong>8 workers</strong>.</li>
+<li>Beyond this point, performance begins to plateau or decline.</li>
+<li>Best measured speedup:</li>
+<li><strong>2.73×</strong> for 1600×1200</li>
+<li><strong>2.59×</strong> for 3200×2400</li>
+</ul>
+<p>Increasing logical workers beyond the available hardware resources provides diminishing returns because workers begin competing for the same CPU cores, memory bandwidth, and cache.</p>
+<h4 id="main-bottlenecks">Main bottlenecks</h4>
+<ul>
+<li>SSH process creation</li>
+<li>Operating system scheduling overhead</li>
+<li>CPU contention between multiple rendering processes</li>
+<li>Sequential image assembly</li>
+</ul>
+<hr />
+<h3 id="3-celery-redis-monte-carlo-benchmark">3. Celery + Redis Monte Carlo Benchmark</h3>
+<p>Unlike the Task Distributor, Celery distributes independent Monte Carlo tasks through a Redis message broker.</p>
+<p>The measured runtime includes task scheduling, serialization, communication, computation, and result collection.</p>
+<p>For small workloads, communication overhead dominates execution time, resulting in almost no speedup.</p>
+<p>As the workload increases to tens of millions of samples, computation becomes the dominant component and the cluster begins to scale more effectively.</p>
+<h4 id="key-observations_2">Key observations</h4>
+<ul>
+<li>Very small workloads show almost no benefit from parallel execution.</li>
+<li>Larger workloads (10M–50M samples) demonstrate increasing speedup.</li>
+<li>Best measured speedup:</li>
+<li><strong>2.68×</strong> at 50M samples using 32 workers.</li>
+</ul>
+<h4 id="main-bottlenecks_1">Main bottlenecks</h4>
+<ul>
+<li>Redis broker becoming a centralized communication point</li>
+<li>Task serialization/deserialization</li>
+<li>Queue scheduling latency</li>
+<li>Python interpreter overhead</li>
+<li>Result collection through Redis</li>
+</ul>
+<p>Possible improvements include replacing Redis with a lower-overhead messaging framework such as <strong>ZeroMQ</strong>, increasing task granularity, and reducing communication frequency.</p>
+<hr />
+<h2 id="overall-comparison">Overall Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Parallel Model</th>
+<th>Best Speedup</th>
+<th>Main Limitation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Task Distributor (8 Workers)</td>
+<td>Static image strip distribution</td>
+<td>~2×</td>
+<td>SSH startup and sequential image composition</td>
+</tr>
+<tr>
+<td>Modified Task Distributor (32 Logical Workers)</td>
+<td>Multiple workers per physical node</td>
+<td>2.73×</td>
+<td>CPU contention and scheduling overhead</td>
+</tr>
+<tr>
+<td>Celery + Redis</td>
+<td>Distributed task queue</td>
+<td>2.68×</td>
+<td>Redis communication and task scheduling overhead</td>
+</tr>
+</tbody>
+</table>
 
 
 
