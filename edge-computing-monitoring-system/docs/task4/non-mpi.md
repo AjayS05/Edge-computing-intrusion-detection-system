@@ -1,12 +1,19 @@
-# POV-Ray Task Distributor — Non-MPI Cluster Benchmark
+# Non-MPI Cluster Benchmark
 
-## Overview
+There are two ways in which a non-MPI cluster benchmark differs from MPI:
+1. The workers do not communicate with each other to get a task done.
+2. The workers make use of a shared space. #
+
+In our implementation, we made use of two ways to do benchmark analysis - each differing in their shared space and the communication technology used by the master node. 
+
+## POV-Ray Task Distributor
+### Overview
 
 This benchmark uses **Dr. Christian Baun's Task Distributor** — the same tool developed by the professor — to distribute POV-Ray ray tracing workloads across a Raspberry Pi cluster without MPI. The goal is to demonstrate Amdahl's Law and Gustafson's Law through a real compute-heavy workload, and to identify bottlenecks in a non-MPI distributed architecture.
 
 ---
 
-## Cluster Setup
+### Cluster Setup
 
 | Component | Details |
 |---|---|
@@ -19,17 +26,19 @@ This benchmark uses **Dr. Christian Baun's Task Distributor** — the same tool 
 
 ---
 
-## How Task Distributor Works
+### How Task Distributor Works
 
 The task distributor splits a POV-Ray scene into horizontal image strips and distributes them across worker nodes. The process has three phases which directly map to Amdahl's serial and parallel fractions:
 
-### Phase 1 — 1st Sequential Part (master only)
-- Master creates a lockfile on the NFS shared volume
+![Workflow Task Distributor Baun](images/baun_povray.png)
+
+#### Phase 1 — 1st Sequential Part (master only)
+- Master creates a locfile on the NFS shared volume
 - Master calculates row ranges for each worker
 - SSH connection established to each worker node
 - This is pure serial overhead — cannot be parallelised
 
-### Phase 2 — Parallel Part (all workers simultaneously)
+#### Phase 2 — Parallel Part (all workers simultaneously)
 - Master SSHes into each RPi3 and launches `task-distributor-worker.sh`
 - Each worker runs POV-Ray independently, rendering only its assigned row range
 - Workers write output to local `/tmp/` (avoids NFS write contention during render)
@@ -37,17 +46,17 @@ The task distributor splits a POV-Ray scene into horizontal image strips and dis
 - Each worker writes a `.done` file to signal completion — master polls this file
 - Master waits until all workers signal done before proceeding
 
-### Phase 3 — 2nd Sequential Part (master only)
+#### Phase 3 — 2nd Sequential Part (master only)
 - Master collects all `worker*.png` strips from NFS shared volume
 - ImageMagick `convert -append` stitches strips vertically into final image
 - This assembly step is serial and grows with number of workers (more strips to assemble)
 
-### Why it is Non-MPI
+#### Why it is Non-MPI
 Workers have no awareness of each other. There are no ranks, no barriers, no collective operations, no direct worker-to-worker communication. Each worker only communicates with the master via the NFS filesystem — reading its task parameters from SSH arguments and signalling completion via a `.done` file. This is a classic **task farming** pattern, architecturally distinct from MPI's tightly-coupled collective model.
 
 ---
 
-## Benchmark Configuration
+### Benchmark Configuration
 
 | Parameter | Value |
 |---|---|
@@ -60,9 +69,9 @@ Workers have no awareness of each other. There are no ranks, no barriers, no col
 
 ---
 
-## Results
+### Results
 
-### Graph interpretation
+#### Graph interpretation
 
 The stacked bar charts show three components per run:
 
@@ -73,9 +82,9 @@ The stacked bar charts show three components per run:
 The speedup bars show T1/Tn — how much faster N workers is compared to 1 worker.
 ![Task Distributor 8 Node Result](images/combined_performance_grid2.png)
 
-### What the results show
+#### What the results show
 
-#### 200×150 — Pure Amdahl's Law regime
+##### 200×150 — Pure Amdahl's Law regime
 
 | Workers | Wall time (s) | Speedup |
 |---|---|---|
@@ -86,11 +95,11 @@ The speedup bars show T1/Tn — how much faster N workers is compared to 1 worke
 
 Wall time **increases** with more workers. Speedup drops far below 1.0. This is textbook Amdahl's Law — the problem is so small (30,000 pixels) that the parallel compute time is negligible, but the SSH startup overhead (establishing 8 connections) and the NFS lockfile coordination grow with N. Adding workers makes things worse because the serial overhead dominates.
 
-#### 400×300 — Still Amdahl-dominated
+##### 400×300 — Still Amdahl-dominated
 
 Similar pattern — time increases then partially recovers at N=8 but never beats N=1. The compute is still too small relative to coordination overhead.
 
-#### 800×600 — Transition zone
+##### 800×600 — Transition zone
 
 | Workers | Wall time (s) | Speedup |
 |---|---|---|
@@ -101,7 +110,7 @@ Similar pattern — time increases then partially recovers at N=8 but never beat
 
 N=4 finally breaks speedup above 1.0 (1.11×) — the parallel compute is large enough to benefit from 4 workers. But N=8 regresses because the 2nd sequential assembly step and SSH overhead now outweigh the compute gain.
 
-#### 1600×1200 — Gustafson's Law emerging
+##### 1600×1200 — Gustafson's Law emerging
 
 | Workers | Wall time (s) | Speedup |
 |---|---|---|
@@ -112,7 +121,7 @@ N=4 finally breaks speedup above 1.0 (1.11×) — the parallel compute is large 
 
 Clear trend — speedup increases with workers and stays above 1.0 from N=4 onwards. The parallel green bar dominates and shrinks with more workers. The sequential orange bar (image assembly) is now visible but small relative to total time. This is Gustafson's regime — the problem is large enough that parallel compute dominates.
 
-#### 3200×2400 — Strong Gustafson's Law
+##### 3200×2400 — Strong Gustafson's Law
 
 | Workers | Wall time (s) | Speedup |
 |---|---|---|
@@ -124,36 +133,36 @@ N=1 not possible — single RPi3 cannot render the full 4K image as `/tmp` fills
 
 ---
 
-## Bottlenecks Identified
+### Bottlenecks Identified
 
-### 1. SSH startup overhead (1st sequential part)
+#### 1. SSH startup overhead (1st sequential part)
 Every run requires the master to open SSH connections to each worker. At N=8 this adds ~0.5–1s of serial overhead before any compute starts. This is why small images show negative speedup — the SSH overhead exceeds the render time.
 
 **Internal CPU view:** The master's CPU spends time in system calls for network socket setup, key exchange, and process spawning. Workers sit idle waiting for the SSH connection to establish.
 
-### 2. NFS lockfile write contention
+#### 2. NFS lockfile write contention
 Workers signal completion by appending to a shared NFS lockfile. Under high concurrency (N=8, all finishing simultaneously) NFS write ordering is not guaranteed, causing some workers' writes to be lost silently. This caused intermittent hangs where the master waited indefinitely for a worker that had already finished.
 
 **Fix applied:** Replaced shared lockfile append with individual per-worker `.done` files — each worker creates `worker1.done`, `worker2.done` etc. Master checks for file existence rather than grepping a shared file, eliminating the race condition.
 
-### 3. Image assembly (2nd sequential part — Amdahl's serial fraction α)
-The `convert -append` command runs on the master and is inherently serial. It grows slightly with N (more strips to load and stitch). At 3200×2400 this takes ~1.5s. This is your measured α — the fraction of work that cannot be parallelised regardless of how many workers you add.
+#### 3. Image assembly (2nd sequential part — Amdahl's serial fraction α)
+The `convert -append` command runs on the master and is inherently serial. It grows slightly with N (more strips to load and stitch). At 3200×2400 this takes ~1.5s. This is our measured α — the fraction of work that cannot be parallelised regardless of how many workers you add.
 
 **Internal CPU view:** Single-threaded ImageMagick decompresses each PNG strip, allocates a full-resolution output buffer in memory, copies strips sequentially, then re-encodes. Memory bandwidth limited on RPi5.
 
-### 4. k3s Kubernetes agent interference
+#### 4. k3s Kubernetes agent interference
 All RPi3 worker nodes run a k3s agent as part of the production Kubernetes cluster serving SeaweedFS. This agent consumes 5–30% CPU intermittently, causing variance in per-worker render times. In extreme cases one worker took 2+ minutes longer than others, inflating parallel wall time significantly.
 
 **Internal CPU view:** k3s agent performs periodic container health checks, network namespace maintenance, and etcd heartbeats. These are burst operations that preempt POV-Ray's compute threads. Since k3s load is non-uniform across nodes (different pods scheduled differently), workers finish at different times — this is visible in the lockfile timestamps showing 30–60 second gaps between first and last worker completion.
 
-### 5. /tmp size limit at large image sizes
+#### 5. /tmp size limit at large image sizes
 RPi3 nodes have 256MB tmpfs mounted at `/tmp`. POV-Ray writes large intermediate files during rendering. At 3200×2400 with a single worker, POV-Ray's temp directories (`/tmp/pov*`) consume the entire tmpfs and the process aborts with a segmentation fault.
 
 **This is actually a Gustafson argument:** The only way to render large images is to distribute them — no single node has sufficient local scratch space. More workers = smaller strips = smaller per-node temp files. This is a real hardware constraint that motivates distributed rendering.
 
 ---
 
-## Amdahl's Law Verification
+### Amdahl's Law Verification
 
 From the results, the serial fraction α can be estimated from the sequential times:
 
@@ -165,7 +174,7 @@ With α ≈ 0.06, Amdahl's Law predicts maximum speedup of `1/0.06 ≈ 16.7×` w
 
 ---
 
-## Gustafson's Law Verification
+### Gustafson's Law Verification
 
 The left columns of the chart (small images) show increasing wall time with workers — Amdahl behaviour. The right columns (large images) show decreasing wall time — Gustafson behaviour. The transition occurs between 800×600 and 1600×1200, where the parallel compute fraction becomes large enough to benefit from distribution.
 
@@ -173,15 +182,73 @@ This matches Gustafson's insight: for a sufficiently large problem, the sequenti
 
 ---
 
-## Key Differences from MPI
+### Side-Quest
+We modified the task distributor to distribute the image slides within a node to cores. Making cores as the workers. Following code transforms the scheduler from a one-worker-per-machine model into a many-workers-per-machine model.
+```
+WORKERS_PER_NODE=$((NUM_NODES / 8))
 
-| Property | MPI | Task Distributor (this experiment) |
-|---|---|---|
-| Coordination mechanism | Direct binary buffers, MPI_Barrier | NFS filesystem, SSH, .done files |
-| Worker awareness | All processes know each other (ranks) | Workers have no awareness of each other |
-| Synchronisation | Collective barriers | Poll-based (master checks .done files) |
-| Communication overhead | Microseconds | SSH ~500ms + NFS write latency |
-| Fault tolerance | One crash = all fail | Failed worker just delays master poll |
-| Serial fraction source | MPI_Gather, MPI_Scatter | SSH startup + image assembly |
+for ((node=1; node<=8; node++)); do
+    for ((w=1; w<=WORKERS_PER_NODE; w++)); do
+        HOSTS_ARRAY[$idx]=${PHYSICAL_NODES[$node]}
+        idx=$((idx + 1))
+    done
+done
+```
 
-The NFS-based coordination is the defining characteristic — it trades MPI's low-latency direct communication for a loosely-coupled filesystem-based protocol that requires no MPI runtime, no rank negotiation, and tolerates worker heterogeneity (different k3s loads per node) naturally.
+Basically, for 32 workers the process distribution is like this:
+
+```
+Image
+────────────────────────────
+
+Slice1  → Pi1
+Slice2  → Pi1
+Slice3  → Pi1
+Slice4  → Pi1
+
+Slice5  → Pi2
+Slice6  → Pi2
+Slice7  → Pi2
+Slice8  → Pi2
+
+...
+```
+
+## Celery-based Benchmark
+Following is the flow which is repeated many times with different numbers of workers and different workload sizes.
+
+```
+               Pi 5 (Master)
+                    │
+         Create Monte Carlo workload
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+   Scheduler             Celery
+        │
+        ▼
+ Distribute work to workers
+        │
+        ▼
+  Raspberry Pi 3 workers
+        │
+        ▼
+Each computes part of Monte Carlo Pi
+        │
+        ▼
+Send results back
+        │
+        ▼
+Master measures total time
+        │
+        ▼
+Compare against serial execution
+```
+
+Timer is started before sending which includes:
+- scheduling
+- sending tasks
+- waiting
+- network delay
+- computation
+- receiving results

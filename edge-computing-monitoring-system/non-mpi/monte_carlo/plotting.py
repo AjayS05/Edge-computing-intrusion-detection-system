@@ -19,17 +19,24 @@ BAR_COLOR = '#CCCCCC'
 BAR_EDGE  = '#333333'
 OUTPUT_DIR    = '.'
 
+BG_COLOR         = '#FFFFFF'
+TEXT_COLOR       = '#000000'
+TOP_BAR_COLOR    = '#00E63D'  # Vibrant green from the reference image
+BOTTOM_BAR_COLOR = '#C0C0C0'  # Clean grey from the reference speedup charts
+BAR_EDGE         = '#000000'  # Defined black borders
+OUTPUT_DIR       = '.'
+
 def professor_chart(results, scheduler_name, filename):
     point_sizes = sorted(set(r['total_points'] for r in results))
     n_cols      = len(point_sizes)
 
     fig, axes = plt.subplots(2, n_cols, figsize=(3.2 * n_cols, 7))
-    fig.patch.set_facecolor(PURPLE)
+    fig.patch.set_facecolor(BG_COLOR)
 
     title = (f"{'Amdahl' + chr(39) + 's & Gustafson' + chr(39) + 's Law — Monte Carlo Pi'}\n"
              f"Non-MPI {'Celery+Redis' if scheduler_name=='celery' else 'ZeroMQ'} Cluster  "
              f"(8× RPi3, mean of trials)")
-    fig.suptitle(title, color='white', fontsize=10, fontweight='bold', y=0.99)
+    fig.suptitle(title, color=TEXT_COLOR, fontsize=10, fontweight='bold', y=0.99)
 
     for col, pts in enumerate(point_sizes):
         rows = sorted([r for r in results if r['total_points'] == pts],
@@ -42,58 +49,65 @@ def professor_chart(results, scheduler_name, filename):
         speedups= [r['speedup']   for r in rows]
         x_pos   = np.arange(len(ns))
 
-        # ── Top: wall time ──
+        # ── Top: wall time (Vivid Green Bars) ──
         ax_w = axes[0][col]
-        bars = ax_w.bar(x_pos, walls, color=BAR_COLOR, edgecolor=BAR_EDGE,
-                        linewidth=0.5, width=0.65)
+        bars = ax_w.bar(x_pos, walls, color=TOP_BAR_COLOR, edgecolor=BAR_EDGE,
+                        linewidth=0.8, width=0.65)
         ax_w.set_xticks(x_pos)
-        ax_w.set_xticklabels(ns, fontsize=5)
-        ax_w.tick_params(axis='y', labelsize=5)
-        ax_w.set_ylabel('[s]', fontsize=6)
-        ax_w.set_xlabel('Number of Workers', fontsize=5)
-        pts_label = f'{pts//1_000_000}M' if pts >= 1_000_000 else f'{pts//1_000}K'
+        ax_w.set_xticklabels(ns, fontsize=6, color=TEXT_COLOR)
+        ax_w.tick_params(axis='y', labelsize=6, colors=TEXT_COLOR)
+        ax_w.set_ylabel('Runtime [s]', fontsize=7, color=TEXT_COLOR)
+        ax_w.set_xlabel('Nodes [#]', fontsize=7, color=TEXT_COLOR)
+        
         trial_count = next(c['trials'] for c in POINT_CONFIGS if c['points'] == pts)
-        ax_w.set_title(f'Pi approximated with\n{pts:,} points\n'
-                       f'(Mean Time of {trial_count} Tests)',
-                       fontsize=6, pad=3)
-        ax_w.set_facecolor('white')
-        ax_w.spines['top'].set_visible(False)
-        ax_w.spines['right'].set_visible(False)
+        pts_label = f'{pts//1_000_000}M' if pts >= 1_000_000 else f'{pts//1_000}K'
+        ax_w.set_title(f'{pts_label} Points\n({trial_count} Trials)',
+                       fontsize=8, pad=4, color=TEXT_COLOR, fontweight='bold')
+        ax_w.set_facecolor(BG_COLOR)
+        
+        # Keep crisp grid lines/spines matching style
+        for spine in ax_w.spines.values():
+            spine.set_color(TEXT_COLOR)
+            spine.set_linewidth(0.8)
+
         for bar, val in zip(bars, walls):
             ax_w.text(bar.get_x() + bar.get_width()/2,
                       bar.get_height() + max(walls)*0.01,
-                      f'{val:.4f}' if val < 10 else f'{val:.3f}',
-                      ha='center', va='bottom', fontsize=4, rotation=90)
+                      f'{val:.2f}' if val >= 1 else f'{val:.3f}',
+                      ha='center', va='bottom', fontsize=5, rotation=90, color=TEXT_COLOR)
 
-        # ── Bottom: speedup ──
+        # ── Bottom: speedup (Grey Bars) ──
         ax_s = axes[1][col]
-        bars2 = ax_s.bar(x_pos, speedups, color=BAR_COLOR, edgecolor=BAR_EDGE,
-                         linewidth=0.5, width=0.65)
+        bars2 = ax_s.bar(x_pos, speedups, color=BOTTOM_BAR_COLOR, edgecolor=BAR_EDGE,
+                         linewidth=0.8, width=0.65)
         ax_s.set_xticks(x_pos)
-        ax_s.set_xticklabels(ns, fontsize=5)
-        ax_s.tick_params(axis='y', labelsize=5)
-        ax_s.set_ylabel('Speedup', fontsize=6)
-        ax_s.set_xlabel('Number of Workers', fontsize=5)
-        ax_s.set_facecolor('white')
-        ax_s.spines['top'].set_visible(False)
-        ax_s.spines['right'].set_visible(False)
+        ax_s.set_xticklabels(ns, fontsize=6, color=TEXT_COLOR)
+        ax_s.tick_params(axis='y', labelsize=6, colors=TEXT_COLOR)
+        ax_s.set_ylabel('Speedup', fontsize=7, color=TEXT_COLOR)
+        ax_s.set_xlabel('Nodes [#]', fontsize=7, color=TEXT_COLOR)
+        ax_s.set_facecolor(BG_COLOR)
+        ax_s.set_ylim(0, 5) # Fixed headroom for speedup representation
+        
+        for spine in ax_s.spines.values():
+            spine.set_color(TEXT_COLOR)
+            spine.set_linewidth(0.8)
+
         for bar, val in zip(bars2, speedups):
             ax_s.text(bar.get_x() + bar.get_width()/2,
-                      bar.get_height() + max(speedups)*0.01,
+                      bar.get_height() + 0.1,
                       f'{val:.2f}',
-                      ha='center', va='bottom', fontsize=4, rotation=90)
+                      ha='center', va='bottom', fontsize=6, color=TEXT_COLOR)
 
     fig.text(0.5, 0.005,
-             f'Non-MPI {"Celery+Redis" if scheduler_name=="celery" else "ZeroMQ (no broker)"}  —  '
+             f'Non-MPI {"Celery+Redis" if scheduler_name=='celery' else 'ZeroMQ (no broker)'}  —  '
              f'8× Raspberry Pi 3 Workers  —  Raspberry Pi 5 Master',
-             ha='center', color='white', fontsize=6)
+             ha='center', color=TEXT_COLOR, fontsize=6)
 
     plt.tight_layout(rect=[0, 0.02, 1, 0.97])
     path = f'{OUTPUT_DIR}/{filename}'
-    plt.savefig(path, dpi=180, bbox_inches='tight', facecolor=PURPLE)
+    plt.savefig(path, dpi=200, bbox_inches='tight', facecolor=BG_COLOR)
     plt.close()
     print(f'\nSaved: {path}')
-
 
 # ---------------------------------------------
 celery_results = [
@@ -616,4 +630,4 @@ celery_results = [
     "efficiency": 0.0839
   }
 ]
-professor_chart(celery_results, 'celery', 'celery_combined.png')
+professor_chart(celery_results, 'celery', 'celery_combined_color.png')
