@@ -1,28 +1,63 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  getKubernetesPods,
   getMonitoringOverview,
+  getTelegramStatus,
+  type KubernetesPod,
+  type KubernetesPodsResponse,
   type MonitoringAlert,
   type MonitoringNode,
   type MonitoringOverview,
+  type TelegramStatusResponse,
 } from "../../services/api";
 import "./DashboardPage.css";
 
 export function DashboardPage() {
   const [data, setData] = useState<MonitoringOverview | null>(null);
+  const [podsData, setPodsData] = useState<KubernetesPodsResponse | null>(null);
+  const [telegramData, setTelegramData] =
+    useState<TelegramStatusResponse | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [podsError, setPodsError] = useState<string | null>(null);
+  const [telegramError, setTelegramError] = useState<string | null>(null);
 
   const loadDashboardData = useCallback(async () => {
     try {
       setError(null);
+      setPodsError(null);
+      setTelegramError(null);
 
-      const response = await getMonitoringOverview();
-      setData(response);
+      const overviewResponse = await getMonitoringOverview();
+      setData(overviewResponse);
+
+      try {
+        const podsResponse = await getKubernetesPods();
+        setPodsData(podsResponse);
+      } catch (podErr) {
+        setPodsData(null);
+        setPodsError(
+          podErr instanceof Error
+            ? podErr.message
+            : "Failed to load Kubernetes pods",
+        );
+      }
+
+      try {
+        const telegramResponse = await getTelegramStatus();
+        setTelegramData(telegramResponse);
+      } catch (telegramErr) {
+        setTelegramData(null);
+        setTelegramError(
+          telegramErr instanceof Error
+            ? telegramErr.message
+            : "Failed to load Telegram status",
+        );
+      }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load dashboard data",
+        err instanceof Error ? err.message : "Failed to load dashboard data",
       );
     } finally {
       setLoading(false);
@@ -40,7 +75,7 @@ export function DashboardPage() {
   }, [loadDashboardData]);
 
   const hottestNodes = useMemo(() => {
-    return [...(data?.cluster.nodes ?? [])]
+    return [...(data?.cluster?.nodes ?? [])]
       .filter((node) => typeof node.temperature_c === "number")
       .sort(
         (firstNode, secondNode) =>
@@ -49,7 +84,43 @@ export function DashboardPage() {
       .slice(0, 5);
   }, [data]);
 
+  const kubernetesPods = useMemo(() => {
+    const pods = podsData?.pods ?? [];
+
+    return [...pods].sort((firstPod, secondPod) => {
+      const firstIsYolo = isYoloPod(firstPod) ? 0 : 1;
+      const secondIsYolo = isYoloPod(secondPod) ? 0 : 1;
+
+      if (firstIsYolo !== secondIsYolo) {
+        return firstIsYolo - secondIsYolo;
+      }
+
+      return firstPod.name.localeCompare(secondPod.name);
+    });
+  }, [podsData]);
+
   const latestAlerts = data?.alerts?.slice(0, 4) ?? [];
+
+  const runningPods = podsData?.running_pods ?? 0;
+  const totalPods = podsData?.total_pods ?? 0;
+
+  const yoloStatus =
+    podsData?.yolo_status ?? String(data?.services.yolo ?? "unknown");
+
+  const yoloPod = podsData?.yolo_pods?.[0];
+
+  const yoloSubtitle = yoloPod
+    ? `${yoloPod.name} · ready ${yoloPod.ready}`
+    : podsData
+      ? "No YOLO pod found"
+      : "Kubernetes pod API not loaded";
+
+  const telegramStatus =
+    telegramData?.status ?? String(data?.services.telegram_bot ?? "unknown");
+
+  const telegramSubtitle = telegramData
+    ? `${telegramData.bot_name} · ${telegramData.mode}`
+    : "Telegram API not loaded";
 
   if (loading) {
     return (
@@ -65,6 +136,20 @@ export function DashboardPage() {
         <div className="dashboard-error" role="alert">
           <strong>Dashboard API Error</strong>
           <p>{error}</p>
+        </div>
+      )}
+
+      {podsError && (
+        <div className="dashboard-error" role="alert">
+          <strong>Kubernetes Pods API Error</strong>
+          <p>{podsError}</p>
+        </div>
+      )}
+
+      {telegramError && (
+        <div className="dashboard-error" role="alert">
+          <strong>Telegram API Error</strong>
+          <p>{telegramError}</p>
         </div>
       )}
 
@@ -88,10 +173,16 @@ export function DashboardPage() {
         />
 
         <MetricCard
-          title="Max Temperature"
-          value={formatTemperature(data?.summary.max_temperature_c)}
-          subtitle="Highest node temperature"
-          status={getTemperatureStatus(data?.summary.max_temperature_c)}
+          title="Kubernetes Pods"
+          value={`${runningPods}/${totalPods}`}
+          subtitle="Running pods in edge-monitoring"
+          status={
+            totalPods === 0
+              ? "unknown"
+              : runningPods === totalPods
+                ? "online"
+                : "warning"
+          }
         />
 
         <MetricCard
@@ -136,10 +227,40 @@ export function DashboardPage() {
         />
 
         <MetricCard
+          title="Max Temperature"
+          value={formatTemperature(data?.summary.max_temperature_c)}
+          subtitle="Highest node temperature"
+          status={getTemperatureStatus(data?.summary.max_temperature_c)}
+        />
+      </section>
+
+      <section className="dashboard-metric-grid" aria-label="Service overview">
+        <MetricCard
           title="YOLO Service"
-          value={formatStatus(data?.services.yolo)}
-          subtitle="Inference service"
-          status={String(data?.services.yolo ?? "unknown")}
+          value={formatStatus(yoloStatus)}
+          subtitle={yoloSubtitle}
+          status={yoloStatus}
+        />
+
+        <MetricCard
+          title="Telegram Bot"
+          value={formatStatus(telegramStatus)}
+          subtitle={telegramSubtitle}
+          status={telegramStatus}
+        />
+
+        <MetricCard
+          title="Images Stored"
+          value="S3"
+          subtitle="SeaweedFS object storage"
+          status="online"
+        />
+
+        <MetricCard
+          title="Detection Pipeline"
+          value="Ready"
+          subtitle="Pi4 camera → Pi3 workers → Pi5 backend"
+          status="online"
         />
       </section>
 
@@ -190,7 +311,7 @@ export function DashboardPage() {
         <div className="dashboard-panel-header">
           <h3 className="dashboard-panel-title">Service Status</h3>
           <p className="dashboard-panel-description">
-            Backend-connected services reported by the API.
+            Backend-connected services reported by real backend APIs.
           </p>
         </div>
 
@@ -205,16 +326,36 @@ export function DashboardPage() {
             value={data?.cluster.status ?? "unknown"}
           />
 
-          <ServiceStatus
-            name="YOLO"
-            value={String(data?.services.yolo ?? "unknown")}
-          />
+          <ServiceStatus name="YOLO" value={yoloStatus} />
 
-          <ServiceStatus
-            name="Telegram Bot"
-            value={String(data?.services.telegram_bot ?? "unknown")}
-          />
+          <ServiceStatus name="Telegram Bot" value={telegramStatus} />
         </div>
+      </section>
+
+      <section className="dashboard-panel dashboard-pods-panel">
+        <div className="dashboard-panel-header">
+          <div>
+            <h3 className="dashboard-panel-title">Kubernetes Pods</h3>
+            <p className="dashboard-panel-description">
+              Running pods reported from the K3s Kubernetes API.
+            </p>
+          </div>
+
+          <div className="dashboard-pods-count">
+            <strong>
+              {runningPods}/{totalPods}
+            </strong>
+            <span>running</span>
+          </div>
+        </div>
+
+        {kubernetesPods.length === 0 ? (
+          <div className="dashboard-empty">
+            No Kubernetes pods returned by backend.
+          </div>
+        ) : (
+          <PodTable pods={kubernetesPods} />
+        )}
       </section>
     </div>
   );
@@ -290,6 +431,74 @@ function ServiceStatus({ name, value }: { name: string; value: string }) {
   );
 }
 
+function PodTable({ pods }: { pods: KubernetesPod[] }) {
+  return (
+    <div className="dashboard-pods-table-wrap">
+      <table className="dashboard-pods-table">
+        <thead>
+          <tr>
+            <th>Pod</th>
+            <th>Namespace</th>
+            <th>App</th>
+            <th>Ready</th>
+            <th>Status</th>
+            <th>Restarts</th>
+            <th>Node</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {pods.map((pod) => (
+            <tr key={`${pod.namespace}-${pod.name}`}>
+              <td>
+                <div className="dashboard-pod-name-cell">
+                  <StatusDot status={pod.status} />
+                  <strong>{pod.name}</strong>
+                </div>
+              </td>
+
+              <td>{pod.namespace}</td>
+
+              <td>
+                <span className="dashboard-pod-app-pill">{pod.app}</span>
+              </td>
+
+              <td>
+                <span
+                  className={
+                    pod.ready_bool
+                      ? "dashboard-ready-pill online"
+                      : "dashboard-ready-pill warning"
+                  }
+                >
+                  {pod.ready}
+                </span>
+              </td>
+
+              <td>
+                <span
+                  className={`dashboard-pod-status-pill ${getStatusClass(
+                    pod.status,
+                  )}`}
+                >
+                  {formatStatus(pod.status)}
+                </span>
+              </td>
+
+              <td>{pod.restarts}</td>
+
+              <td>{pod.node ?? "N/A"}</td>
+
+              <td>{formatAge(pod.age_seconds)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function StatusDot({ status }: { status: string }) {
   return (
     <span
@@ -359,7 +568,8 @@ function getStatusClass(status: string | null | undefined) {
     normalizedStatus === "normal" ||
     normalizedStatus === "healthy" ||
     normalizedStatus === "running" ||
-    normalizedStatus === "ready"
+    normalizedStatus === "ready" ||
+    normalizedStatus === "succeeded"
   ) {
     return "online";
   }
@@ -368,7 +578,8 @@ function getStatusClass(status: string | null | undefined) {
     normalizedStatus === "warning" ||
     normalizedStatus === "unknown" ||
     normalizedStatus === "degraded" ||
-    normalizedStatus === "pending"
+    normalizedStatus === "pending" ||
+    normalizedStatus === "containercreating"
   ) {
     return "warning";
   }
@@ -378,12 +589,31 @@ function getStatusClass(status: string | null | undefined) {
     normalizedStatus === "error" ||
     normalizedStatus === "offline" ||
     normalizedStatus === "failed" ||
-    normalizedStatus === "unhealthy"
+    normalizedStatus === "unhealthy" ||
+    normalizedStatus === "crashloopbackoff" ||
+    normalizedStatus === "imagepullbackoff"
   ) {
     return "critical";
   }
 
   return "warning";
+}
+
+function isYoloPod(pod: KubernetesPod) {
+  const searchableText = [
+    pod.name,
+    pod.app,
+    pod.namespace,
+    ...Object.values(pod.labels ?? {}),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return (
+    searchableText.includes("yolo") ||
+    searchableText.includes("inference") ||
+    searchableText.includes("model")
+  );
 }
 
 function formatPercent(value: number | null | undefined) {
@@ -407,8 +637,9 @@ function formatStatus(value: unknown) {
     return "Unknown";
   }
 
-  const text = String(value);
-  return text.charAt(0).toUpperCase() + text.slice(1);
+  return String(value)
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 function formatLabel(value: string) {
@@ -419,4 +650,18 @@ function formatLabel(value: string) {
 
 function cleanNodeName(value: string) {
   return value.replace(":9100", "");
+}
+
+function formatAge(value: number | null) {
+  if (value === null || value === undefined) {
+    return "N/A";
+  }
+
+  const days = Math.floor(value / 86400);
+  const hours = Math.floor((value % 86400) / 3600);
+  const minutes = Math.floor((value % 3600) / 60);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
 }

@@ -61,7 +61,7 @@ export function Sidebar({
         </div>
 
         <div>
-          <h1>Edge Sentinel</h1>
+          <h1>PI WATCH</h1>
           <p>V1.4.2 · K3S</p>
         </div>
       </div>

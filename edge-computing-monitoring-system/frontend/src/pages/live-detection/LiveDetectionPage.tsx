@@ -3,7 +3,6 @@ import {
   AlertTriangle,
   Camera,
   CheckCircle2,
-  Cpu,
   ImageIcon,
   RefreshCcw,
   ShieldAlert,
@@ -87,13 +86,56 @@ function formatRelativeTime(value: string) {
 }
 
 function extractLatestEvent(response: LatestEventResponse): EventItem | null {
-  if ("event" in response && response.event) return response.event;
+  if ("event" in response && response.event) {
+    return response.event;
+  }
+
   if ("latest_event" in response && response.latest_event) {
     return response.latest_event;
   }
-  if ("data" in response && response.data) return response.data;
+
+  if ("data" in response && response.data) {
+    return response.data;
+  }
 
   return response as EventItem;
+}
+
+function normalizeDetections(data: EventItem): Detection[] {
+  if (Array.isArray(data.detections) && data.detections.length > 0) {
+    return data.detections.map((item) => ({
+      class_name:
+        item.class_name || item.label || item.class || item.name || "unknown",
+      confidence: Number(item.confidence ?? 0),
+    }));
+  }
+
+  if (Array.isArray(data.class_names) && data.class_names.length > 0) {
+    return data.class_names.map((className) => ({
+      class_name: className,
+      confidence: Number(data.confidence ?? 0),
+    }));
+  }
+
+  if (Array.isArray(data.classes) && data.classes.length > 0) {
+    return data.classes.map((className) => ({
+      class_name: className,
+      confidence: Number(data.confidence ?? 0),
+    }));
+  }
+
+  return [
+    {
+      class_name:
+        data.event_type ||
+        data.threat_type ||
+        data.class_name ||
+        data.label ||
+        data.detected_class ||
+        "unknown",
+      confidence: Number(data.confidence ?? 0),
+    },
+  ];
 }
 
 function normalizeSeverity(
@@ -140,68 +182,33 @@ function normalizeTelegramStatus(
   return "pending";
 }
 
-function normalizeDetections(data: EventItem): Detection[] {
-  if (Array.isArray(data.detections) && data.detections.length > 0) {
-    return data.detections.map((item) => ({
-      class_name:
-        item.class_name || item.label || item.class || item.name || "unknown",
-      confidence: Number(item.confidence ?? 0),
-    }));
-  }
-
-  if (Array.isArray(data.class_names) && data.class_names.length > 0) {
-    return data.class_names.map((className) => ({
-      class_name: className,
-      confidence: Number(data.confidence ?? 0),
-    }));
-  }
-
-  if (Array.isArray(data.classes) && data.classes.length > 0) {
-    return data.classes.map((className) => ({
-      class_name: className,
-      confidence: Number(data.confidence ?? 0),
-    }));
-  }
-
-  return [
-    {
-      class_name:
-        data.event_type ||
-        data.threat_type ||
-        data.class_name ||
-        data.label ||
-        data.detected_class ||
-        "unknown",
-      confidence: Number(data.confidence ?? 0),
-    },
-  ];
-}
-
 function normalizeWorkers(data: EventItem): WorkerChunk[] {
   const sourceWorkers = data.workers || data.chunks;
 
   if (Array.isArray(sourceWorkers) && sourceWorkers.length > 0) {
     return sourceWorkers.map((worker, index) => ({
       chunk_id: Number(worker.chunk_id ?? index + 1),
-      worker_node: worker.worker_node || worker.node || `pi3-worker-${index + 1}`,
+      worker_node:
+        worker.worker_node ||
+        worker.node ||
+        `pi3-worker-${String(index + 1).padStart(2, "0")}`,
       status:
         worker.status === "failed"
           ? "failed"
           : worker.status === "pending"
-          ? "pending"
-          : "completed",
+            ? "pending"
+            : "completed",
       processing_ms: Number(worker.processing_ms ?? 0),
     }));
   }
 
   const totalChunks = Number(data.total_chunks ?? 8);
+  const chunksProcessed = Number(data.chunks_processed ?? totalChunks);
 
   return Array.from({ length: totalChunks }, (_, index) => ({
     chunk_id: index + 1,
     worker_node: `pi3-worker-${String(index + 1).padStart(2, "0")}`,
-    status: index < Number(data.chunks_processed ?? totalChunks)
-      ? "completed"
-      : "pending",
+    status: index < chunksProcessed ? "completed" : "pending",
     processing_ms: 0,
   }));
 }
@@ -273,10 +280,14 @@ function getDetectionIcon(className: string) {
   const name = className.toLowerCase();
 
   if (name.includes("person")) return <User size={22} />;
+
   if (name.includes("intruder") || name.includes("weapon")) {
     return <ShieldAlert size={22} />;
   }
-  if (name.includes("fire") || name.includes("smoke")) return <Zap size={22} />;
+
+  if (name.includes("fire") || name.includes("smoke")) {
+    return <Zap size={22} />;
+  }
 
   return <AlertTriangle size={22} />;
 }
@@ -384,11 +395,17 @@ export function LiveDetectionPage() {
       setEvent(normalizeLiveEvent(latestEvent));
 
       const recentResponse = await getEvents({ limit: 6 });
-      setRecentFrames(recentResponse.events.map(normalizeLiveEvent));
+      const recentEvents = Array.isArray(recentResponse.events)
+        ? recentResponse.events
+        : [];
+
+      setRecentFrames(recentEvents.map(normalizeLiveEvent));
     } catch (error) {
       console.error("Live detection API error:", error);
+
       setEvent(null);
       setRecentFrames([]);
+
       setApiError(
         error instanceof Error
           ? error.message
@@ -494,10 +511,10 @@ export function LiveDetectionPage() {
               </div>
 
               <div className="detected-grid">
-                {event.detections.map((detection) => (
+                {event.detections.map((detection, index) => (
                   <div
                     className="detected-card"
-                    key={`${detection.class_name}-${detection.confidence}`}
+                    key={`${detection.class_name}-${index}`}
                   >
                     <div className="detected-icon">
                       {getDetectionIcon(detection.class_name)}

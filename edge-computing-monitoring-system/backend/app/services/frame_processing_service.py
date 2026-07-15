@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import copy
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
-from uuid import uuid4
+from threading import Lock
+from typing import Any, Iterator
+from uuid import NAMESPACE_URL, uuid5
+
+from botocore.exceptions import ClientError
 
 from app.core.config import settings
 from app.services.alert_service import alert_service
@@ -25,6 +30,9 @@ class FrameProcessingInput:
     sequence_number: int | None
     camera_location: str | None
     api_base_url: str
+    capture_id: str
+    image_sha256: str
+    upload_source: str
 
 
 @dataclass(frozen=True)
@@ -48,10 +56,21 @@ class FrameProcessingResult:
     events: list[dict[str, Any]]
     alerts: list[dict[str, Any]]
     distribution: dict[str, Any]
+    duplicate: bool
+
+
+@dataclass
+class _CaptureLockEntry:
+    lock: Lock
+    users: int = 0
 
 
 class FrameProcessingService:
     """Coordinates the complete frame-ingestion pipeline."""
+
+    def __init__(self) -> None:
+        self._capture_locks_guard = Lock()
+        self._capture_locks: dict[str, _CaptureLockEntry] = {}
 
     @staticmethod
     def _raw_image_url(
@@ -104,12 +123,164 @@ class FrameProcessingService:
             "error": None,
         }
 
+    @contextmanager
+    def _capture_lock(
+        self,
+        capture_id: str,
+    ) -> Iterator[None]:
+        with self._capture_locks_guard:
+            entry = self._capture_locks.get(capture_id)
+
+            if entry is None:
+                entry = _CaptureLockEntry(lock=Lock())
+                self._capture_locks[capture_id] = entry
+
+            entry.users += 1
+
+        entry.lock.acquire()
+
+        try:
+            yield
+        finally:
+            entry.lock.release()
+
+            with self._capture_locks_guard:
+                entry.users -= 1
+
+                if (
+                    entry.users == 0
+                    and self._capture_locks.get(capture_id)
+                    is entry
+                ):
+                    self._capture_locks.pop(capture_id, None)
+
+    @staticmethod
+    def _metadata_uri(object_key: str) -> str:
+        if settings.storage_backend.lower() == "s3":
+            return (
+                f"s3://{settings.s3_metadata_bucket}/"
+                f"{object_key}"
+            )
+
+        return str(settings.data_directory / object_key)
+
+    @staticmethod
+    def _read_metadata_if_present(
+        object_key: str,
+    ) -> dict[str, Any] | None:
+        try:
+            return storage_service.read_metadata_json(
+                object_key
+            )
+
+        except FileNotFoundError:
+            return None
+
+        except ClientError as exc:
+            error_code = str(
+                exc.response.get("Error", {}).get("Code", "")
+            )
+
+            if error_code in {
+                "NoSuchKey",
+                "NoSuchObject",
+                "404",
+                "NotFound",
+            }:
+                return None
+
+            raise
+
+    def _load_existing_result(
+        self,
+        payload: FrameProcessingInput,
+    ) -> FrameProcessingResult | None:
+        frame_id = payload.capture_id
+
+        metadata_key = (
+            storage_service.build_frame_metadata_key(
+                frame_id
+            )
+        )
+
+        existing = self._read_metadata_if_present(
+            metadata_key
+        )
+
+        if existing is None:
+            return None
+
+        stored_hash = existing.get("image_sha256")
+
+        if (
+            stored_hash
+            and stored_hash != payload.image_sha256
+        ):
+            raise ValueError(
+                "capture_id already exists with different "
+                "image content"
+            )
+
+        detection_key = (
+            storage_service.build_detection_metadata_key(
+                frame_id
+            )
+        )
+
+        response_frame = copy.deepcopy(existing)
+        response_frame["duplicate_upload"] = True
+        response_frame["duplicate_request_received_at"] = (
+            datetime.now(timezone.utc).isoformat()
+        )
+        response_frame["duplicate_upload_source"] = (
+            payload.upload_source
+        )
+
+        return FrameProcessingResult(
+            frame=response_frame,
+            metadata_key=metadata_key,
+            metadata_uri=self._metadata_uri(metadata_key),
+            detection_key=detection_key,
+            detection_uri=self._metadata_uri(detection_key),
+            events=copy.deepcopy(
+                existing.get("events", [])
+            ),
+            alerts=copy.deepcopy(
+                existing.get("alerts", [])
+            ),
+            distribution=copy.deepcopy(
+                existing.get(
+                    "distributed_processing",
+                    self._default_distribution_metadata(
+                        status="unknown"
+                    ),
+                )
+            ),
+            duplicate=True,
+        )
+
     def process(
         self,
         payload: FrameProcessingInput,
     ) -> FrameProcessingResult:
+        # One backend replica is currently deployed. This lock prevents two
+        # simultaneous retries of the same capture from running inference
+        # twice. The metadata check also preserves idempotency across restarts.
+        with self._capture_lock(payload.capture_id):
+            existing = self._load_existing_result(payload)
+
+            if existing is not None:
+                return existing
+
+            return self._process_new(payload)
+
+    def _process_new(
+        self,
+        payload: FrameProcessingInput,
+    ) -> FrameProcessingResult:
         pipeline_started = time.perf_counter()
-        frame_id = storage_service.generate_frame_id()
+        frame_id = payload.capture_id
+
         received_at = datetime.now(
             timezone.utc
         ).isoformat()
@@ -118,7 +289,6 @@ class FrameProcessingService:
             payload.content_type
         )
 
-        # Always store the exact original bytes received from Pi4.
         raw_image_key = storage_service.build_raw_image_key(
             sensor_node_id=payload.sensor_node_id,
             frame_id=frame_id,
@@ -233,6 +403,10 @@ class FrameProcessingService:
 
         metadata = {
             "frame_id": frame_id,
+            "capture_id": payload.capture_id,
+            "image_sha256": payload.image_sha256,
+            "upload_source": payload.upload_source,
+            "duplicate_upload": False,
             "timestamp": received_at,
             "sensor_node_id": payload.sensor_node_id,
             "node_name": payload.sensor_node_id,
@@ -273,7 +447,6 @@ class FrameProcessingService:
                 pipeline_latency_seconds,
                 6,
             ),
-            # Backward-compatible flat fields used by existing APIs/UI.
             "inference_latency_seconds": (
                 inference_outcome.model_latency_seconds
                 if settings.run_inference_on_upload
@@ -287,17 +460,6 @@ class FrameProcessingService:
             ),
         }
 
-        metadata_key = (
-            storage_service.build_frame_metadata_key(
-                frame_id
-            )
-        )
-
-        metadata_uri = storage_service.upload_metadata_json(
-            metadata=metadata,
-            object_key=metadata_key,
-        )
-
         detection_key = (
             storage_service.build_detection_metadata_key(
                 frame_id
@@ -307,6 +469,9 @@ class FrameProcessingService:
         detection_uri = storage_service.upload_metadata_json(
             metadata={
                 "frame_id": frame_id,
+                "capture_id": payload.capture_id,
+                "image_sha256": payload.image_sha256,
+                "upload_source": payload.upload_source,
                 "timestamp": received_at,
                 "detections": detections,
                 "events": events,
@@ -332,6 +497,20 @@ class FrameProcessingService:
         self._store_events(events)
         self._store_alerts(alerts)
 
+        # Frame metadata is the completion record used by duplicate
+        # detection. Store it last so an interrupted first attempt is
+        # retried instead of being mistaken for a completed frame.
+        metadata_key = (
+            storage_service.build_frame_metadata_key(
+                frame_id
+            )
+        )
+
+        metadata_uri = storage_service.upload_metadata_json(
+            metadata=metadata,
+            object_key=metadata_key,
+        )
+
         return FrameProcessingResult(
             frame=metadata,
             metadata_key=metadata_key,
@@ -341,6 +520,7 @@ class FrameProcessingService:
             events=events,
             alerts=alerts,
             distribution=distribution_metadata,
+            duplicate=False,
         )
 
     def _run_inference(
@@ -362,14 +542,17 @@ class FrameProcessingService:
         )
 
         detections = inference_result.detections
+
         model_latency = round(
             inference_result.inference_latency_seconds,
             6,
         )
+
         round_trip_latency = round(
             inference_result.request_latency_seconds,
             6,
         )
+
         annotation_diff_pixels = (
             inference_result.annotation_diff_pixels
         )
@@ -433,6 +616,23 @@ class FrameProcessingService:
             ),
         )
 
+    @staticmethod
+    def _severity_rank(value: str | None) -> int:
+        ranking = {
+            "critical": 6,
+            "high": 5,
+            "medium": 4,
+            "warning": 3,
+            "informational": 2,
+            "info": 2,
+            "unknown": 1,
+        }
+
+        return ranking.get(
+            str(value or "unknown").lower(),
+            0,
+        )
+
     def _build_events_and_alerts(
         self,
         *,
@@ -445,22 +645,97 @@ class FrameProcessingService:
         raw_image_key: str,
         annotated_image_key: str | None,
     ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-        events: list[dict[str, Any]] = []
+        if not detections:
+            return [], []
+
+        ordered_detections = sorted(
+            detections,
+            key=lambda detection: (
+                self._severity_rank(
+                    detection.get("severity")
+                ),
+                float(detection.get("confidence") or 0.0),
+            ),
+            reverse=True,
+        )
+
+        primary_detection = ordered_detections[0]
+        event_id = uuid5(
+            NAMESPACE_URL,
+            f"piwatch:event:{frame_id}",
+        ).hex
+
+        created_at = datetime.now(
+            timezone.utc
+        ).isoformat()
+
+        detected_classes = sorted(
+            {
+                str(
+                    detection.get(
+                        "class_name",
+                        "unknown",
+                    )
+                )
+                for detection in detections
+            }
+        )
+
+        event = {
+            "event_id": event_id,
+            "frame_id": frame_id,
+            "timestamp": created_at,
+            "created_at": created_at,
+            "captured_at": captured_at,
+            "received_at": received_at,
+            "event_type": primary_detection.get(
+                "class_name",
+                "unknown",
+            ),
+            "severity": primary_detection.get(
+                "severity",
+                "unknown",
+            ),
+            "confidence": primary_detection.get(
+                "confidence"
+            ),
+            "confidence_percent": primary_detection.get(
+                "confidence_percent"
+            ),
+            "node_name": sensor_node_id,
+            "sensor_node_id": sensor_node_id,
+            "camera_location": camera_location,
+            "detection": primary_detection,
+            "detections": detections,
+            "detection_count": len(detections),
+            "detected_classes": detected_classes,
+            "raw_image_id": frame_id,
+            "annotated_image_id": (
+                frame_id if annotated_image_key else None
+            ),
+            "raw_image_key": raw_image_key,
+            "annotated_image_key": annotated_image_key,
+            "status": "open",
+            "telegram_sent": False,
+            "telegram_sent_at": None,
+            "telegram_error": None,
+        }
+
         alerts: list[dict[str, Any]] = []
 
-        for detection in detections:
-            event_id = uuid4().hex
-            created_at = datetime.now(
-                timezone.utc
-            ).isoformat()
+        for detection_index, detection in enumerate(
+            detections
+        ):
+            if not alert_service.should_create_alert(
+                detection
+            ):
+                continue
 
-            event = {
-                "event_id": event_id,
-                "frame_id": frame_id,
-                "timestamp": created_at,
-                "created_at": created_at,
-                "captured_at": captured_at,
-                "received_at": received_at,
+            # alert_service reads event_type and severity from the supplied
+            # event. Use a small alert-specific view so each alert describes
+            # its own detection while still referring to the one frame event.
+            alert_event = {
+                **event,
                 "event_type": detection.get(
                     "class_name",
                     "unknown",
@@ -469,42 +744,35 @@ class FrameProcessingService:
                     "severity",
                     "unknown",
                 ),
-                "confidence": detection.get("confidence"),
+                "confidence": detection.get(
+                    "confidence"
+                ),
                 "confidence_percent": detection.get(
                     "confidence_percent"
                 ),
-                "node_name": sensor_node_id,
-                "sensor_node_id": sensor_node_id,
-                "camera_location": camera_location,
                 "detection": detection,
-                "detections": [detection],
-                "raw_image_id": frame_id,
-                "annotated_image_id": (
-                    frame_id if annotated_image_key else None
-                ),
-                "raw_image_key": raw_image_key,
-                "annotated_image_key": annotated_image_key,
-                "status": "open",
-                "telegram_sent": False,
-                "telegram_sent_at": None,
-                "telegram_error": None,
             }
 
-            events.append(event)
+            alert = alert_service.build_alert(
+                frame_id=frame_id,
+                event=alert_event,
+                detection=detection,
+                raw_image_key=raw_image_key,
+                annotated_image_key=annotated_image_key,
+            )
 
-            if alert_service.should_create_alert(detection):
-                alert = alert_service.build_alert(
-                    frame_id=frame_id,
-                    event=event,
-                    detection=detection,
-                    raw_image_key=raw_image_key,
-                    annotated_image_key=(
-                        annotated_image_key
-                    ),
-                )
-                alerts.append(alert)
+            alert["alert_id"] = uuid5(
+                NAMESPACE_URL,
+                (
+                    f"piwatch:alert:{frame_id}:"
+                    f"{detection_index}:"
+                    f"{detection.get('class_name', 'unknown')}"
+                ),
+            ).hex
 
-        return events, alerts
+            alerts.append(alert)
+
+        return [event], alerts
 
     def _send_telegram_alerts(
         self,
@@ -539,15 +807,20 @@ class FrameProcessingService:
             )
 
             if related_event is not None:
-                related_event["telegram_sent"] = (
-                    telegram_result["telegram_sent"]
-                )
-                related_event["telegram_sent_at"] = (
-                    telegram_result["telegram_sent_at"]
-                )
-                related_event["telegram_error"] = (
-                    telegram_result["telegram_error"]
-                )
+                if telegram_result["telegram_sent"]:
+                    related_event["telegram_sent"] = True
+                    related_event["telegram_sent_at"] = (
+                        telegram_result[
+                            "telegram_sent_at"
+                        ]
+                    )
+
+                if telegram_result["telegram_error"]:
+                    related_event["telegram_error"] = (
+                        telegram_result[
+                            "telegram_error"
+                        ]
+                    )
 
     @staticmethod
     def _store_events(

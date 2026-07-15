@@ -366,3 +366,152 @@
     flex: 1;
   }
 }
+/* ================================
+   KUBERNETES PODS TABLE
+================================ */
+
+.dashboard-pods-panel {
+  overflow: hidden;
+}
+
+.dashboard-pods-count {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dashboard-pods-count strong {
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.dashboard-pods-count span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.dashboard-pods-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.dashboard-pods-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+
+.dashboard-pods-table th,
+.dashboard-pods-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.dashboard-pods-table th {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--surface);
+}
+
+.dashboard-pods-table td {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.dashboard-pods-table tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+.dashboard-pod-name-cell {
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-pod-name-cell strong {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-pod-app-pill,
+.dashboard-ready-pill,
+.dashboard-pod-status-pill {
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dashboard-pod-app-pill {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+}
+
+.dashboard-ready-pill.online {
+  color: var(--success);
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+}
+
+.dashboard-ready-pill.warning {
+  color: var(--warning);
+  background: var(--warning-soft);
+  border: 1px solid var(--warning-border);
+}
+
+.dashboard-pod-status-pill.online {
+  color: var(--success);
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+}
+
+.dashboard-pod-status-pill.warning {
+  color: var(--warning);
+  background: var(--warning-soft);
+  border: 1px solid var(--warning-border);
+}
+
+.dashboard-pod-status-pill.critical {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+}
+
+.dashboard-pod-status-pill.unknown {
+  color: var(--text-secondary);
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+}
+
+@media (max-width: 700px) {
+  .dashboard-pods-count {
+    width: 100%;
+    justify-content: center;
+  }
+}
