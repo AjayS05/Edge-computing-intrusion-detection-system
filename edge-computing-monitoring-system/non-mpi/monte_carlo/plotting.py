@@ -30,7 +30,7 @@ def professor_chart(results, scheduler_name, filename):
     point_sizes = sorted(set(r['total_points'] for r in results))
     n_cols      = len(point_sizes)
 
-    fig, axes = plt.subplots(2, n_cols, figsize=(3.2 * n_cols, 7))
+    fig, axes = plt.subplots(2, n_cols, figsize=(13, 8))
     fig.patch.set_facecolor(BG_COLOR)
 
     title = (f"{'Amdahl' + chr(39) + 's & Gustafson' + chr(39) + 's Law — Monte Carlo Pi'}\n"

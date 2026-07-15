@@ -1,4 +1,0 @@
-/shared/output/lockfile has been created.
-Wait for rpi3-01 in lockfile.
-Wait for rpi3-01 in lockfile.
-Wait for rpi3-01 in lockfile.

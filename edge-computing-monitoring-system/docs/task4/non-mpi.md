@@ -1,8 +1,9 @@
 # Non-MPI Cluster Benchmark
 
 There are two ways in which a non-MPI cluster benchmark differs from MPI:
+
 1. The workers do not communicate with each other to get a task done.
-2. The workers make use of a shared space. #
+2. The workers make use of a shared space. 
 
 In our implementation, we made use of two ways to do benchmark analysis - each differing in their shared space and the communication technology used by the master node. 
 
@@ -50,10 +51,6 @@ The task distributor splits a POV-Ray scene into horizontal image strips and dis
 - Master collects all `worker*.png` strips from NFS shared volume
 - ImageMagick `convert -append` stitches strips vertically into final image
 - This assembly step is serial and grows with number of workers (more strips to assemble)
-
-#### Why it is Non-MPI
-Workers have no awareness of each other. There are no ranks, no barriers, no collective operations, no direct worker-to-worker communication. Each worker only communicates with the master via the NFS filesystem — reading its task parameters from SSH arguments and signalling completion via a `.done` file. This is a classic **task farming** pattern, architecturally distinct from MPI's tightly-coupled collective model.
-
 ---
 
 ### Benchmark Configuration
@@ -75,12 +72,12 @@ Workers have no awareness of each other. There are no ranks, no barriers, no col
 
 The stacked bar charts show three components per run:
 
-- **Green (Par. part)** — time workers spent actually rendering in parallel
-- **Orange (2nd seq. part)** — time master spent assembling image strips
-- **Red (1st seq. part)** — time master spent setting up SSH connections and lockfile
+- **Green** — time workers spent actually rendering in parallel
+- **Orange** — time master spent assembling image strips
+- **Red** — time master spent setting up SSH connections and lockfile
 
 The speedup bars show T1/Tn — how much faster N workers is compared to 1 worker.
-![Task Distributor 8 Node Result](images/combined_performance_grid2.png)
+![Task Distributor 8 Node Result](images/task_distributor.png)
 
 #### What the results show
 
@@ -182,8 +179,13 @@ This matches Gustafson's insight: for a sufficiently large problem, the sequenti
 
 ---
 
-### Side-Quest
-We modified the task distributor to distribute the image slides within a node to cores. Making cores as the workers. Following code transforms the scheduler from a one-worker-per-machine model into a many-workers-per-machine model.
+### Side Quest – Extending the Task Distributor to 32 Logical Workers
+The original Task Distributor was designed with the assumption that one worker corresponds to one physical machine. As a result, the maximum degree of parallelism was limited to the eight Raspberry Pi 3 worker nodes available in the cluster, even though each Pi contains multiple CPU cores.
+
+To better utilize the available hardware, the scheduler was modified to support multiple logical workers per physical node. Instead of assigning one image strip to each Raspberry Pi, the image is divided into more strips, allowing several independent rendering processes to execute concurrently on the same machine.
+
+The following modification dynamically constructs the worker list by assigning multiple workers to each physical node:
+
 ```
 WORKERS_PER_NODE=$((NUM_NODES / 8))
 
@@ -195,60 +197,88 @@ for ((node=1; node<=8; node++)); do
 done
 ```
 
-Basically, for 32 workers the process distribution is like this:
-
+For example, with 32 workers, each Raspberry Pi executes four independent rendering processes:
 ```
-Image
-────────────────────────────
-
-Slice1  → Pi1
-Slice2  → Pi1
-Slice3  → Pi1
-Slice4  → Pi1
-
-Slice5  → Pi2
-Slice6  → Pi2
-Slice7  → Pi2
-Slice8  → Pi2
-
+Pi1 → Workers 1–4
+Pi2 → Workers 5–8
 ...
+Pi8 → Workers 29–32
 ```
+Rather than increasing the number of physical machines, the workload granularity is increased, allowing the scheduler to exploit the multicore CPUs of each Raspberry Pi.
+
+#### Results
+The graph shows us the results of Speedup and Walltime with 32 cores. 
+![Task Distributor 32 Cores](images/task_distributor_32_cores.png)
+
+The overall behaviour follows the same trend observed in the original benchmark.
+
+- Small images (200×150, 400×300 and 800×600) continue to exhibit Amdahl's Law. Rendering each strip requires very little computation, while the overhead of launching additional SSH sessions, managing more worker processes and assembling a larger number of image strips dominates execution time. Increasing the worker count beyond four therefore reduces performance rather than improving it.
+- Medium-sized images (1600×1200) benefit from finer-grained parallelism. The best performance is achieved at 8 workers, reaching a speedup of approximately 2.73×. Beyond this point, increasing to 16 and 32 workers introduces additional scheduling and image assembly overhead that outweighs the reduction in rendering time.
+- Large images (3200×2400) demonstrate Gustafson's Law. As the computational workload grows, the rendering phase dominates the execution time and the communication overhead becomes proportionally smaller. Speedup increases steadily up to 8 workers (≈2.59×), after which it begins to plateau and slightly decline at 16 and 32 workers.
+
+Unlike the original implementation, increasing the number of workers beyond the number of physical machines no longer provides additional hardware resources. Instead, the operating system schedules multiple rendering processes on the same CPU cores. Consequently, workers begin competing for CPU time, cache and memory bandwidth, resulting in diminishing returns. This explains why the performance peaks around eight workers despite supporting up to thirty-two logical workers.
 
 ## Celery-based Benchmark
-Following is the flow which is repeated many times with different numbers of workers and different workload sizes.
-
+Unlike the Task Distributor benchmark, which partitions a single rendering job into image strips, the Celery benchmark evaluates a distributed task queue. The workload consists of Monte Carlo estimation of π, where the master divides the total number of random samples into independent tasks and distributes them through a Redis message broker.
 ```
-               Pi 5 (Master)
+                Pi 5 (Master)
                     │
          Create Monte Carlo workload
                     │
         ┌───────────┴───────────┐
         │                       │
-   Scheduler             Celery
+   Scheduler              Redis Queue
         │
         ▼
- Distribute work to workers
+ Raspberry Pi workers (Celery)
         │
         ▼
-  Raspberry Pi 3 workers
+ Compute partial estimates
         │
         ▼
-Each computes part of Monte Carlo Pi
+ Return partial results
         │
         ▼
-Send results back
-        │
-        ▼
-Master measures total time
-        │
-        ▼
-Compare against serial execution
+ Master combines results
 ```
 
-Timer is started before sending which includes:
-- scheduling
-- sending tasks
-- waiting
-- network delay
+The measured wall-clock time includes:
+
+- task creation
+- serialization
+- network transmission
+- Redis queue operations
+- task scheduling
 - computation
-- receiving results
+- result collection
+
+Unlike MPI, these communication costs are included in every task execution and therefore become part of the measured runtime.
+### Results
+![Celery Results](images/celery.png)
+
+For 10K, 100K and 1M samples, execution time remains almost constant regardless of the number of workers. The workload is simply too small for parallel execution to offset the overhead of task scheduling and communication. Consequently, the measured speedup remains close to one—or even below one—demphasizing Amdahl's Law where the fixed overhead dominates the computation.
+
+A different trend emerges for 10M and 50M samples. As the computational workload increases, communication becomes a much smaller fraction of the total runtime and the cluster begins to benefit from parallel execution. The best result is obtained for 50M samples using 32 workers, achieving approximately 2.68× speedup. This demonstrates Gustafson's Law: larger problem sizes improve parallel efficiency because the computation grows much faster than the communication overhead.
+
+However, the scaling is still far from linear.
+
+### Limitations of Redis and Celery
+Several characteristics of the Celery–Redis architecture limit scalability compared to lower-level distributed computing frameworks:
+
+- Redis is a centralized broker. Every task must pass through a single Redis instance, making it a communication bottleneck as the number of workers increases.
+- Task serialization overhead. Celery serializes task arguments and results before sending them over the network. For small tasks, this overhead can exceed the computation time.
+- Queue latency. Workers must continuously poll Redis for available work, introducing additional latency before computation even begins.
+- Result collection overhead. Completed results are written back through Redis before the master can aggregate them, adding another communication step.
+- Python process overhead. Celery workers execute inside Python processes, so task scheduling, process management and interpreter overhead are significantly higher than lightweight native message-passing libraries.
+
+These overheads explain why the speedup increases only modestly even for the largest workloads.
+
+### Possible Improvements
+Several improvements could reduce these communication costs:
+
+- Replace Redis with a lower-overhead messaging system such as ZeroMQ, allowing direct asynchronous message passing between the master and workers without relying on a centralized broker.
+- Reduce task granularity by assigning larger batches of Monte Carlo samples to each worker, thereby amortizing scheduling and serialization costs over more computation.
+- Use binary serialization formats or shared-memory approaches where applicable to reduce data transfer overhead.
+- Implement dynamic load balancing so that idle workers can immediately receive additional work rather than waiting for fixed task assignments to complete.
+
+Overall, the Celery benchmark illustrates an important trade-off in distributed systems. Frameworks such as Celery greatly simplify task distribution and fault tolerance, but this convenience introduces non-negligible scheduling and messaging overhead. For coarse-grained workloads, these costs become relatively insignificant and useful speedup is achieved. For fine-grained workloads, however, the framework overhead dominates, limiting scalability compared with lighter-weight communication mechanisms such as MPI or ZeroMQ.
