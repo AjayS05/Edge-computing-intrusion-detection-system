@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: edge-monitoring
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: edge-monitoring
+data:
+  APP_NAME: "Edge Monitoring Backend"
+  APP_VERSION: "0.3.0"
+
+  STORAGE_BACKEND: "s3"
+  DATA_DIRECTORY: "/data"
+  MAX_UPLOAD_SIZE_BYTES: "5242880"
+
+  S3_ENDPOINT_URL: "http://seaweedfs-s3.seaweedfs.svc.cluster.local:8333"
+  S3_IMAGES_BUCKET: "captured-images"
+  S3_METADATA_BUCKET: "event-metadata"
+  S3_UNSIGNED_REQUESTS: "true"
+
+  RUN_INFERENCE_ON_UPLOAD: "true"
+  INFERENCE_SERVICE_URL: "http://inference.edge-monitoring.svc.cluster.local:8001"
+  INFERENCE_REQUEST_TIMEOUT_SECONDS: "60"
+
+  YOLO_MODEL_PATH: "/models/best_final.pt"
+  YOLO_CONFIDENCE_THRESHOLD: "0.55"
+
+  DISTRIBUTED_PROCESSING_ENABLED: "true"
+  WORKER_URLS: ""
+  WORKER_SERVICE_HOST: "image-worker-headless.edge-monitoring.svc.cluster.local"
+  WORKER_SERVICE_PORT: "8002"
+  WORKER_HEALTH_TIMEOUT_SECONDS: "2"
+  WORKER_REQUEST_TIMEOUT_SECONDS: "30"
+  WORKER_TILE_OVERLAP_PIXELS: "32"
+
+  TELEGRAM_ENABLED: "true"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secret
+  namespace: edge-monitoring
+type: Opaque
+stringData:
+  TELEGRAM_BOT_TOKEN: "8607169233:AAFnPgCPSgZZ00s52TH4NnORsEtA9isKtzE"
+  TELEGRAM_CHAT_ID: "7555204164"

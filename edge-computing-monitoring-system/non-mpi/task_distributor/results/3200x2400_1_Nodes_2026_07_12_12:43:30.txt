@@ -1,0 +1,21 @@
+/shared/output/lockfile has been created.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+Wait for rpi3-01 in lockfile.
+/shared/task-distributor/task-distributor-worker.sh: line 20: 46281 Aborted                 povray -D $2$3 $4 $5 $6 $7 > /dev/null 2> /tmp/povraymessages
+mv: cannot stat '/tmp/blob.png': No such file or directory
+rpi3-01 has been finished.
+cp: cannot stat '/shared/output/*worker*.png': No such file or directory
+Unable to copy the image.

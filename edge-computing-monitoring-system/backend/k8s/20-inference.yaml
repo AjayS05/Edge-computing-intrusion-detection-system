@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference
+  namespace: edge-monitoring
+  labels:
+    app: edge-inference
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: edge-inference
+  template:
+    metadata:
+      labels:
+        app: edge-inference
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: cloud
+
+      terminationGracePeriodSeconds: 30
+
+      containers:
+        - name: inference
+          image: edge-inference:v1
+          imagePullPolicy: Never
+
+          ports:
+            - name: http
+              containerPort: 8001
+              protocol: TCP
+
+          envFrom:
+            - configMapRef:
+                name: backend-config
+
+          volumeMounts:
+            - name: yolo-model
+              mountPath: /models
+              readOnly: true
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            timeoutSeconds: 10
+            periodSeconds: 5
+            failureThreshold: 60
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            timeoutSeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            timeoutSeconds: 10
+            periodSeconds: 20
+            failureThreshold: 6
+
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "4"
+              memory: "4Gi"
+
+      volumes:
+        - name: yolo-model
+          hostPath:
+            path: /srv/nfs/edge-monitoring/models
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inference
+  namespace: edge-monitoring
+  labels:
+    app: edge-inference
+spec:
+  type: ClusterIP
+  selector:
+    app: edge-inference
+  ports:
+    - name: http
+      port: 8001
+      targetPort: http
+      protocol: TCP

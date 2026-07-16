@@ -1,32 +1,148 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+import hashlib
+import re
 from typing import Optional
-from uuid import uuid4
-from app.services.telegram_service import telegram_service
-from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
+
+from fastapi import (
+    APIRouter,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+)
+from starlette.concurrency import run_in_threadpool
 
 from app.core.config import settings
-from app.services.alert_service import alert_service
-from app.services.inference_service import inference_service
+from app.services.frame_processing_service import (
+    FrameProcessingInput,
+    frame_processing_service,
+)
 from app.services.storage_service import storage_service
 
 router = APIRouter(prefix="/api/v1/frames", tags=["frames"])
+
+ALLOWED_IMAGE_TYPES = {
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+}
+
+CAPTURE_ID_PATTERN = re.compile(r"^[a-f0-9]{32}$")
+SHA256_PATTERN = re.compile(r"^[a-f0-9]{64}$")
+ALLOWED_UPLOAD_SOURCES = {"live", "retry", "manual"}
 
 
 def _api_base_url(request: Request) -> str:
     return str(request.base_url).rstrip("/")
 
 
-def _raw_image_api_url(request: Request, frame_id: str) -> str:
-    return f"{_api_base_url(request)}/api/v1/images/raw/{frame_id}"
+def _raw_image_api_url(
+    request: Request,
+    frame_id: str,
+) -> str:
+    return (
+        f"{_api_base_url(request)}"
+        f"/api/v1/images/raw/{frame_id}"
+    )
 
 
-def _annotated_image_api_url(request: Request, frame_id: str, annotated_image_key: str | None) -> str | None:
+def _annotated_image_api_url(
+    request: Request,
+    frame_id: str,
+    annotated_image_key: str | None,
+) -> str | None:
     if not annotated_image_key:
         return None
 
-    return f"{_api_base_url(request)}/api/v1/images/annotated/{frame_id}"
+    return (
+        f"{_api_base_url(request)}"
+        f"/api/v1/images/annotated/{frame_id}"
+    )
+
+
+def _validate_upload(
+    *,
+    content_type: str | None,
+    image_bytes: bytes,
+) -> str:
+    normalized_content_type = (
+        content_type or "application/octet-stream"
+    ).lower()
+
+    if normalized_content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Unsupported file type: "
+                f"{normalized_content_type}"
+            ),
+        )
+
+    if not image_bytes:
+        raise HTTPException(
+            status_code=400,
+            detail="Uploaded image is empty",
+        )
+
+    if len(image_bytes) > settings.max_upload_size_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail="Uploaded image is too large",
+        )
+
+    return normalized_content_type
+
+
+def _normalize_upload_source(value: str | None) -> str:
+    normalized = (value or "live").strip().lower()
+
+    if normalized not in ALLOWED_UPLOAD_SOURCES:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "upload_source must be one of: "
+                "live, retry, manual"
+            ),
+        )
+
+    return normalized
+
+
+def _resolve_capture_id(
+    *,
+    capture_id: str | None,
+    sensor_node_id: str,
+    captured_at: str,
+    sequence_number: int | None,
+    image_sha256: str,
+) -> str:
+    if capture_id:
+        normalized = capture_id.strip().lower()
+
+        if not CAPTURE_ID_PATTERN.fullmatch(normalized):
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "capture_id must contain exactly "
+                    "32 lowercase hexadecimal characters"
+                ),
+            )
+
+        return normalized
+
+    # Backward-compatible deterministic ID for older clients that do not
+    # yet send capture_id. Retrying the same image with the same metadata
+    # resolves to the same frame ID.
+    seed = (
+        f"{sensor_node_id}\0"
+        f"{captured_at}\0"
+        f"{sequence_number}\0"
+        f"{image_sha256}"
+    ).encode("utf-8")
+
+    return hashlib.sha256(seed).hexdigest()[:32]
 
 
 @router.post("")
@@ -37,226 +153,136 @@ async def upload_frame(
     captured_at: str = Form(...),
     sequence_number: Optional[int] = Form(None),
     camera_location: Optional[str] = Form(None),
+    capture_id: Optional[str] = Form(None),
+    content_sha256: Optional[str] = Form(None),
+    upload_source: str = Form("live"),
 ):
-    if image.content_type not in {"image/jpeg", "image/jpg", "image/png"}:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported file type: {image.content_type}",
-        )
-
     image_bytes = await image.read()
 
-    if len(image_bytes) > settings.max_upload_size_bytes:
-        raise HTTPException(
-            status_code=413,
-            detail="Uploaded image is too large",
-        )
-
-    frame_id = storage_service.generate_frame_id()
-    received_at = datetime.now(timezone.utc).isoformat()
-
-    extension = "png" if image.content_type == "image/png" else "jpg"
-
-    raw_image_key = storage_service.build_raw_image_key(
-        sensor_node_id=sensor_node_id,
-        frame_id=frame_id,
-        extension=extension,
-    )
-
-    raw_image_uri = storage_service.upload_image_bytes(
+    content_type = _validate_upload(
+        content_type=image.content_type,
         image_bytes=image_bytes,
-        object_key=raw_image_key,
-        content_type=image.content_type or "image/jpeg",
     )
 
-    detections: list[dict] = []
-    events: list[dict] = []
-    alerts: list[dict] = []
+    sensor_node_id = sensor_node_id.strip()
+    captured_at = captured_at.strip()
 
-    annotated_image_key = None
-    annotated_image_uri = None
-    annotation_check = "not_run"
-    inference_latency_seconds = None
-    annotation_diff_pixels = 0
+    if not sensor_node_id:
+        raise HTTPException(
+            status_code=400,
+            detail="sensor_node_id cannot be empty",
+        )
 
-    if settings.run_inference_on_upload:
-        try:
-            inference_result = inference_service.run_on_image_bytes(image_bytes)
+    if not captured_at:
+        raise HTTPException(
+            status_code=400,
+            detail="captured_at cannot be empty",
+        )
 
-            detections = inference_result.detections
-            inference_latency_seconds = round(
-                inference_result.inference_latency_seconds,
-                4,
-            )
-            annotation_diff_pixels = inference_result.annotation_diff_pixels
+    actual_sha256 = hashlib.sha256(image_bytes).hexdigest()
 
-            if inference_result.annotated_image_bytes is not None:
-                annotated_image_key = storage_service.build_annotated_image_key(
-                    sensor_node_id=sensor_node_id,
-                    frame_id=frame_id,
-                    extension="jpg",
-                )
+    if content_sha256:
+        normalized_sha256 = content_sha256.strip().lower()
 
-                annotated_image_uri = storage_service.upload_image_bytes(
-                    image_bytes=inference_result.annotated_image_bytes,
-                    object_key=annotated_image_key,
-                    content_type="image/jpeg",
-                )
-
-                if annotation_diff_pixels > 0:
-                    annotation_check = "passed"
-                else:
-                    annotation_check = "failed_no_visual_difference"
-            else:
-                annotation_check = "not_applicable_no_detections"
-
-            for detection in detections:
-                event_id = uuid4().hex
-                created_at = datetime.now(timezone.utc).isoformat()
-
-                event = {
-                    "event_id": event_id,
-                    "frame_id": frame_id,
-                    "timestamp": created_at,
-                    "created_at": created_at,
-                    "captured_at": captured_at,
-                    "received_at": received_at,
-                    "event_type": detection.get("class_name", "unknown"),
-                    "severity": detection.get("severity", "unknown"),
-                    "confidence": detection.get("confidence"),
-                    "confidence_percent": detection.get("confidence_percent"),
-                    "node_name": sensor_node_id,
-                    "sensor_node_id": sensor_node_id,
-                    "camera_location": camera_location,
-                    "detection": detection,
-                    "detections": [detection],
-                    "raw_image_id": frame_id,
-                    "annotated_image_id": frame_id if annotated_image_key else None,
-                    "raw_image_key": raw_image_key,
-                    "annotated_image_key": annotated_image_key,
-                    "status": "open",
-                    "telegram_sent": False,
-                    "telegram_sent_at": None,
-                    "telegram_error": None,
-                }
-
-                events.append(event)
-
-                if alert_service.should_create_alert(detection):
-                    alert = alert_service.build_alert(
-                        frame_id=frame_id,
-                        event=event,
-                        detection=detection,
-                        raw_image_key=raw_image_key,
-                        annotated_image_key=annotated_image_key,
-                    )
-                    alerts.append(alert)
-
-        except Exception as exc:
+        if not SHA256_PATTERN.fullmatch(normalized_sha256):
             raise HTTPException(
-                status_code=500,
-                detail=f"Inference failed: {exc}",
-            ) from exc
-    
-    for alert in alerts:
-        telegram_result = telegram_service.send_alert(
-            alert,
-            raw_image_url=_raw_image_api_url(request, frame_id),
-        )
+                status_code=422,
+                detail=(
+                    "content_sha256 must contain exactly "
+                    "64 lowercase hexadecimal characters"
+                ),
+            )
 
-        alert["telegram_sent"] = telegram_result["telegram_sent"]
-        alert["telegram_sent_at"] = telegram_result["telegram_sent_at"]
-        alert["telegram_error"] = telegram_result["telegram_error"]
+        if normalized_sha256 != actual_sha256:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "content_sha256 does not match the "
+                    "uploaded image bytes"
+                ),
+            )
 
-        for event in events:
-            if event.get("event_id") == alert.get("event_id"):
-                event["telegram_sent"] = telegram_result["telegram_sent"]
-                event["telegram_sent_at"] = telegram_result["telegram_sent_at"]
-                event["telegram_error"] = telegram_result["telegram_error"]
-    
-    metadata = {
-        "frame_id": frame_id,
-        "timestamp": received_at,
-        "sensor_node_id": sensor_node_id,
-        "node_name": sensor_node_id,
-        "captured_at": captured_at,
-        "received_at": received_at,
-        "sequence_number": sequence_number,
-        "camera_location": camera_location,
-        "content_type": image.content_type,
-        "size_bytes": len(image_bytes),
-        "raw_image_id": frame_id,
-        "annotated_image_id": frame_id if annotated_image_key else None,
-        "raw_image_key": raw_image_key,
-        "raw_image_uri": raw_image_uri,
-        "annotated_image_key": annotated_image_key,
-        "annotated_image_uri": annotated_image_uri,
-        "raw_image_url": _raw_image_api_url(request, frame_id),
-        "annotated_image_url": _annotated_image_api_url(request, frame_id, annotated_image_key),
-        "storage_backend": settings.storage_backend,
-        "status": "processed" if settings.run_inference_on_upload else "stored",
-        "detections": detections,
-        "events": events,
-        "alerts": alerts,
-        "inference_latency_seconds": inference_latency_seconds,
-        "annotation_check": annotation_check,
-        "annotation_diff_pixels": annotation_diff_pixels,
-    }
-
-    metadata_key = storage_service.build_frame_metadata_key(frame_id)
-    metadata_uri = storage_service.upload_metadata_json(
-        metadata=metadata,
-        object_key=metadata_key,
+    resolved_capture_id = _resolve_capture_id(
+        capture_id=capture_id,
+        sensor_node_id=sensor_node_id,
+        captured_at=captured_at,
+        sequence_number=sequence_number,
+        image_sha256=actual_sha256,
     )
 
-    detection_key = storage_service.build_detection_metadata_key(frame_id)
-    detection_uri = storage_service.upload_metadata_json(
-        metadata={
-            "frame_id": frame_id,
-            "timestamp": received_at,
-            "detections": detections,
-            "events": events,
-            "alerts": alerts,
-            "annotation_check": annotation_check,
-            "annotation_diff_pixels": annotation_diff_pixels,
-            "raw_image_key": raw_image_key,
-            "annotated_image_key": annotated_image_key,
-        },
-        object_key=detection_key,
+    normalized_upload_source = _normalize_upload_source(
+        upload_source
     )
 
-    for event in events:
-        event_key = storage_service.build_event_metadata_key(event["event_id"])
-        storage_service.upload_metadata_json(
-            metadata=event,
-            object_key=event_key,
+    processing_input = FrameProcessingInput(
+        image_bytes=image_bytes,
+        content_type=content_type,
+        sensor_node_id=sensor_node_id,
+        captured_at=captured_at,
+        sequence_number=sequence_number,
+        camera_location=(
+            camera_location.strip()
+            if camera_location and camera_location.strip()
+            else None
+        ),
+        api_base_url=_api_base_url(request),
+        capture_id=resolved_capture_id,
+        image_sha256=actual_sha256,
+        upload_source=normalized_upload_source,
+    )
+
+    try:
+        result = await run_in_threadpool(
+            frame_processing_service.process,
+            processing_input,
         )
 
-    for alert in alerts:
-        alert_key = storage_service.build_alert_metadata_key(alert["alert_id"])
-        storage_service.upload_metadata_json(
-            metadata=alert,
-            object_key=alert_key,
-        )
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Inference model unavailable: {exc}",
+        ) from exc
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=str(exc),
+        ) from exc
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Frame processing failed: {exc}",
+        ) from exc
 
     return {
-        "message": "Frame uploaded and processed successfully",
-        "frame": metadata,
-        "metadata_key": metadata_key,
-        "metadata_uri": metadata_uri,
-        "detection_key": detection_key,
-        "detection_uri": detection_uri,
-        "events": events,
-        "alerts": alerts,
+        "message": (
+            "Duplicate upload detected; existing result returned"
+            if result.duplicate
+            else "Frame uploaded and processed successfully"
+        ),
+        "duplicate": result.duplicate,
+        "capture_id": resolved_capture_id,
+        "frame": result.frame,
+        "metadata_key": result.metadata_key,
+        "metadata_uri": result.metadata_uri,
+        "detection_key": result.detection_key,
+        "detection_uri": result.detection_uri,
+        "events": result.events,
+        "alerts": result.alerts,
+        "distribution": result.distribution,
     }
 
 
 @router.get("/{frame_id}")
 def get_frame(frame_id: str, request: Request):
-    frame_key = storage_service.build_frame_metadata_key(frame_id)
+    frame_key = storage_service.build_frame_metadata_key(
+        frame_id
+    )
 
     try:
         frame = storage_service.read_metadata_json(frame_key)
+
     except Exception as exc:
         raise HTTPException(
             status_code=404,
@@ -264,44 +290,90 @@ def get_frame(frame_id: str, request: Request):
         ) from exc
 
     frame["frame_metadata_key"] = frame_key
-    frame["raw_image_id"] = frame.get("raw_image_id") or frame_id
-    frame["annotated_image_id"] = frame.get("annotated_image_id") or (
-        frame_id if frame.get("annotated_image_key") else None
+    frame["raw_image_id"] = (
+        frame.get("raw_image_id") or frame_id
     )
-    frame["raw_image_url"] = _raw_image_api_url(request, frame_id)
-    frame["annotated_image_url"] = _annotated_image_api_url(
+
+    frame["annotated_image_id"] = (
+        frame.get("annotated_image_id")
+        or (
+            frame_id
+            if frame.get("annotated_image_key")
+            else None
+        )
+    )
+
+    frame["raw_image_url"] = _raw_image_api_url(
         request,
         frame_id,
-        frame.get("annotated_image_key"),
+    )
+
+    frame["annotated_image_url"] = (
+        _annotated_image_api_url(
+            request,
+            frame_id,
+            frame.get("annotated_image_key"),
+        )
     )
 
     return frame
 
 
 @router.get("/{frame_id}/annotation-check")
-def get_annotation_check(frame_id: str, request: Request):
-    frame_key = storage_service.build_frame_metadata_key(frame_id)
+def get_annotation_check(
+    frame_id: str,
+    request: Request,
+):
+    frame_key = storage_service.build_frame_metadata_key(
+        frame_id
+    )
 
     try:
         frame = storage_service.read_metadata_json(frame_key)
+
     except Exception as exc:
         raise HTTPException(
             status_code=404,
             detail=f"Frame not found: {frame_id}",
         ) from exc
 
-    annotated_image_key = frame.get("annotated_image_key")
+    annotated_image_key = frame.get(
+        "annotated_image_key"
+    )
 
     return {
         "frame_id": frame_id,
-        "detections_count": len(frame.get("detections", [])),
+        "capture_id": frame.get("capture_id"),
+        "detections_count": len(
+            frame.get("detections", [])
+        ),
         "raw_image_id": frame_id,
-        "annotated_image_id": frame_id if annotated_image_key else None,
+        "annotated_image_id": (
+            frame_id if annotated_image_key else None
+        ),
         "raw_image_key": frame.get("raw_image_key"),
         "annotated_image_key": annotated_image_key,
-        "raw_image_url": _raw_image_api_url(request, frame_id),
-        "annotated_image_url": _annotated_image_api_url(request, frame_id, annotated_image_key),
-        "annotated_image_uri": frame.get("annotated_image_uri"),
-        "annotation_check": frame.get("annotation_check"),
-        "annotation_diff_pixels": frame.get("annotation_diff_pixels"),
+        "raw_image_url": _raw_image_api_url(
+            request,
+            frame_id,
+        ),
+        "annotated_image_url": (
+            _annotated_image_api_url(
+                request,
+                frame_id,
+                annotated_image_key,
+            )
+        ),
+        "annotated_image_uri": frame.get(
+            "annotated_image_uri"
+        ),
+        "annotation_check": frame.get(
+            "annotation_check"
+        ),
+        "annotation_diff_pixels": frame.get(
+            "annotation_diff_pixels"
+        ),
+        "distributed_processing": frame.get(
+            "distributed_processing"
+        ),
     }

@@ -1,0 +1,7 @@
+filer:
+  data:
+    type: existingClaim
+    claimName: seaweedfs-filer-data
+  extraVolumeMounts: |
+    - name: data-filer
+      mountPath: /data

@@ -1,4 +1,4 @@
-# Task 2: Investigation of the performance using HPL
+# Investigation of the performance using HPL
 
 ## HPL (High Performance Linpack)
 

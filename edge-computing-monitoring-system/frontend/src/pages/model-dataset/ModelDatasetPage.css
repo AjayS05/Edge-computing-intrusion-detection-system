@@ -1,0 +1,431 @@
+/* ================================
+   MODEL & DATASET PAGE
+   Theme-ready: light + dark
+================================ */
+
+.model-page {
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 18px 22px 32px;
+  color: var(--text-primary);
+}
+
+.model-page * {
+  box-sizing: border-box;
+}
+
+.model-page-header {
+  margin-bottom: 18px;
+}
+
+.model-page-header p {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.model-page-header h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.model-page-header span {
+  display: block;
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.model-api-notice {
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: var(--warning-soft);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Top metrics */
+.model-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.model-metric-card {
+  min-height: 110px;
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.model-metric-card span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.model-metric-card strong {
+  display: block;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.model-metric-card strong.cyan {
+  color: var(--accent);
+}
+
+.model-metric-card strong.green {
+  color: var(--success);
+}
+
+.model-metric-card strong.white {
+  color: var(--text-primary);
+}
+
+.model-metric-card p {
+  margin: 10px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.model-metric-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.model-metric-icon.cyan {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.model-metric-icon.green {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.model-metric-icon.white {
+  color: var(--text-muted);
+  background: var(--surface-soft);
+}
+
+/* Panels */
+.model-main-grid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.65fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.model-panel {
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.model-panel-header {
+  min-height: 54px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+}
+
+.model-panel-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Metadata */
+.model-metadata-list {
+  padding: 18px;
+  display: grid;
+  gap: 15px;
+}
+
+.model-metadata-list div {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 12px;
+}
+
+.model-metadata-list span {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.model-metadata-list strong {
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dataset */
+.dataset-summary-cards {
+  padding: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.dataset-summary-cards div {
+  min-height: 90px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.dataset-summary-cards svg {
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.dataset-summary-cards span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.dataset-summary-cards strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--text-primary);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.class-distribution {
+  padding: 0 18px 18px;
+}
+
+.class-distribution > p {
+  margin: 0 0 14px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.class-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 50px 70px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 13px;
+}
+
+.class-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.class-name svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.class-name strong {
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.class-bar {
+  height: 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  overflow: hidden;
+}
+
+.class-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.class-percent,
+.class-count {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: right;
+}
+
+/* Supported classes */
+.supported-panel {
+  margin-bottom: 16px;
+}
+
+.supported-class-grid {
+  padding: 18px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(130px, 1fr));
+  gap: 14px;
+}
+
+.supported-class-card {
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.supported-class-card > div {
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.supported-class-card strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.supported-class-card span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* Pipeline */
+.model-pipeline {
+  padding: 18px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
+  gap: 14px;
+}
+
+.model-pipeline div {
+  padding: 15px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.model-pipeline svg {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.model-pipeline strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.model-pipeline span {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Hover polish */
+.model-metric-card:hover,
+.model-panel:hover,
+.supported-class-card:hover,
+.model-pipeline div:hover,
+.dataset-summary-cards div:hover {
+  border-color: var(--accent-border);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .model-metric-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .model-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .supported-class-grid {
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+  }
+
+  .model-pipeline {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .model-page {
+    padding: 16px;
+  }
+
+  .model-page-header h1 {
+    font-size: 26px;
+  }
+
+  .model-metric-grid,
+  .dataset-summary-cards,
+  .supported-class-grid,
+  .model-pipeline {
+    grid-template-columns: 1fr;
+  }
+
+  .model-metadata-list div,
+  .class-row {
+    grid-template-columns: 1fr;
+  }
+
+  .model-metadata-list strong,
+  .class-percent,
+  .class-count {
+    text-align: left;
+  }
+}

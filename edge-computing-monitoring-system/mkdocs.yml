@@ -5,7 +5,7 @@ site_url: https://yourdomain.com # Change to your actual domain
 theme:
   name: material
   favicon: assets/favicon.png
-  
+
   # Modern, sleek color palettes with proper contrast
   palette:
     - scheme: default
@@ -53,60 +53,51 @@ markdown_extensions:
   - attr_list
   - md_in_html
 
-# Cleaned up, semantic navigation structure
 nav:
   - Home: index.md
 
-  - Introduction:
-      - Project Overview: introduction/overview.md
-      - Objectives: introduction/objectives.md
-      - System Architecture: introduction/architecture.md
+  - Task 1 - Hardware & Infrastructure:
+        # - Hardware Components: task1/hardware.md
+        - System Architecture: task1/architecture.md
+        - Execution Flow: task1/execution_flow.md
+      # - Raspberry Pi Cluster: task1/cluster.md
+      # - PXE Boot: task1/pxe.md
+      # - Operating System Setup: task1/os.md
 
-  - Hardware & Infrastructure:
-      - Hardware Components: task1/hardware.md
-      - Raspberry Pi Cluster: task1/cluster.md
-      - PXE Boot: task1/pxe.md
-      - Operating System Setup: task1/os.md
-
-  - Performance Evaluation:
+  - Task 2, 3 & 4 - Performance Evaluation:
       - HPL & GFLOPS Benchmarks: task2/hpl.md
       - MPI Cluster Setup: task3/mpi.md
       - Non-MPI Performance: task4/non-mpi.md
-      - Amdahl's Law Analysis: task3/amdahl.md
-      - Gustafson's Law Analysis: task3/gustafson.md
+      # - Amdahl's Law Analysis: task3/amdahl.md
+      # - Gustafson's Law Analysis: task3/gustafson.md
 
-  - Monitoring Platform:
+  - Task 5 -Monitoring Platform:
       - Infrastructure Architecture: task5/monitoring.md
       - Prometheus Metrics: task5/prometheus.md
       - Grafana Dashboards: task5/grafana.md
 
-  - AI Threat Detection:
-      - Dataset Collection: task6/dataset.md
+  - Task 6 - Object Detection:
       - Model Training: task6/training.md
       - Model Architecture: task6/model.md
       - Detection Results: task6/results.md
 
-  - Backend Services:
+  - Task 7 - Backend Services:
       - Service Overview: task7/backend_overview.md
       - Architecture Design: task7/backend_architecture.md
       - REST API Reference: task7/backend_api.md
       - SeaweedFS Storage: task7/seaweedfs.md
-      - Kubernetes Deployment: task7/backend_k8s.md
+      - Kubernetes Deployment: task7/kubernetes.md
+      - High Availability Approaches: task7/high_availability.md
 
-  - Frontend Dashboard:
+  - Task 8 - Frontend Dashboard:
       - UI Architecture: task8/frontend_architecture.md
       - User Interface Components: task8/ui.md
       - Real-time Event Dashboard: task8/dashboard.md
 
-  - Alerts & Notifications:
+  - Task 9 - Alerts & Notifications:
       - Telegram Bot Architecture: task9/telegram.md
-
-  - Deployment Guide:
-      - Installation Steps: deployment/installation.md
-      - Running the System: deployment/running.md
-      - Troubleshooting Guide: deployment/troubleshooting.md
 
   - Results & Analysis:
       - Performance Summary: results/performance.md
-      - Lessons Learned: results/lessons.md
       - Future Work: results/future_work.md
+  - The Team: team.md

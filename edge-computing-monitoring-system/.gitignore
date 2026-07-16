@@ -10,6 +10,9 @@ env.bak/
 *.egg-info/
 Pipfile.lock
 poetry.lock
+docs/.vnv/
+non-mpi/plot-vnv/
+site/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
@@ -49,3 +52,6 @@ Thumbs.db       # Windows
 *.tmp
 *.bak
 *.zip
+
+# docs
+site/*
