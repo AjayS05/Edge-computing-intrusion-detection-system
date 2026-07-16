@@ -11,7 +11,7 @@ The backend is implemented with FastAPI and is deployed in the `edge-monitoring`
 ---
 
 ## 2. Current Deployment Status
-
+    
 The currently deployed production arrangement is:
 
 | Component | Current runtime location | Kubernetes resource | Port |
