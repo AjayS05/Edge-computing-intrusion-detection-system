@@ -25,7 +25,7 @@ Unlike the frontend, Telegram does not require a separate application or service
 
 ## 3. Telegram Architecture
 
-![Telegram Architecture](assets/telegram/telegram-notification.png)
+![Telegram Architecture](telegram-notification.jpeg)
 
 **Figure 1. Telegram notification**
 
