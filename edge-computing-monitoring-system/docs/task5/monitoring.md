@@ -48,8 +48,6 @@ Node Exporter runs directly on each Raspberry Pi as a Linux systemd service and 
 
 The Kubernetes Node Exporter component remains disabled because the host-level exporters already occupy port `9100`.
 
-> **Safety note:** Do not rerun the installation playbook merely to create documentation evidence when the exporters are already working. Use the read-only verification commands in Section 3.5. Run the playbook only when provisioning a new node, repairing a missing installation, or intentionally applying the configuration again.
-
 ### 3.1 Prerequisites
 
 Install Ansible on Pi5:
