@@ -209,7 +209,7 @@ curl -s http://127.0.0.1:9100/metrics | head
 Test Pi5, Pi4, and all eight Pi3 workers together:
 
 ```bash
-for ip in 192.168.178.200 192.168.50.144 192.168.50.{101..108}; do
+for ip in 192.168.50.1 192.168.50.144 192.168.50.{101..108}; do
   if curl -sf --connect-timeout 3 "http://$ip:9100/metrics" >/dev/null; then
     echo "$ip:9100 UP"
   else
@@ -224,11 +224,11 @@ The final monitoring addresses are:
 
 | Device | Node Exporter address |
 |---|---|
-| Pi5 control plane | `192.168.178.200:9100` |
+| Pi5 control plane | `192.168.50.1:9100` |
 | Pi4 sensor node | `192.168.50.144:9100` |
 | Pi3-01 to Pi3-08 | `192.168.50.101:9100` to `192.168.50.108:9100` |
 
-Only `192.168.178.200:9100` is used for Pi5 so the same device is not counted twice through another network address.
+Only `192.168.50.1.200:9100` is used for Pi5 so the same device is not counted twice through another network address.
 
 The following screenshot may be used as read-only availability evidence. Crop out any failed Ansible attempt and retain only the command and ten `UP` results.
 
