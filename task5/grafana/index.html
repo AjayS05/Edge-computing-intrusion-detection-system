@@ -904,17 +904,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#exporting-the-dashboard" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Exporting the Dashboard
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1789,17 +1778,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#exporting-the-dashboard" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Exporting the Dashboard
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -2299,24 +2277,6 @@
 <p>Some panels may show <code>N/A</code> when a metric is not supported by a particular Raspberry Pi, operating system, filesystem, or Node Exporter version. This does not invalidate the dashboard when the core availability, CPU, memory, disk, network, uptime, and load metrics are present.</p>
 <p><img alt="Verified Grafana dashboard with live Raspberry Pi metrics" src="../images/monitoring-dashboard.png" /></p>
 <hr />
-<h2 id="exporting-the-dashboard">Exporting the Dashboard</h2>
-<p>Export the completed dashboard so another team member can import the exact panels, variables, thresholds, and layout without recreating them manually.</p>
-<ol>
-<li>Open the completed dashboard.</li>
-<li>Select <strong>Dashboard settings</strong>.</li>
-<li>Select <strong>JSON model</strong> or <strong>Export</strong>, depending on the Grafana version.</li>
-<li>Enable the option to make the dashboard importable on another instance, if displayed.</li>
-<li>Save the file as:</li>
-</ol>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>grafana/raspberry-pi-monitoring-dashboard.json
-</span></code></pre></div>
-<p>To import the saved file later:</p>
-<ol>
-<li>Open <strong>Dashboards → New → Import</strong>.</li>
-<li>Upload <code>raspberry-pi-monitoring-dashboard.json</code>.</li>
-<li>Select the Prometheus data source.</li>
-<li>Select <strong>Import</strong>.</li>
-</ol>
 
 
 
