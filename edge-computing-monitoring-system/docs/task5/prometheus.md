@@ -1,7 +1,5 @@
 # Prometheus Deployment and Configuration
 
-
-
 **Namespace:** `monitoring`  
 **Helm release:** `prometheus`  
 **Chart:** `prometheus-community/kube-prometheus-stack`  
@@ -620,41 +618,11 @@ Access pages:
 | Rules | `http://192.168.178.200:30090/rules` |
 | Alerts | `http://192.168.178.200:30090/alerts` |
 
-> **IMAGE REQUIRED — Healthy monitoring components**  
-> Save as: `images/monitoring/prometheus-pods-healthy.png`  
-> Capture the clean running-pods command above. The screenshot should show Prometheus, Alertmanager, the Operator, kube-state-metrics, and Grafana in `Running` state. Replace this placeholder with:  
-> `![Healthy Prometheus monitoring components](images/monitoring/prometheus-pods-healthy.png)`
+![Healthy Prometheus monitoring components](images/prometheus-pods-healthy.png)
 
-![Raspberry Pi Node Exporter targets reporting UP](images/monitoring/prometheus-targets.png)
+![Raspberry Pi Node Exporter targets reporting UP](images/prometheus-targets.png)
 
 The targets screenshot must show all ten `raspberry-pi-nodes` endpoints in the `UP` state. Zoom out or capture a second view if all rows do not fit in one screenshot.
-
-The same result can be verified in the terminal without changing Prometheus:
-
-```bash
-curl -sG \
-  --data-urlencode 'query=up{job="raspberry-pi-nodes"}' \
-  http://192.168.178.200:30090/api/v1/query \
-  | jq -r '.data.result[] | "\(.metric.instance) = \(.value[1])"' \
-  | sort
-```
-
-Expected: ten instances, each with value `1`.
-
-Count the returned targets:
-
-```bash
-curl -sG \
-  --data-urlencode 'query=up{job="raspberry-pi-nodes"}' \
-  http://192.168.178.200:30090/api/v1/query \
-  | jq '.data.result | length'
-```
-
-Expected output:
-
-```text
-10
-```
 
 ---
 
@@ -747,26 +715,6 @@ sum by(instance) (
     device!~"lo|veth.*|docker.*|cni.*|flannel.*"
   }[2m])
 )
-```
-
-> **IMAGE REQUIRED — PromQL result**  
-> Save as: `images/monitoring/prometheus-query-result.png`  
-> Run `up{job="raspberry-pi-nodes"}` on the Prometheus Query page and capture the result showing every configured instance with value `1`. Replace this placeholder with:  
-> `![PromQL node availability result](images/monitoring/prometheus-query-result.png)`
-
-For a concise terminal alternative, run:
-
-```bash
-curl -sG \
-  --data-urlencode 'query=count(up{job="raspberry-pi-nodes"} == 1)' \
-  http://192.168.178.200:30090/api/v1/query \
-  | jq -r '"Online Raspberry Pi targets: \(.data.result[0].value[1])"'
-```
-
-Expected output:
-
-```text
-Online Raspberry Pi targets: 10
 ```
 
 ---
@@ -971,75 +919,18 @@ Prometheus Server is Ready.
 
 ---
 
-## 10. Required screenshots
+## 10. Deployment evidence
 
-The following screenshots document the complete progression from local validation to Kubernetes deployment:
+The document uses three screenshots as final deployment evidence:
 
-| Phase | Required content | Repository path |
-|---|---|---|
-| Local validation | Local Prometheus Targets page showing Raspberry Pi targets `UP` | `images/monitoring/prometheus-local-targets.png` |
-| Local validation | Local PromQL result for `up{job="raspberry-pi-nodes"}` | `images/monitoring/prometheus-local-query.png` |
-| Local validation | Controlled `PrometheusDocumentationTest` alert in `firing` state | `images/monitoring/prometheus-local-alert-firing.png` |
-| K3s deployment | Running Prometheus, Alertmanager, Operator, kube-state-metrics, and Grafana pods | `images/monitoring/prometheus-pods-healthy.png` |
-| K3s deployment | All ten `raspberry-pi-nodes` targets showing `UP` | `images/monitoring/prometheus-targets.png` |
-| K3s deployment | `raspberry-pi-cluster` rules loaded with status `OK` | `images/monitoring/raspberry-pi-alert-rules.png` |
+| Evidence | Repository path |
+|---|---|
+| Monitoring components running in K3s | `images/prometheus-pods-healthy.png` |
+| Raspberry Pi scrape targets reporting `UP` | `images/prometheus-targets.png` |
+| Raspberry Pi alert rules loaded with status `OK` | `images/raspberry-pi-alert-rules.png` |
 
-If the local Prometheus service no longer exists, do not disturb the current K3s deployment merely to recreate historical screenshots. The documented local commands and their expected outputs are sufficient. Never disconnect a real node to trigger an alert; use only the controlled temporary rule described in Section 1.8.
+The local installation is documented through commands and expected outputs, so additional local Prometheus screenshots are not required.
 
-The separate Kubernetes PromQL screenshot `images/monitoring/prometheus-query-result.png` is optional when the Kubernetes targets screenshot clearly shows all ten nodes and the terminal count returns `10`.
-
-Do not include screenshots containing passwords, tokens, failed installation attempts, stale `ContainerStatusUnknown` pods, or unrelated terminal output.
-
----
-
-## 11. Files to commit to GitHub
-
-Commit the following documentation and configuration files:
-
-```text
-prometheus.md
-prometheus-k3s-values.yaml
-k8s/
-└── monitoring/
-    └── raspberry-pi-alerts.yaml
-images/
-└── monitoring/
-    ├── prometheus-local-targets.png
-    ├── prometheus-local-query.png
-    ├── prometheus-local-alert-firing.png
-    ├── prometheus-pods-healthy.png
-    ├── prometheus-targets.png
-    └── raspberry-pi-alert-rules.png
-```
-
-Only commit local-phase screenshots that actually exist. Do not add empty placeholder image files. The optional Kubernetes query screenshot may be committed as `images/monitoring/prometheus-query-result.png`.
-
-Do not commit:
-
-- Grafana administrator passwords;
-- Kubernetes Secret values;
-- kubeconfig files;
-- private SSH keys;
-- environment files containing tokens or credentials;
-- temporary terminal-output files.
-
-Suggested commit command:
-
-```bash
-git add prometheus.md \
-  prometheus-k3s-values.yaml \
-  k8s/monitoring/raspberry-pi-alerts.yaml \
-  images/monitoring/prometheus-pods-healthy.png \
-  images/monitoring/prometheus-targets.png \
-  images/monitoring/raspberry-pi-alert-rules.png
-
-git commit -m "docs: document Prometheus monitoring deployment"
-```
-
-Add the local-validation screenshots and `images/monitoring/prometheus-query-result.png` to the `git add` command only when those files are present.
-
----
-
-## 12. Result
+## 11. Result
 
 The monitoring pipeline was first proven locally on Pi5 by installing Prometheus and Alertmanager, scraping all ten host Node Exporters, executing PromQL queries, and validating a controlled firing alert. Prometheus was then migrated to `kube-prometheus-stack` in the K3s `monitoring` namespace. The final deployment stores seven days of metrics, evaluates the Raspberry Pi alert rules, supplies Grafana dashboards, and provides monitoring data to the FastAPI backend through Kubernetes service discovery.
