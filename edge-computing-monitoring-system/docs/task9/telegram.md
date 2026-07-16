@@ -10,6 +10,8 @@ The Telegram notification feature informs the project team about:
 
 The integration is part of the FastAPI backend. It does not require a separate Telegram process in the current deployment. The backend uses the Telegram Bot HTTP API to validate the bot and deliver notifications to the configured chat.
 
+There is no Telegram page, panel or notification-delivery UI in the React frontend. Telegram operates independently through the backend, and users view alerts directly in the configured Telegram chat.
+
 > **Security:** Never commit a Telegram bot token or chat ID to Git. If a token has been exposed in source code, terminal output, screenshots, documentation, or chat, revoke it with BotFather and generate a new token.
 
 ## 2. Project Integration
@@ -21,7 +23,6 @@ The integration is part of the FastAPI backend. It does not require a separate T
 | Telegram service | Checks bot connectivity and sends messages through the Telegram Bot API |
 | SeaweedFS | Persists raw images, annotated evidence and event metadata on SSD-backed storage |
 | Prometheus and Grafana | Observe cluster health and provide health-event data |
-| React frontend | Displays bot status, event history and notification delivery information exposed by FastAPI |
 | Telegram chat | Receives detection and infrastructure alerts |
 
 ## 3. Architecture
@@ -39,7 +40,7 @@ The end-to-end alert flow is:
 5. Alert rules decide whether the event requires a Telegram notification.
 6. The Telegram service sends the alert to the external Telegram Bot API.
 7. Telegram delivers the message to the configured team chat.
-8. Delivery state should be stored with the event and exposed to the frontend.
+8. The backend records the notification result in its logs or event metadata for troubleshooting and auditing.
 
 ## 4. Notification Content
 
@@ -67,7 +68,7 @@ Recommended notification fields:
 | Confidence | Shows the model confidence score |
 | Camera and location | Identifies where the event occurred |
 | Timestamp | Records when the frame was captured |
-| Event ID | Correlates Telegram, API, metadata and frontend records |
+| Event ID | Correlates the Telegram alert with backend and metadata records |
 | Evidence | Provides the annotated frame or a backend evidence link |
 
 The trained model classes are `fire`, `intruder`, `liquid_spill`, `person`, `smoke` and `weapon`. Notification policy should distinguish normal observations such as `person` from urgent threat classes rather than treating every detection as critical.
@@ -213,17 +214,17 @@ Example successful response shape:
 
 The exact wording may differ from the deployed service. A response should never contain `TELEGRAM_BOT_TOKEN` or `TELEGRAM_CHAT_ID`.
 
-The monitoring endpoint also exposes the Telegram service state as part of:
+The monitoring endpoint may also expose the Telegram service state as part of:
 
 ```http
 GET /api/v1/monitoring/overview
 ```
 
-The React monitoring page uses this value to show whether the bot is online, offline or unknown.
+This value is intended for backend monitoring and API verification. It is not displayed in the frontend.
 
 ### Delivery tracking
 
-For complete frontend integration, each stored event should include:
+If notification auditing is required, each stored event can include:
 
 ```json
 {
@@ -233,14 +234,12 @@ For complete frontend integration, each stored event should include:
 }
 ```
 
-The frontend Telegram page is designed to consume status and delivery data. If `/api/v1/telegram/deliveries` is not yet implemented, document the page as a UI preview and do not present mock deliveries as production records.
-
-Useful extension endpoints are:
+No Telegram-specific frontend page or delivery-history UI is required for the current project. The following backend endpoints can be used for verification or future extensions:
 
 | Endpoint | Purpose | State |
 | --- | --- | --- |
 | `GET /api/v1/telegram/status` | Bot configuration and connectivity | Confirmed |
-| `GET /api/v1/telegram/deliveries` | Recent delivery attempts | Implement if not present |
+| `GET /api/v1/telegram/deliveries` | Recent delivery attempts | Optional future extension |
 | `POST /api/v1/telegram/test` | Send a controlled test alert | Optional |
 | `POST /api/v1/events/{event_id}/notify` | Retry one event notification | Optional |
 
@@ -316,8 +315,6 @@ Use a controlled test alert or temporary test rule. Do not deliberately overheat
 
 **Image placeholder — annotated evidence:** Add the annotated image corresponding to the Telegram event.
 
-**Image placeholder — frontend Telegram page:** Add the Telegram page showing bot state, delivery totals and the latest notification.
-
 ## 11. Troubleshooting
 
 | Symptom | Likely cause | Resolution |
@@ -330,7 +327,6 @@ Use a controlled test alert or temporary test rule. Do not deliberately overheat
 | Status works but no alert arrives | Alert policy not triggered or send method not called | Check event class, confidence, enable flag and backend logs |
 | Repeated alerts | No cooldown or duplicate suppression | Add a camera/class cooldown and event idempotency |
 | Message arrives without evidence | Annotated object was not stored or not accessible | Verify the `captured-images` object and backend image endpoint |
-| Frontend shows mock deliveries | Delivery endpoint is absent or failed | Implement/fix `/api/v1/telegram/deliveries` and remove mock fallback for production |
 | Alerts disappear after restart | Delivery fields were kept only in memory | Persist notification state with event metadata/database records |
 
 Check recent backend logs without exposing the environment:
@@ -345,11 +341,11 @@ kubectl logs deployment/backend -n edge-monitoring --since=10m \
 - Keep bot credentials only in `.env` for local development and Kubernetes Secrets for deployment.
 - Add `.env` to `.gitignore` and never paste real tokens into Markdown.
 - Revoke and rotate any token that may have been exposed.
-- Do not return secrets through FastAPI endpoints or frontend bundles.
+- Do not return secrets through FastAPI endpoints or include them in frontend code.
 - Redact tokens, chat IDs, usernames and private images in screenshots.
 - Use backend evidence endpoints instead of publishing the SeaweedFS S3 gateway directly.
 - Add network timeouts and bounded retries for all Telegram requests.
-- Store timestamps in UTC and display local time only in the user interface.
+- Store timestamps in UTC and include the timezone clearly in Telegram messages and API responses.
 - Record delivery success, failure reason and retry count for auditing.
 - Review bot membership and chat permissions when team members change.
 
@@ -363,5 +359,5 @@ The Telegram feature is ready for demonstration when all of the following are tr
 - raw and annotated evidence remains available after a restart;
 - exactly one notification reaches the correct Telegram chat;
 - notification delivery state is linked to the event ID;
-- the frontend shows real API data rather than mock delivery records; and
+- no Telegram-specific frontend UI is required or presented as part of the implementation; and
 - screenshots contain no credentials or sensitive identifiers.
