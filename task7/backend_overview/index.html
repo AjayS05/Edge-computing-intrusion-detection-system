@@ -79,6 +79,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#backend-overview" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -583,7 +588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../task5/prometheus.md" class="md-nav__link">
+      <a href="../../task5/prometheus/" class="md-nav__link">
         
   
   
@@ -611,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../task5/grafana.md" class="md-nav__link">
+      <a href="../../task5/grafana/" class="md-nav__link">
         
   
   
@@ -839,6 +844,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Service Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -856,6 +881,318 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-current-deployment-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Current Deployment Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-main-backend-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Main Backend Responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-backend-api-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Backend API Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-frame-upload-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Frame Upload Contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Frame Upload Contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#duplicate-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duplicate behaviour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-distributed-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Distributed Processing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-yolo-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. YOLO Inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-events-alerts-and-telegram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Events, Alerts and Telegram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-persistent-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Persistent Storage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-monitoring-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Monitoring Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-kubernetes-access-and-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Kubernetes Access and RBAC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-container-image-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Container-Image Improvements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-high-availability-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. High-Availability Status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. High-Availability Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#already-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Already available
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-yet-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not yet complete
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-backend-setup-and-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Backend Setup and Deployment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Backend Setup and Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-open-the-backend-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Open the backend directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-create-the-backend-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Create the backend configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-build-the-backend-container-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Build the backend container image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-import-the-image-into-k3s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Import the image into K3s
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-apply-the-kubernetes-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Apply the Kubernetes resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-deploy-the-new-image-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Deploy the new image version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-access-the-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Access the backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-send-frames-from-the-raspberry-pi-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Send frames from the Raspberry Pi 4
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1383,6 +1720,309 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-current-deployment-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Current Deployment Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-main-backend-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Main Backend Responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-backend-api-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Backend API Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-frame-upload-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Frame Upload Contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Frame Upload Contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#duplicate-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duplicate behaviour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-distributed-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Distributed Processing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-yolo-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. YOLO Inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-events-alerts-and-telegram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Events, Alerts and Telegram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-persistent-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Persistent Storage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-monitoring-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Monitoring Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-kubernetes-access-and-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Kubernetes Access and RBAC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-container-image-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Container-Image Improvements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-high-availability-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. High-Availability Status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. High-Availability Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#already-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Already available
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-yet-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not yet complete
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-backend-setup-and-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Backend Setup and Deployment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Backend Setup and Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-open-the-backend-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Open the backend directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-create-the-backend-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Create the backend configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-build-the-backend-container-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Build the backend container image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-import-the-image-into-k3s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Import the image into K3s
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-apply-the-kubernetes-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Apply the Kubernetes resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-deploy-the-new-image-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Deploy the new image version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-access-the-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Access the backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-send-frames-from-the-raspberry-pi-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Send frames from the Raspberry Pi 4
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1399,9 +2039,513 @@
 
 
 
-  <h1>Service Overview</h1>
-
-
+<article>
+<h1 id="backend-overview">Backend Overview</h1>
+<h2 id="1-purpose">1. Purpose</h2>
+<p>The PiWatch backend is the coordination and API layer of the edge-computing intrusion-detection system. It receives camera frames from the Raspberry Pi 4, validates and stores them, coordinates distributed preprocessing across Raspberry Pi 3 workers, invokes the YOLO inference service on the Raspberry Pi 5, creates events and alerts, and exposes the data required by the frontend, monitoring pages and Telegram workflow.</p>
+<p>The backend is implemented with FastAPI and is deployed in the <code>edge-monitoring</code> Kubernetes namespace.</p>
+<hr />
+<h2 id="2-current-deployment-status">2. Current Deployment Status</h2>
+<p>The currently deployed production arrangement is:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Current runtime location</th>
+<th>Kubernetes resource</th>
+<th style="text-align: right;">Port</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FastAPI backend</td>
+<td>Raspberry Pi 5 node <code>cloud</code></td>
+<td><code>Deployment/backend</code></td>
+<td style="text-align: right;"><code>8000</code></td>
+</tr>
+<tr>
+<td>Backend external access</td>
+<td>Kubernetes NodePort</td>
+<td><code>Service/backend</code></td>
+<td style="text-align: right;"><code>30080</code></td>
+</tr>
+<tr>
+<td>YOLO inference</td>
+<td>Raspberry Pi 5 node <code>cloud</code></td>
+<td><code>Deployment/inference</code></td>
+<td style="text-align: right;"><code>8001</code></td>
+</tr>
+<tr>
+<td>Image workers</td>
+<td>Raspberry Pi 3 nodes</td>
+<td><code>Deployment/image-worker</code></td>
+<td style="text-align: right;"><code>8002</code></td>
+</tr>
+<tr>
+<td>SeaweedFS S3 gateway</td>
+<td>K3s cluster</td>
+<td><code>Service/seaweedfs-s3</code></td>
+<td style="text-align: right;"><code>8333</code></td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td><code>monitoring</code> namespace</td>
+<td><code>Service/prometheus-kube-prometheus-prometheus</code></td>
+<td style="text-align: right;"><code>9090</code></td>
+</tr>
+</tbody>
+</table>
+<p>The production backend still runs as one replica on the Pi5. A separate Pi3 backend canary was successfully validated using a compressed runtime-bundle design, but that HA design has not yet replaced the production backend.</p>
+<blockquote>
+<p><strong>Screenshot placeholder — current backend deployment</strong><br />
+Show the production backend, inference pod and worker pods with their assigned nodes.<br />
+Suggested filename: <code>assets/backend/backend-current-pods.png</code></p>
+</blockquote>
+<hr />
+<h2 id="3-main-backend-responsibilities">3. Main Backend Responsibilities</h2>
+<p>The backend performs the following tasks:</p>
+<ul>
+<li>validates uploaded JPEG and PNG frames;</li>
+<li>verifies upload size and optional SHA-256 checksums;</li>
+<li>generates or accepts a stable <code>capture_id</code>;</li>
+<li>stores raw evidence before inference;</li>
+<li>discovers healthy Pi3 worker endpoints;</li>
+<li>selects an image-splitting layout based on available workers;</li>
+<li>sends image tiles to workers and retries failed assignments;</li>
+<li>reconstructs the processed image;</li>
+<li>sends one reconstructed frame to the YOLO inference service;</li>
+<li>stores raw images, annotated images and JSON metadata in SeaweedFS;</li>
+<li>creates frame-level events and critical alerts;</li>
+<li>sends configured Telegram notifications;</li>
+<li>serves raw and annotated images to the frontend;</li>
+<li>exposes monitoring, Kubernetes, storage and model-information APIs;</li>
+<li>exports Prometheus metrics through <code>/metrics</code>.</li>
+</ul>
+<hr />
+<h2 id="4-backend-api-summary">4. Backend API Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/health</code></td>
+<td>Backend process, local data directory and SQLite health check</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/frames</code></td>
+<td>Upload and process a camera frame</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/frames/{frame_id}</code></td>
+<td>Retrieve stored frame metadata</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/events</code></td>
+<td>List stored detection events</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/images/raw/{frame_id}</code></td>
+<td>Retrieve the original image</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/images/annotated/{frame_id}</code></td>
+<td>Retrieve the annotated image</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/alerts</code></td>
+<td>List alert records</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/monitoring/overview</code></td>
+<td>Return node metrics, charts and monitoring alerts</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/storage/status</code></td>
+<td>Check SeaweedFS buckets and storage status</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/kubernetes/pods</code></td>
+<td>Return pod and workload information</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/model/info</code></td>
+<td>Return model and dataset metadata</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/metrics</code></td>
+<td>Prometheus metrics endpoint</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Screenshot placeholder — FastAPI API documentation</strong><br />
+Capture the <code>/docs</code> page showing the registered backend endpoints.<br />
+Suggested filename: <code>assets/backend/backend-swagger-docs.png</code></p>
+</blockquote>
+<hr />
+<h2 id="5-frame-upload-contract">5. Frame Upload Contract</h2>
+<p>The Pi4 sender submits a multipart request to:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>POST http://192.168.50.1:30080/api/v1/frames
+</span></code></pre></div>
+<p>A frame request can contain:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image</code></td>
+<td>JPEG or PNG image file</td>
+</tr>
+<tr>
+<td><code>sensor_node_id</code></td>
+<td>Camera node identity, for example <code>rpi4-camera-01</code></td>
+</tr>
+<tr>
+<td><code>captured_at</code></td>
+<td>Capture timestamp</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td>Optional sender sequence number</td>
+</tr>
+<tr>
+<td><code>camera_location</code></td>
+<td>Optional camera location</td>
+</tr>
+<tr>
+<td><code>capture_id</code></td>
+<td>Optional 32-character hexadecimal identity</td>
+</tr>
+<tr>
+<td><code>content_sha256</code></td>
+<td>Optional SHA-256 checksum</td>
+</tr>
+<tr>
+<td><code>upload_source</code></td>
+<td><code>live</code>, <code>retry</code> or <code>manual</code></td>
+</tr>
+</tbody>
+</table>
+<p>If <code>capture_id</code> is omitted, the backend generates a deterministic identity from the sensor, timestamp, sequence number and image checksum.</p>
+<h3 id="duplicate-behaviour">Duplicate behaviour</h3>
+<p>With the current single production replica, the backend uses:</p>
+<ol>
+<li>an in-process lock for simultaneous requests handled by that replica; and</li>
+<li>stored frame metadata in SeaweedFS to recognize completed retries across restarts.</li>
+</ol>
+<p>This provides reliable retry handling for the current deployment. In a future multi-replica deployment, two identical requests can still begin processing on different replicas at the same time. That duplicate risk was accepted for the current HA experiment and must not be described as strict cluster-wide exactly-once processing.</p>
+<hr />
+<h2 id="6-distributed-processing">6. Distributed Processing</h2>
+<p>The backend discovers workers through:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>image-worker-headless.edge-monitoring.svc.cluster.local:8002
+</span></code></pre></div>
+<p>The number of healthy workers determines the image layout:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Healthy workers</th>
+<th style="text-align: right;">Selected layout</th>
+<th style="text-align: right;">Tiles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">8 or more</td>
+<td style="text-align: right;"><code>4 × 2</code></td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td style="text-align: right;">6–7</td>
+<td style="text-align: right;"><code>3 × 2</code></td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td style="text-align: right;">4–5</td>
+<td style="text-align: right;"><code>2 × 2</code></td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td style="text-align: right;">2–3</td>
+<td style="text-align: right;"><code>2 × 1</code></td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td style="text-align: right;">Fewer than 2</td>
+<td style="text-align: right;">Full-frame fallback</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>A default overlap of <code>32 px</code> protects objects located near tile boundaries. Workers currently support processing modes such as CLAHE, grayscale and identity processing.</p>
+<p>If a worker fails, the backend can retry the tile on another healthy worker. When all attempts fail, the original tile is used. This allows frame processing to continue with fewer Pi3 nodes, although latency can increase.</p>
+<blockquote>
+<p><strong>Screenshot placeholder — distributed response metadata</strong><br />
+Capture a frame-upload response showing <code>active_worker_count</code>, layout, tile count, fallback count, workers used and latency.<br />
+Suggested filename: <code>assets/backend/backend-distributed-metadata.png</code></p>
+</blockquote>
+<hr />
+<h2 id="7-yolo-inference">7. YOLO Inference</h2>
+<p>After reconstruction, the backend calls the cluster-internal inference service:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>http://inference.edge-monitoring.svc.cluster.local:8001
+</span></code></pre></div>
+<p>YOLO runs once on the reconstructed image. The Pi3 workers do not run separate YOLO models on individual tiles.</p>
+<p>The inference response can contain:</p>
+<ul>
+<li>class name;</li>
+<li>confidence value and confidence percentage;</li>
+<li>bounding box coordinates;</li>
+<li>severity;</li>
+<li>inference latency;</li>
+<li>request round-trip latency;</li>
+<li>annotated JPEG bytes.</li>
+</ul>
+<p>The current model classes are:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Event policy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fire</code></td>
+<td>Critical alert candidate</td>
+</tr>
+<tr>
+<td><code>weapon</code></td>
+<td>Critical alert candidate</td>
+</tr>
+<tr>
+<td><code>person</code></td>
+<td>Informational event</td>
+</tr>
+<tr>
+<td><code>container</code></td>
+<td>Informational event</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Screenshot placeholder — inference success logs</strong><br />
+Show a backend request together with an inference <code>POST /infer 200 OK</code> log entry.<br />
+Suggested filename: <code>assets/backend/backend-inference-logs.png</code></p>
+</blockquote>
+<hr />
+<h2 id="8-events-alerts-and-telegram">8. Events, Alerts and Telegram</h2>
+<p>A detected frame produces one frame-level event that contains the complete list of detections. This keeps Event History organized while preserving every detection associated with the frame.</p>
+<p>Critical detections can additionally produce alert records. Telegram notification status is stored with the event and alert metadata, including:</p>
+<ul>
+<li>whether the message was sent;</li>
+<li>send timestamp;</li>
+<li>error text when delivery failed.</li>
+</ul>
+<p>Live annotations and alerts are separate concepts. A future Live Streaming page can show bounding boxes for every processed frame, while Telegram remains limited to configured threat conditions.</p>
+<hr />
+<h2 id="9-persistent-storage">9. Persistent Storage</h2>
+<p>The backend uses SeaweedFS through its S3-compatible gateway:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>http://seaweedfs-s3.seaweedfs.svc.cluster.local:8333
+</span></code></pre></div>
+<p>Configured buckets:</p>
+<table>
+<thead>
+<tr>
+<th>Bucket</th>
+<th>Stored content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>captured-images</code></td>
+<td>Raw and annotated images</td>
+</tr>
+<tr>
+<td><code>event-metadata</code></td>
+<td>Frame, detection, event and alert JSON</td>
+</tr>
+</tbody>
+</table>
+<p>The shared application evidence is therefore not stored only inside the backend container. Backend pod restarts do not remove the evidence saved in SeaweedFS.</p>
+<p>The local <code>/data</code> directory currently contains a small SQLite file used for backend health initialization and checking. It is not the authoritative frame/event store. For Pi3 backend canaries, <code>/data</code> was safely provided as a pod-local <code>emptyDir</code>.</p>
+<blockquote>
+<p><strong>Screenshot placeholder — storage status API</strong><br />
+Capture <code>/api/v1/storage/status?refresh=true</code> showing the storage backend, bucket checks and available capacity.<br />
+Suggested filename: <code>assets/backend/backend-storage-status.png</code></p>
+</blockquote>
+<hr />
+<h2 id="10-monitoring-integration">10. Monitoring Integration</h2>
+<p>The monitoring overview endpoint queries Prometheus for:</p>
+<ul>
+<li>node availability;</li>
+<li>CPU usage;</li>
+<li>memory usage;</li>
+<li>disk usage;</li>
+<li>temperature;</li>
+<li>network receive/transmit rates;</li>
+<li>load averages;</li>
+<li>uptime;</li>
+<li>time-series chart data.</li>
+</ul>
+<p>Inside Kubernetes, the backend must use the internal Prometheus address:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+</span></code></pre></div>
+<p>Without an explicit <code>PROMETHEUS_URL</code>, the application defaults to <code>http://127.0.0.1:9090</code>. That address works only when Prometheus is in the same network namespace, so a Pi3 backend pod returns HTTP <code>200</code> with empty metrics and <code>Connection refused</code> debug messages until the internal service URL is configured.</p>
+<blockquote>
+<p><strong>Screenshot placeholder — monitoring overview response</strong><br />
+Capture a populated <code>/api/v1/monitoring/overview</code> response after setting the Kubernetes Prometheus service URL.<br />
+Suggested filename: <code>assets/backend/backend-monitoring-overview.png</code></p>
+</blockquote>
+<hr />
+<h2 id="11-kubernetes-access-and-rbac">11. Kubernetes Access and RBAC</h2>
+<p>The backend uses the dedicated ServiceAccount:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>backend-kubernetes-reader
+</span></code></pre></div>
+<p>A namespaced Role and RoleBinding allow it to read pod information in <code>edge-monitoring</code>. This fixed the earlier <code>403 Forbidden</code> response from <code>/api/v1/kubernetes/pods</code>.</p>
+<p>The backend should retain read-only permissions unless a future feature explicitly requires write access.</p>
+<hr />
+<h2 id="12-container-image-improvements">12. Container-Image Improvements</h2>
+<p>The original combined backend image was approximately <code>3.26 GB</code> because it was built from a root requirements file containing <code>ultralytics</code>, PyTorch-related inference dependencies, inference source files and model files.</p>
+<p>The backend-only Dockerfile reduced the image to approximately <code>198 MB</code> by using <code>requirements/backend.txt</code> and excluding YOLO dependencies. However, new backend images still timed out during container creation on the Pi3 nodes because their K3s containerd storage is located inside the PXE/NFS root filesystem.</p>
+<p>The successful workaround was a bundle-based image:</p>
+<ol>
+<li>use the already-working <code>edge-worker:v1</code> image as the base;</li>
+<li>install only missing backend dependencies in a builder stage;</li>
+<li>compress the backend runtime into one <code>backend-runtime.tar.gz</code> file;</li>
+<li>add only that archive to the final image;</li>
+<li>extract it into a pod-local runtime directory when the container starts.</li>
+</ol>
+<p>This design successfully started a real backend canary on <code>rpi3-01</code>, and the following checks worked:</p>
+<ul>
+<li><code>/health</code>;</li>
+<li><code>/docs</code>;</li>
+<li><code>/api/v1/kubernetes/pods</code>;</li>
+<li><code>/api/v1/storage/status</code>;</li>
+<li><code>/api/v1/monitoring/overview</code> route execution.</li>
+</ul>
+<blockquote>
+<p><strong>Screenshot placeholder — Pi3 backend canary</strong><br />
+Show <code>backend-bundle-canary</code> in <code>1/1 Ready</code> state on <code>rpi3-01</code>.<br />
+Suggested filename: <code>assets/backend/backend-bundle-canary.png</code></p>
+</blockquote>
+<hr />
+<h2 id="13-high-availability-status">13. High-Availability Status</h2>
+<h3 id="already-available">Already available</h3>
+<ul>
+<li>Kubernetes restarts failed backend containers.</li>
+<li>The worker stage can continue with fewer healthy Pi3 nodes.</li>
+<li>The backend Service can load-balance across multiple ready backend endpoints when more replicas are added.</li>
+<li>K3s ServiceLB and Traefik are already installed.</li>
+<li>A Pi3 backend canary has been validated successfully.</li>
+</ul>
+<h3 id="not-yet-complete">Not yet complete</h3>
+<ul>
+<li>Production still uses one backend replica on Pi5.</li>
+<li>The Pi3 backend has not yet been rolled out to all eight nodes.</li>
+<li>Inference still runs as one replica on Pi5.</li>
+<li>SeaweedFS and the external SSD depend on Pi5.</li>
+<li>The K3s control plane is one Pi5 server.</li>
+<li>Every Pi3 PXE/NFS root depends on Pi5.</li>
+</ul>
+<p>The correct current statement is:</p>
+<blockquote>
+<p>PiWatch has worker-level fault tolerance, Kubernetes self-recovery and a validated Pi3 backend-canary design. It is not yet a fully highly available system because Pi5 remains a major single point of failure.</p>
+</blockquote>
+<hr />
+<h2 id="14-backend-setup-and-deployment">14. Backend Setup and Deployment</h2>
+<p>The backend is deployed from the Raspberry Pi 5, which acts as the K3s control-plane node. The following procedure describes the production deployment workflow.</p>
+<h3 id="step-1-open-the-backend-directory">Step 1: Open the backend directory</h3>
+<p>From the project repository, move into the backend source directory:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">cd</span><span class="w"> </span>~/cloud/Edge-computing-intrusion-detection-system/edge-computing-monitoring-system/backend
+</span></code></pre></div>
+<h3 id="step-2-create-the-backend-configuration">Step 2: Create the backend configuration</h3>
+<p>The Kubernetes configuration must provide the internal addresses used by the backend services. The important values are:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>STORAGE_BACKEND=s3
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>S3_ENDPOINT_URL=http://seaweedfs-s3.seaweedfs.svc.cluster.local:8333
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>S3_CAPTURED_IMAGES_BUCKET=captured-images
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>S3_EVENT_METADATA_BUCKET=event-metadata
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>PROMETHEUS_URL=http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>INFERENCE_URL=http://inference.edge-monitoring.svc.cluster.local:8001
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>WORKER_SERVICE_HOST=image-worker-headless.edge-monitoring.svc.cluster.local
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>WORKER_SERVICE_PORT=8002
+</span></code></pre></div>
+<p>Non-sensitive settings belong in the backend ConfigMap. Credentials, tokens and other confidential values must be stored in a Kubernetes Secret rather than committed to Git.</p>
+<p>Apply the backend configuration before deploying the application:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>k8s/backend-configmap.yaml
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>k8s/backend-secret.yaml
+</span></code></pre></div>
+<h3 id="step-3-build-the-backend-container-image">Step 3: Build the backend container image</h3>
+<p>Create a unique image tag so that each deployment can be identified and rolled back if required:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">BACKEND_TAG</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m%d-%H%M%S<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;edge-backend:</span><span class="si">${</span><span class="nv">BACKEND_TAG</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>.
+</span></code></pre></div>
+<p>The backend image contains the FastAPI application and backend-only Python dependencies. YOLO and its larger machine-learning dependencies remain in the separate inference image.</p>
+<h3 id="step-4-import-the-image-into-k3s">Step 4: Import the image into K3s</h3>
+<p>K3s uses its own containerd image store. Import the newly built image before updating the Deployment:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>save<span class="w"> </span><span class="s2">&quot;edge-backend:</span><span class="si">${</span><span class="nv">BACKEND_TAG</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>k3s<span class="w"> </span>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>import<span class="w"> </span>-
+</span></code></pre></div>
+<p>Confirm that the image is available to K3s:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>sudo<span class="w"> </span>k3s<span class="w"> </span>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>edge-backend
+</span></code></pre></div>
+<h3 id="step-5-apply-the-kubernetes-resources">Step 5: Apply the Kubernetes resources</h3>
+<p>Create or update the ServiceAccount, read-only RBAC permissions, Deployment and Service:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>k8s/backend-serviceaccount.yaml
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>k8s/backend-rbac.yaml
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>k8s/backend-deployment.yaml
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>k8s/backend-service.yaml
+</span></code></pre></div>
+<p>The backend runs in the <code>edge-monitoring</code> namespace and is exposed externally through NodePort <code>30080</code>.</p>
+<h3 id="step-6-deploy-the-new-image-version">Step 6: Deploy the new image version</h3>
+<p>Update the backend Deployment to use the image created in Step 3:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span><span class="nb">set</span><span class="w"> </span>image<span class="w"> </span>deployment/backend<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nv">backend</span><span class="o">=</span><span class="s2">&quot;edge-backend:</span><span class="si">${</span><span class="nv">BACKEND_TAG</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<p>Wait for Kubernetes to complete the rollout:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/backend
+</span></code></pre></div>
+<p>The running backend pod and its assigned node can be viewed with:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>wide
+</span></code></pre></div>
+<h3 id="step-7-access-the-backend">Step 7: Access the backend</h3>
+<p>The production API is available through the Pi5 cluster address:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>http://192.168.50.1:30080
+</span></code></pre></div>
+<p>FastAPI generates interactive API documentation at:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>http://192.168.50.1:30080/docs
+</span></code></pre></div>
+<p>The frontend uses the same NodePort address as its backend base URL:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>VITE_API_BASE_URL=http://192.168.50.1:30080
+</span></code></pre></div>
+<h3 id="step-8-send-frames-from-the-raspberry-pi-4">Step 8: Send frames from the Raspberry Pi 4</h3>
+<p>The Pi4 camera sender uploads captured images to the frame endpoint:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>POST http://192.168.50.1:30080/api/v1/frames
+</span></code></pre></div>
+<p>Each accepted frame follows the complete backend pipeline:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>Pi4 camera → FastAPI backend → Pi3 preprocessing workers → YOLO inference → SeaweedFS storage → frontend and Telegram
+</span></code></pre></div>
+<p>Raw images, annotated images and event metadata remain stored in SeaweedFS and can be retrieved through the backend API after processing.</p>
+</article>
 
 
 

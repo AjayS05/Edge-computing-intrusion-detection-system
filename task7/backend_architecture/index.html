@@ -79,6 +79,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#backend-architecture-design" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -583,7 +588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../task5/prometheus.md" class="md-nav__link">
+      <a href="../../task5/prometheus/" class="md-nav__link">
         
   
   
@@ -611,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../task5/grafana.md" class="md-nav__link">
+      <a href="../../task5/grafana/" class="md-nav__link">
         
   
   
@@ -867,6 +872,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Design
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -884,6 +909,489 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-architecture-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Architecture Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-system-architecture-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. System Architecture Diagram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-hardware-and-network-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Hardware and Network Roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-deployed-kubernetes-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Deployed Kubernetes Topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-end-to-end-processing-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. End-to-End Processing Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. End-to-End Processing Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-camera-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Camera capture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-frame-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Frame upload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-validation-and-frame-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Validation and frame identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-raw-image-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Raw-image storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-worker-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Worker discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-adaptive-tile-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Adaptive tile layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-pi3-tile-preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Pi3 tile preprocessing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-retry-and-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Retry and fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-9-reconstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9 — Reconstruction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10-yolo-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10 — YOLO inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-11-event-and-alert-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 11 — Event and alert creation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-12-persistent-result-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 12 — Persistent result storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-13-frontend-and-notification-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 13 — Frontend and notification access
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-core-architecture-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Core Architecture Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Core Architecture Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-fastapi-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 FastAPI backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-image-worker-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Image worker service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-yolo-inference-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 YOLO inference service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-seaweedfs-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 SeaweedFS storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-monitoring-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Monitoring stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-event-and-alert-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Event and alert service
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-service-communication-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Service Communication Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-storage-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Storage Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reliability-and-failure-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reliability and Failure Behaviour
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Reliability and Failure Behaviour">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#worker-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-pod-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend pod failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inference-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inference failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pi5-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pi5 failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-backend-ha-architecture-validated-canary-and-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Backend HA Architecture: Validated Canary and Target
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Backend HA Architecture: Validated Canary and Target">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-why-the-normal-backend-image-failed-on-pi3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Why the normal backend image failed on Pi3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-bundle-based-solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Bundle-based solution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-target-multi-pi3-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Target multi-Pi3 design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-ha-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 HA limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-backend-source-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Backend Source Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-architecture-validation-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Architecture Validation Evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1383,6 +1891,480 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-architecture-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Architecture Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-system-architecture-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. System Architecture Diagram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-hardware-and-network-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Hardware and Network Roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-deployed-kubernetes-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Deployed Kubernetes Topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-end-to-end-processing-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. End-to-End Processing Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. End-to-End Processing Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-camera-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Camera capture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-frame-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Frame upload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-validation-and-frame-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Validation and frame identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-raw-image-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Raw-image storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-worker-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Worker discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-adaptive-tile-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Adaptive tile layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-pi3-tile-preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Pi3 tile preprocessing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-retry-and-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Retry and fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-9-reconstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9 — Reconstruction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10-yolo-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10 — YOLO inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-11-event-and-alert-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 11 — Event and alert creation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-12-persistent-result-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 12 — Persistent result storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-13-frontend-and-notification-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 13 — Frontend and notification access
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-core-architecture-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Core Architecture Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Core Architecture Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-fastapi-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 FastAPI backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-image-worker-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Image worker service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-yolo-inference-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 YOLO inference service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-seaweedfs-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 SeaweedFS storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-monitoring-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Monitoring stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-event-and-alert-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Event and alert service
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-service-communication-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Service Communication Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-storage-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Storage Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reliability-and-failure-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reliability and Failure Behaviour
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Reliability and Failure Behaviour">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#worker-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-pod-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend pod failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inference-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inference failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pi5-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pi5 failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-backend-ha-architecture-validated-canary-and-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Backend HA Architecture: Validated Canary and Target
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Backend HA Architecture: Validated Canary and Target">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-why-the-normal-backend-image-failed-on-pi3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Why the normal backend image failed on Pi3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-bundle-based-solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Bundle-based solution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-target-multi-pi3-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Target multi-Pi3 design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-ha-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 HA limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-backend-source-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Backend Source Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-architecture-validation-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Architecture Validation Evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1399,9 +2381,386 @@
 
 
 
-  <h1>Architecture Design</h1>
-
-
+<article>
+<h1 id="backend-architecture-design">Backend Architecture Design</h1>
+<h2 id="1-architecture-purpose">1. Architecture Purpose</h2>
+<p>The PiWatch backend architecture separates camera capture, orchestration, distributed preprocessing, YOLO inference, persistent storage, monitoring and user access into clear services. This allows each stage to be tested and deployed independently while keeping the edge-detection pipeline understandable and recoverable.</p>
+<hr />
+<h2 id="2-system-architecture-diagram">2. System Architecture Diagram</h2>
+<p><img alt="PiWatch system architecture" src="../piwatch-system-architecture.png" /></p>
+<p><strong>Figure 1 — PiWatch backend and edge-processing architecture.</strong> The Pi4 camera sends frames to the backend, Pi3 workers process image tiles, Pi5 performs YOLO inference, SeaweedFS stores evidence, the frontend reads results through the API, and the monitoring stack can feed infrastructure conditions into the event and alert workflow.</p>
+<p>This figure represents the baseline deployed architecture. The validated Pi3 backend-canary and future multi-replica backend design are documented separately in Section 10.</p>
+<hr />
+<h2 id="3-hardware-and-network-roles">3. Hardware and Network Roles</h2>
+<table>
+<thead>
+<tr>
+<th>Device or service</th>
+<th>Address or identity</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raspberry Pi 5</td>
+<td><code>cloud</code></td>
+<td>K3s control plane, production backend, inference, NFS/PXE services and storage access</td>
+</tr>
+<tr>
+<td>Pi5 private interface</td>
+<td><code>192.168.50.1</code></td>
+<td>Private edge-network gateway and NFS endpoint</td>
+</tr>
+<tr>
+<td>Pi5 Wi-Fi/LAN interface</td>
+<td><code>192.168.178.200</code></td>
+<td>Current frontend/backend access from the external network</td>
+</tr>
+<tr>
+<td>Raspberry Pi 4 camera</td>
+<td><code>192.168.50.144</code></td>
+<td>Captures and uploads frames</td>
+</tr>
+<tr>
+<td>Raspberry Pi 3 workers</td>
+<td><code>rpi3-01</code> to <code>rpi3-08</code></td>
+<td>Distributed image preprocessing</td>
+</tr>
+<tr>
+<td>Pi3 addresses</td>
+<td><code>192.168.50.101</code> to <code>192.168.50.108</code></td>
+<td>Internal worker communication</td>
+</tr>
+<tr>
+<td>External SSD</td>
+<td>Mounted on Pi5 at <code>/srv/nfs</code></td>
+<td>PXE roots, SeaweedFS data and container storage</td>
+</tr>
+</tbody>
+</table>
+<p>The Pi3 nodes PXE-boot from node-specific NFS roots such as:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>192.168.50.1:/srv/nfs/rpi3-01
+</span></code></pre></div>
+<p>This means the Pi3 filesystems are physically stored on the SSD, but each Pi3 has its own root directory.</p>
+<hr />
+<h2 id="4-deployed-kubernetes-topology">4. Deployed Kubernetes Topology</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>K3s cluster
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── Node: cloud (Raspberry Pi 5)
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│   ├── backend pod
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│   ├── inference pod
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   ├── Traefik pod
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│   ├── Prometheus/Grafana components
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│   └── SeaweedFS-related storage access
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>├── Nodes: rpi3-01 ... rpi3-08
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   ├── image-worker pods
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│   └── ServiceLB pods
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>├── Namespace: edge-monitoring
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│   ├── Deployment/backend
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│   ├── Service/backend (NodePort 30080)
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│   ├── Deployment/inference
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>│   ├── Service/inference
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   ├── Deployment/image-worker
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│   └── Service/image-worker-headless
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>├── Namespace: seaweedfs
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>│   └── SeaweedFS master, filer, volume and S3 services
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>│
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>└── Namespace: monitoring
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    └── Prometheus, Alertmanager and Grafana
+</span></code></pre></div>
+<blockquote>
+<p><strong>Screenshot placeholder — Kubernetes topology</strong><br />
+Use <code>kubectl get pods -A -o wide</code> and capture the relevant PiWatch workloads and nodes.<br />
+Suggested filename: <code>assets/backend/kubernetes-backend-topology.png</code></p>
+</blockquote>
+<hr />
+<h2 id="5-end-to-end-processing-flow">5. End-to-End Processing Flow</h2>
+<h3 id="step-1-camera-capture">Step 1 — Camera capture</h3>
+<p>The Pi4 captures a JPEG frame and generates metadata including the sensor ID, location, timestamp, sequence number, upload source and checksum.</p>
+<h3 id="step-2-frame-upload">Step 2 — Frame upload</h3>
+<p>The camera sends the frame to:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>POST http://192.168.50.1:30080/api/v1/frames
+</span></code></pre></div>
+<p>The Kubernetes NodePort forwards the request to the ready backend pod selected by the <code>backend</code> Service.</p>
+<h3 id="step-3-validation-and-frame-identity">Step 3 — Validation and frame identity</h3>
+<p>The backend validates the file type, file size, required metadata and optional checksum. It accepts a supplied <code>capture_id</code> or generates a deterministic one.</p>
+<h3 id="step-4-raw-image-storage">Step 4 — Raw-image storage</h3>
+<p>The unmodified uploaded bytes are stored in the <code>captured-images</code> SeaweedFS bucket before the distributed or inference stages.</p>
+<h3 id="step-5-worker-discovery">Step 5 — Worker discovery</h3>
+<p>The backend resolves worker endpoints through:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>image-worker-headless.edge-monitoring.svc.cluster.local:8002
+</span></code></pre></div>
+<p>Only healthy workers are selected.</p>
+<h3 id="step-6-adaptive-tile-layout">Step 6 — Adaptive tile layout</h3>
+<p>The backend chooses a layout based on the number of healthy workers:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>8+ workers → 4x2
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>6–7       → 3x2
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>4–5       → 2x2
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>2–3       → 2x1
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>&lt;2        → full-frame fallback
+</span></code></pre></div>
+<h3 id="step-7-pi3-tile-preprocessing">Step 7 — Pi3 tile preprocessing</h3>
+<p>Tiles are sent to worker pods over HTTP. A worker can apply CLAHE, grayscale or identity processing, then returns the processed tile with checksum and latency metadata.</p>
+<h3 id="step-8-retry-and-fallback">Step 8 — Retry and fallback</h3>
+<p>Failed tiles can be retried on another worker. When all attempts fail, the original tile is retained. The frame therefore continues through the pipeline instead of being discarded.</p>
+<h3 id="step-9-reconstruction">Step 9 — Reconstruction</h3>
+<p>The backend reconstructs one frame from successful and fallback tiles. Overlap is removed using each tile's core region.</p>
+<h3 id="step-10-yolo-inference">Step 10 — YOLO inference</h3>
+<p>The reconstructed frame is sent to:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>http://inference.edge-monitoring.svc.cluster.local:8001
+</span></code></pre></div>
+<p>The inference service returns detections, confidence values, bounding boxes, severity, latency and annotated JPEG bytes.</p>
+<h3 id="step-11-event-and-alert-creation">Step 11 — Event and alert creation</h3>
+<p>The backend creates one event for the frame and optional critical alerts for configured threat detections.</p>
+<h3 id="step-12-persistent-result-storage">Step 12 — Persistent result storage</h3>
+<p>The backend stores image evidence and JSON metadata in SeaweedFS.</p>
+<h3 id="step-13-frontend-and-notification-access">Step 13 — Frontend and notification access</h3>
+<p>The frontend reads events and images through the backend API. Critical alerts can be delivered through Telegram. Monitoring metrics are retrieved from Prometheus and can contribute infrastructure alerts.</p>
+<blockquote>
+<p><strong>Screenshot placeholder — complete frame flow</strong><br />
+Add a sequence or flow screenshot showing upload, worker calls, inference, storage and event output.<br />
+Suggested filename: <code>assets/backend/backend-frame-pipeline.png</code></p>
+</blockquote>
+<hr />
+<h2 id="6-core-architecture-components">6. Core Architecture Components</h2>
+<h3 id="61-fastapi-backend">6.1 FastAPI backend</h3>
+<p>The backend is the orchestration layer. It does not load the YOLO model directly in the deployed architecture. Its main responsibilities are request validation, distributed processing, storage, metadata generation, API delivery and integrations.</p>
+<h3 id="62-image-worker-service">6.2 Image worker service</h3>
+<p>The worker service is intentionally lightweight and runs on the Pi3 nodes. It exposes a health endpoint and an image-processing endpoint on port <code>8002</code>.</p>
+<h3 id="63-yolo-inference-service">6.3 YOLO inference service</h3>
+<p>The inference service runs separately on Pi5 so the large model and inference dependencies do not have to exist in every backend or worker image.</p>
+<h3 id="64-seaweedfs-storage">6.4 SeaweedFS storage</h3>
+<p>SeaweedFS provides S3-compatible object storage. The application uses shared buckets for evidence and metadata rather than storing authoritative results only inside one pod.</p>
+<h3 id="65-monitoring-stack">6.5 Monitoring stack</h3>
+<p>Prometheus gathers node and application metrics. Grafana provides visualization, while the backend monitoring API converts Prometheus results into the frontend response format.</p>
+<h3 id="66-event-and-alert-service">6.6 Event and alert service</h3>
+<p>Detection results are transformed into event and alert records. Monitoring conditions can also feed the event/alert path. Telegram is a downstream notification channel, not the only way to see a detection.</p>
+<hr />
+<h2 id="7-service-communication-matrix">7. Service Communication Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Address or Service</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pi4 camera</td>
+<td>Backend</td>
+<td><code>192.168.50.1:30080</code></td>
+<td>Upload frames</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>Backend</td>
+<td>Current Pi5/NodePort address</td>
+<td>Read events, images and monitoring data</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Workers</td>
+<td><code>image-worker-headless...:8002</code></td>
+<td>Health checks and tile processing</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Inference</td>
+<td><code>inference...:8001</code></td>
+<td>YOLO inference</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>SeaweedFS</td>
+<td><code>seaweedfs-s3...:8333</code></td>
+<td>Object read/write operations</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Prometheus</td>
+<td><code>prometheus-kube-prometheus-prometheus.monitoring...:9090</code></td>
+<td>Metrics queries</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Kubernetes API</td>
+<td>In-cluster API through ServiceAccount</td>
+<td>Pod and workload status</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Telegram API</td>
+<td>HTTPS</td>
+<td>Critical notifications</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>Backend</td>
+<td><code>/metrics</code></td>
+<td>Backend metrics collection</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-storage-architecture">8. Storage Architecture</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>External SSD on Pi5 (/srv/nfs)
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── Pi3 PXE/NFS roots
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>│   ├── rpi3-01
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>│   ├── rpi3-02
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>│   └── ...
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>├── SeaweedFS data
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>├── Docker data
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>└── other cluster storage
+</span></code></pre></div>
+<p>Application evidence is stored through SeaweedFS:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>captured-images
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>├── raw images
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>└── annotated images
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>event-metadata
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>├── frame metadata
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>├── detection metadata
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>├── events
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>└── alerts
+</span></code></pre></div>
+<p>A normal Kubernetes <code>hostPath</code> on each Pi3 would refer to a different node-specific NFS root. For that reason, multi-replica backend pods should not rely on a supposedly shared <code>/data</code> hostPath. The validated canary uses pod-local <code>emptyDir</code> volumes and keeps shared evidence in SeaweedFS.</p>
+<hr />
+<h2 id="9-reliability-and-failure-behaviour">9. Reliability and Failure Behaviour</h2>
+<h3 id="worker-failure">Worker failure</h3>
+<p>When one or more Pi3 workers are unavailable:</p>
+<ul>
+<li>the headless Service no longer returns unhealthy endpoints;</li>
+<li>the backend uses the remaining workers;</li>
+<li>the tile layout can shrink;</li>
+<li>failed requests are retried;</li>
+<li>original-tile or full-frame fallback remains available.</li>
+</ul>
+<p>Worker loss therefore reduces capacity but does not necessarily stop frame processing.</p>
+<h3 id="backend-pod-failure">Backend pod failure</h3>
+<p>Kubernetes restarts the backend pod. Readiness probes keep it out of Service traffic until <code>/health</code> succeeds.</p>
+<h3 id="inference-failure">Inference failure</h3>
+<p>The backend cannot complete new detections until the inference service becomes available. Current inference is a single Pi5 workload.</p>
+<h3 id="storage-failure">Storage failure</h3>
+<p>If SeaweedFS or the Pi5 SSD is unavailable, evidence storage and retrieval are affected.</p>
+<h3 id="pi5-failure">Pi5 failure</h3>
+<p>Pi5 remains a system-wide dependency because it hosts the K3s control plane, PXE/NFS services, inference and shared storage access. Backend replicas on Pi3 improve Pi3-level service availability but do not remove this Pi5 dependency.</p>
+<hr />
+<h2 id="10-backend-ha-architecture-validated-canary-and-target">10. Backend HA Architecture: Validated Canary and Target</h2>
+<h3 id="101-why-the-normal-backend-image-failed-on-pi3">10.1 Why the normal backend image failed on Pi3</h3>
+<p>The Pi3 containerd directory is inside the NFS-backed PXE root. The original backend image was approximately <code>3.26 GB</code>; after removing YOLO dependencies, the backend-only image was approximately <code>198 MB</code>. Even the smaller image repeatedly failed during container creation with <code>context deadline exceeded</code> before Python started.</p>
+<p>The existing <code>edge-worker:v1</code> image could start successfully. A repacked worker image with no new filesystem content also started, proving that newly imported manifests were valid and that the problem was the large number of new backend dependency files.</p>
+<h3 id="102-bundle-based-solution">10.2 Bundle-based solution</h3>
+<p>The validated solution uses:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>edge-worker:v1 base image
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>        +
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>one compressed backend-runtime.tar.gz file
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        ↓
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>container starts successfully
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>        ↓
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>archive extracted into pod-local /runtime
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>        ↓
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>backend starts with PYTHONPATH=/runtime/python:/runtime
+</span></code></pre></div>
+<p>A real <code>backend-bundle-canary</code> pod reached <code>1/1 Ready</code> on <code>rpi3-01</code> and successfully served health, documentation, Kubernetes and storage APIs.</p>
+<h3 id="103-target-multi-pi3-design">10.3 Target multi-Pi3 design</h3>
+<p>The planned design is one edge-node pod on each Pi3 with two containers:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Pi3 edge-node pod
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>├── worker container
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>│   ├── worker service
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>│   └── port 8002
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>│
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>└── backend container
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    ├── bundled backend runtime
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    └── port 8000
+</span></code></pre></div>
+<p>The worker and backend remain separate processes and can have independent probes and resource limits while sharing the same pod network.</p>
+<p>The backend Service can then select all ready backend containers and distribute requests across them. Kubernetes already performs this internal load balancing; MetalLB is not required merely to balance traffic between backend pods.</p>
+<blockquote>
+<p><strong>Screenshot placeholder — target HA canary</strong><br />
+Show the Pi3 backend bundle pod and its successful readiness, storage and API tests.<br />
+Suggested filename: <code>assets/backend/backend-ha-canary-validation.png</code></p>
+</blockquote>
+<h3 id="104-ha-limitations">10.4 HA limitations</h3>
+<p>Even after deploying backend containers on every Pi3, the system will still depend on Pi5 for:</p>
+<ul>
+<li>K3s control plane;</li>
+<li>PXE boot and NFS roots;</li>
+<li>inference;</li>
+<li>SeaweedFS and SSD access.</li>
+</ul>
+<p>This should be described as backend and worker fault tolerance, not complete system-level HA.</p>
+<hr />
+<h2 id="11-backend-source-structure">11. Backend Source Structure</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>backend/
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>├── app/
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>│   ├── api/
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>│   │   ├── frames.py
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>│   │   ├── events.py
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>│   │   ├── images.py
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>│   │   ├── alerts.py
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>│   │   ├── monitoring.py
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>│   │   ├── kubernetes.py
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>│   │   ├── storage.py
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>│   │   ├── telegram.py
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>│   │   └── model_dataset.py
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>│   ├── core/
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>│   │   └── config.py
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>│   ├── services/
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>│   │   ├── frame_processing_service.py
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>│   │   ├── distributed_frame_service.py
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>│   │   ├── image_splitter.py
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>│   │   ├── worker_registry.py
+</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>│   │   ├── task_dispatcher.py
+</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a>│   │   ├── inference_client.py
+</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>│   │   ├── storage_service.py
+</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a>│   │   ├── storage_status_service.py
+</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a>│   │   ├── alert_service.py
+</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a>│   │   └── telegram_service.py
+</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>│   └── main.py
+</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a>├── inference_app/
+</span><span id="__span-10-28"><a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a>├── worker_app/
+</span><span id="__span-10-29"><a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a>├── docker/
+</span><span id="__span-10-30"><a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a>│   ├── Dockerfile.backend
+</span><span id="__span-10-31"><a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a>│   ├── Dockerfile.inference
+</span><span id="__span-10-32"><a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a>│   ├── Dockerfile.worker
+</span><span id="__span-10-33"><a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a>│   ├── Dockerfile.edge-node
+</span><span id="__span-10-34"><a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>│   └── Dockerfile.edge-node-bundle
+</span><span id="__span-10-35"><a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a>├── requirements/
+</span><span id="__span-10-36"><a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a>│   ├── backend.txt
+</span><span id="__span-10-37"><a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a>│   ├── backend-extra.txt
+</span><span id="__span-10-38"><a id="__codelineno-10-38" name="__codelineno-10-38" href="#__codelineno-10-38"></a>│   ├── inference.txt
+</span><span id="__span-10-39"><a id="__codelineno-10-39" name="__codelineno-10-39" href="#__codelineno-10-39"></a>│   └── worker.txt
+</span><span id="__span-10-40"><a id="__codelineno-10-40" name="__codelineno-10-40" href="#__codelineno-10-40"></a>└── k8s/
+</span><span id="__span-10-41"><a id="__codelineno-10-41" name="__codelineno-10-41" href="#__codelineno-10-41"></a>    ├── 00-namespace-config.yaml
+</span><span id="__span-10-42"><a id="__codelineno-10-42" name="__codelineno-10-42" href="#__codelineno-10-42"></a>    ├── 05-backend-rbac.yaml
+</span><span id="__span-10-43"><a id="__codelineno-10-43" name="__codelineno-10-43" href="#__codelineno-10-43"></a>    ├── 10-backend.yaml
+</span><span id="__span-10-44"><a id="__codelineno-10-44" name="__codelineno-10-44" href="#__codelineno-10-44"></a>    ├── 12-backend-bundle-canary.yaml
+</span><span id="__span-10-45"><a id="__codelineno-10-45" name="__codelineno-10-45" href="#__codelineno-10-45"></a>    ├── 20-inference.yaml
+</span><span id="__span-10-46"><a id="__codelineno-10-46" name="__codelineno-10-46" href="#__codelineno-10-46"></a>    └── 30-workers.yaml
+</span></code></pre></div>
+<p>Update this tree if filenames differ in the final repository.</p>
+<hr />
+<h2 id="12-architecture-validation-evidence">12. Architecture Validation Evidence</h2>
+<p>Capture the following evidence for the final report:</p>
+<ol>
+<li><code>piwatch-system-architecture.png</code> — architecture diagram included above.</li>
+<li><code>kubernetes-backend-topology.png</code> — pods and nodes.</li>
+<li><code>backend-frame-pipeline.png</code> — end-to-end processing flow.</li>
+<li><code>backend-worker-endpoints.png</code> — headless Service endpoints.</li>
+<li><code>backend-inference-logs.png</code> — successful inference call.</li>
+<li><code>backend-seaweedfs-objects.png</code> — stored raw, annotated and JSON objects.</li>
+<li><code>backend-ha-canary-validation.png</code> — Pi3 backend bundle canary.</li>
+<li><code>backend-monitoring-overview.png</code> — Prometheus-backed monitoring response.</li>
+<li><code>frontend-live-detection.png</code> — final annotated evidence in the UI.</li>
+</ol>
+<p>Recommended directory:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>assets/backend/
+</span></code></pre></div>
+</article>
 
 
 
