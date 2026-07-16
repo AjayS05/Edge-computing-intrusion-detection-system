@@ -26,7 +26,7 @@ The system provides infrastructure-level visualization through Grafana and appli
 
 ---
 
-## 2. Final architecture
+## 2.Monitoring Components and Responsibilities
 
 The existing Ansible-installed Node Exporters are retained as Linux services on the Raspberry Pi hosts. The Node Exporter dependency included in `kube-prometheus-stack` is disabled to prevent two exporters from competing for port `9100`.
 
