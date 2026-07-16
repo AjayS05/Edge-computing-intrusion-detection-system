@@ -361,6 +361,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task1/network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PXE Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -900,6 +928,34 @@
     <span class="md-ellipsis">
       
         Possible Improvements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-distributor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task Distributor
       
     </span>
   </a>
@@ -2180,6 +2236,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-distributor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task Distributor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2564,6 +2648,21 @@ Rather than increasing the number of physical machines, the workload granularity
 <li>Implement dynamic load balancing so that idle workers can immediately receive additional work rather than waiting for fixed task assignments to complete.</li>
 </ul>
 <p>Overall, the Celery benchmark illustrates an important trade-off in distributed systems. Frameworks such as Celery greatly simplify task distribution and fault tolerance, but this convenience introduces non-negligible scheduling and messaging overhead. For coarse-grained workloads, these costs become relatively insignificant and useful speedup is achieved. For fine-grained workloads, however, the framework overhead dominates, limiting scalability compared with lighter-weight communication mechanisms such as MPI or ZeroMQ.</p>
+<h2 id="how-to-run">How to run</h2>
+<h3 id="task-distributor">Task Distributor</h3>
+<p>Place the <code>task-distributor-master.sh</code> and <code>task-distributor-worker.sh</code> in the master node. Change the shared folder in <code>task-distributor-master.sh</code> accordingly. Then, to execute 10 runs with 8 or 32 workers use the following code:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>for workers in 1 2 4 8 16 32; do
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    for i in $(seq 1 2); do
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        echo &quot;=== Workers: $workers | Run: $i/2 ===&quot;
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>        for j in 101 102 103 104 105 106 107 108; do
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>            ssh pi3@192.168.50.$j &quot;rm -rf /tmp/worker* /tmp/blob*&quot; &amp;
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        done
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        wait
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        sleep 1
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>        ./run_one.sh 800 600 $workers
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    done
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>done
+</span></code></pre></div></p>
 
 
 
