@@ -91,9 +91,7 @@ nav:
       - High Availability Approaches: task7/high_availability.md
 
   - Task 8 - Frontend Dashboard:
-      - UI Architecture: task8/frontend_architecture.md
-      - User Interface Components: task8/ui.md
-      - Real-time Event Dashboard: task8/dashboard.md
+      - Frontend – PIWATCH: task8/frontend.md
 
   - Task 9 - Alerts & Notifications:
       - Telegram Bot Architecture: task9/telegram.md
