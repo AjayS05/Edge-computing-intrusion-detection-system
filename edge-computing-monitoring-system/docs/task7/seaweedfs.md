@@ -28,17 +28,6 @@ rpi3-08                192.168.50.108
 
 ---
 
-## Why SeaweedFS
-
-We evaluated three options — MinIO (distributed mode), SeaweedFS, and Longhorn — and chose SeaweedFS for these reasons:
-
-- Pi 3 nodes only have 1GB RAM each. SeaweedFS volume servers run comfortably at ~100–256MB RAM, whereas MinIO distributed mode requires 512MB+ per instance.
-- SeaweedFS has a native S3-compatible API via its S3 gateway component.
-- It supports topology-aware replication across nodes out of the box.
-- Official ARM64 Docker images are available.
-
----
-
 ## Storage Architecture (Initial Deployment)
 
 Since all Pi 3s are diskless (PXE boot), we could not use `local-path` storage at first. Instead:
