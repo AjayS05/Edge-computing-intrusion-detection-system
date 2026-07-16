@@ -70,7 +70,6 @@ function App() {
 
           {activePage === "storage" && <StoragePage/>
           }
-          {activePage === "modelDataset" && <ModelDatasetPage />}
           {activePage === "clusterPerformance" && (
             <ClusterPerformancePage />
           )}
