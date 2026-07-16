@@ -352,7 +352,7 @@ The React frontend calls the monitoring endpoint every five seconds. A manual re
 The interface displays:
 
 - Backend and Prometheus status
-- YOLO and Telegram service status
+- YOLO status
 - Online and total node counts
 - Average CPU and memory utilization
 - Disk utilization
