@@ -1076,10 +1076,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-7-pi3-tile-preprocessing" class="md-nav__link">
+  <a href="#step-7-distributed-image-preprocessing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 7 — Pi3 tile preprocessing
+        Step 7 — Distributed Image Preprocessing
       
     </span>
   </a>
@@ -1098,10 +1098,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-9-reconstruction" class="md-nav__link">
+  <a href="#step-9-image-reconstruction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 9 — Reconstruction
+        Step 9 — Image Reconstruction
       
     </span>
   </a>
@@ -1184,7 +1184,7 @@
   <a href="#62-image-worker-service" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.2 Image worker service
+        6.2 Image Worker Service
       
     </span>
   </a>
@@ -1323,6 +1323,56 @@
     <span class="md-ellipsis">
       
         Pi5 failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backend-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend Performance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backend-performance-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend Performance Evaluation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backend Performance Evaluation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#latency-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Latency Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation-of-the-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation of the Metrics
       
     </span>
   </a>
@@ -2023,10 +2073,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-7-pi3-tile-preprocessing" class="md-nav__link">
+  <a href="#step-7-distributed-image-preprocessing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 7 — Pi3 tile preprocessing
+        Step 7 — Distributed Image Preprocessing
       
     </span>
   </a>
@@ -2045,10 +2095,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-9-reconstruction" class="md-nav__link">
+  <a href="#step-9-image-reconstruction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 9 — Reconstruction
+        Step 9 — Image Reconstruction
       
     </span>
   </a>
@@ -2131,7 +2181,7 @@
   <a href="#62-image-worker-service" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.2 Image worker service
+        6.2 Image Worker Service
       
     </span>
   </a>
@@ -2270,6 +2320,56 @@
     <span class="md-ellipsis">
       
         Pi5 failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backend-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend Performance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backend-performance-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend Performance Evaluation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backend Performance Evaluation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#latency-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Latency Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation-of-the-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation of the Metrics
       
     </span>
   </a>
@@ -2470,11 +2570,6 @@
 </span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>└── Namespace: monitoring
 </span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    └── Prometheus, Alertmanager and Grafana
 </span></code></pre></div>
-<blockquote>
-<p><strong>Screenshot placeholder — Kubernetes topology</strong><br />
-Use <code>kubectl get pods -A -o wide</code> and capture the relevant PiWatch workloads and nodes.<br />
-Suggested filename: <code>assets/backend/kubernetes-backend-topology.png</code></p>
-</blockquote>
 <hr />
 <h2 id="5-end-to-end-processing-flow">5. End-to-End Processing Flow</h2>
 <h3 id="step-1-camera-capture">Step 1 — Camera capture</h3>
@@ -2501,16 +2596,35 @@ Suggested filename: <code>assets/backend/kubernetes-backend-topology.png</code><
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>2–3       → 2x1
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>&lt;2        → full-frame fallback
 </span></code></pre></div>
-<h3 id="step-7-pi3-tile-preprocessing">Step 7 — Pi3 tile preprocessing</h3>
-<p>Tiles are sent to worker pods over HTTP. A worker can apply CLAHE, grayscale or identity processing, then returns the processed tile with checksum and latency metadata.</p>
+<h3 id="step-7-distributed-image-preprocessing">Step 7 — Distributed Image Preprocessing</h3>
+<p>The backend sends each image tile to a separate Raspberry Pi 3 worker through the Kubernetes headless Service.</p>
+<p>Each worker independently preprocesses its assigned tile using the configured preprocessing mode, such as:</p>
+<ul>
+<li>CLAHE contrast enhancement</li>
+<li>Grayscale conversion</li>
+<li>Identity processing</li>
+</ul>
+<p>The worker does not perform object detection.</p>
+<p>Instead, it returns:</p>
+<ul>
+<li>processed image tile</li>
+<li>checksum</li>
+<li>worker identifier</li>
+<li>processing latency</li>
+</ul>
+<p>Since multiple workers process tiles simultaneously, image preprocessing is executed in parallel across the cluster.</p>
+<hr />
 <h3 id="step-8-retry-and-fallback">Step 8 — Retry and fallback</h3>
 <p>Failed tiles can be retried on another worker. When all attempts fail, the original tile is retained. The frame therefore continues through the pipeline instead of being discarded.</p>
-<h3 id="step-9-reconstruction">Step 9 — Reconstruction</h3>
-<p>The backend reconstructs one frame from successful and fallback tiles. Overlap is removed using each tile's core region.</p>
+<h3 id="step-9-image-reconstruction">Step 9 — Image Reconstruction</h3>
+<p>After all worker responses are received, the backend reconstructs a complete image by combining the processed tiles.</p>
+<p>Only the central region of each tile is used during reconstruction so that overlapping border regions are removed, preventing duplicated image content.</p>
+<p>Once reconstruction is complete, the backend forwards a single reconstructed frame to the inference service.</p>
+<p>The YOLO model is executed only once per frame regardless of how many worker nodes participated in preprocessing.</p>
 <h3 id="step-10-yolo-inference">Step 10 — YOLO inference</h3>
-<p>The reconstructed frame is sent to:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>http://inference.edge-monitoring.svc.cluster.local:8001
-</span></code></pre></div>
+<p>The backend performs only one inference for every uploaded frame.</p>
+<p>After the distributed preprocessing stage has completed and the processed tiles have been reconstructed into a single image, the backend forwards the reconstructed frame to the dedicated inference service running on the Raspberry Pi 5.</p>
+<p>The Raspberry Pi 3 workers never execute the YOLO model.</p>
 <p>The inference service returns detections, confidence values, bounding boxes, severity, latency and annotated JPEG bytes.</p>
 <h3 id="step-11-event-and-alert-creation">Step 11 — Event and alert creation</h3>
 <p>The backend creates one event for the frame and optional critical alerts for configured threat detections.</p>
@@ -2518,17 +2632,15 @@ Suggested filename: <code>assets/backend/kubernetes-backend-topology.png</code><
 <p>The backend stores image evidence and JSON metadata in SeaweedFS.</p>
 <h3 id="step-13-frontend-and-notification-access">Step 13 — Frontend and notification access</h3>
 <p>The frontend reads events and images through the backend API. Critical alerts can be delivered through Telegram. Monitoring metrics are retrieved from Prometheus and can contribute infrastructure alerts.</p>
-<blockquote>
-<p><strong>Screenshot placeholder — complete frame flow</strong><br />
-Add a sequence or flow screenshot showing upload, worker calls, inference, storage and event output.<br />
-Suggested filename: <code>assets/backend/backend-frame-pipeline.png</code></p>
-</blockquote>
 <hr />
 <h2 id="6-core-architecture-components">6. Core Architecture Components</h2>
 <h3 id="61-fastapi-backend">6.1 FastAPI backend</h3>
 <p>The backend is the orchestration layer. It does not load the YOLO model directly in the deployed architecture. Its main responsibilities are request validation, distributed processing, storage, metadata generation, API delivery and integrations.</p>
-<h3 id="62-image-worker-service">6.2 Image worker service</h3>
-<p>The worker service is intentionally lightweight and runs on the Pi3 nodes. It exposes a health endpoint and an image-processing endpoint on port <code>8002</code>.</p>
+<h3 id="62-image-worker-service">6.2 Image Worker Service</h3>
+<p>The image worker service is a lightweight FastAPI application deployed on the Raspberry Pi 3 worker nodes.</p>
+<p>Its only responsibility is image preprocessing.</p>
+<p>Each worker receives one image tile, applies the configured preprocessing algorithm and returns the processed tile together with processing metadata.</p>
+<p>By distributing preprocessing across several Raspberry Pi 3 nodes, the backend reduces the preprocessing workload performed by a single device while maintaining a single centralized YOLO inference stage.</p>
 <h3 id="63-yolo-inference-service">6.3 YOLO inference service</h3>
 <p>The inference service runs separately on Pi5 so the large model and inference dependencies do not have to exist in every backend or worker image.</p>
 <h3 id="64-seaweedfs-storage">6.4 SeaweedFS storage</h3>
@@ -2607,25 +2719,25 @@ Suggested filename: <code>assets/backend/backend-frame-pipeline.png</code></p>
 </table>
 <hr />
 <h2 id="8-storage-architecture">8. Storage Architecture</h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>External SSD on Pi5 (/srv/nfs)
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── Pi3 PXE/NFS roots
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>│   ├── rpi3-01
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>│   ├── rpi3-02
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>│   └── ...
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>├── SeaweedFS data
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>├── Docker data
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>└── other cluster storage
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>External SSD on Pi5 (/srv/nfs)
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>├── Pi3 PXE/NFS roots
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>│   ├── rpi3-01
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>│   ├── rpi3-02
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>│   └── ...
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>├── SeaweedFS data
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>├── Docker data
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>└── other cluster storage
 </span></code></pre></div>
 <p>Application evidence is stored through SeaweedFS:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>captured-images
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>├── raw images
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>└── annotated images
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>event-metadata
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>├── frame metadata
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>├── detection metadata
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>├── events
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>└── alerts
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>captured-images
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── raw images
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>└── annotated images
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>event-metadata
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>├── frame metadata
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>├── detection metadata
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>├── events
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>└── alerts
 </span></code></pre></div>
 <p>A normal Kubernetes <code>hostPath</code> on each Pi3 would refer to a different node-specific NFS root. For that reason, multi-replica backend pods should not rely on a supposedly shared <code>/data</code> hostPath. The validated canary uses pod-local <code>emptyDir</code> volumes and keeps shared evidence in SeaweedFS.</p>
 <hr />
@@ -2649,41 +2761,131 @@ Suggested filename: <code>assets/backend/backend-frame-pipeline.png</code></p>
 <h3 id="pi5-failure">Pi5 failure</h3>
 <p>Pi5 remains a system-wide dependency because it hosts the K3s control plane, PXE/NFS services, inference and shared storage access. Backend replicas on Pi3 improve Pi3-level service availability but do not remove this Pi5 dependency.</p>
 <hr />
+<h2 id="backend-performance">Backend Performance</h2>
+<h2 id="backend-performance-evaluation">Backend Performance Evaluation</h2>
+<p>Performance measurements were collected using the backend's built-in latency instrumentation during the processing of <strong>20 frames</strong>. The backend records latency for each major stage of the distributed processing pipeline, allowing performance to be evaluated from image preprocessing through to inference.</p>
+<h3 id="latency-results">Latency Results</h3>
+<table>
+<thead>
+<tr>
+<th>Processing Stage</th>
+<th style="text-align: right;">Samples</th>
+<th style="text-align: right;">Mean (ms)</th>
+<th style="text-align: right;">Median (ms)</th>
+<th style="text-align: right;">Min (ms)</th>
+<th style="text-align: right;">Max (ms)</th>
+<th style="text-align: right;">P95 (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complete Backend Pipeline</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;"><strong>6453.53</strong></td>
+<td style="text-align: right;"><strong>1680.93</strong></td>
+<td style="text-align: right;"><strong>919.16</strong></td>
+<td style="text-align: right;"><strong>34013.48</strong></td>
+<td style="text-align: right;"><strong>24908.62</strong></td>
+</tr>
+<tr>
+<td>YOLO Model Inference</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;"><strong>528.54</strong></td>
+<td style="text-align: right;"><strong>520.77</strong></td>
+<td style="text-align: right;"><strong>464.27</strong></td>
+<td style="text-align: right;"><strong>743.07</strong></td>
+<td style="text-align: right;"><strong>582.04</strong></td>
+</tr>
+<tr>
+<td>Inference Round Trip</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;"><strong>682.76</strong></td>
+<td style="text-align: right;"><strong>582.07</strong></td>
+<td style="text-align: right;"><strong>488.00</strong></td>
+<td style="text-align: right;"><strong>2442.78</strong></td>
+<td style="text-align: right;"><strong>850.99</strong></td>
+</tr>
+<tr>
+<td>Distributed Processing</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;"><strong>2205.79</strong></td>
+<td style="text-align: right;"><strong>741.60</strong></td>
+<td style="text-align: right;"><strong>255.31</strong></td>
+<td style="text-align: right;"><strong>19919.31</strong></td>
+<td style="text-align: right;"><strong>8920.94</strong></td>
+</tr>
+<tr>
+<td>Total Worker Processing</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;"><strong>1546.23</strong></td>
+<td style="text-align: right;"><strong>85.39</strong></td>
+<td style="text-align: right;"><strong>65.52</strong></td>
+<td style="text-align: right;"><strong>16116.75</strong></td>
+<td style="text-align: right;"><strong>11592.70</strong></td>
+</tr>
+<tr>
+<td>Maximum Worker Processing</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;"><strong>1113.06</strong></td>
+<td style="text-align: right;"><strong>16.07</strong></td>
+<td style="text-align: right;"><strong>12.94</strong></td>
+<td style="text-align: right;"><strong>15579.63</strong></td>
+<td style="text-align: right;"><strong>5700.40</strong></td>
+</tr>
+<tr>
+<td>Maximum Worker Round Trip</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;"><strong>1751.60</strong></td>
+<td style="text-align: right;"><strong>290.31</strong></td>
+<td style="text-align: right;"><strong>156.10</strong></td>
+<td style="text-align: right;"><strong>18089.88</strong></td>
+<td style="text-align: right;"><strong>8355.57</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="interpretation-of-the-metrics">Interpretation of the Metrics</h3>
+<p>The backend records latency at multiple stages of the processing pipeline:</p>
+<ul>
+<li><strong>Complete Backend Pipeline</strong> measures the total time required for the backend to process an uploaded frame, including distributed preprocessing, inference, metadata generation and storage.</li>
+<li><strong>YOLO Model Inference</strong> measures only the execution time of the YOLO object detection model on the Raspberry Pi 5.</li>
+<li><strong>Inference Round Trip</strong> includes both the YOLO inference time and the communication overhead between the backend and the inference service.</li>
+<li><strong>Distributed Processing</strong> measures the complete preprocessing stage, including image distribution to worker nodes, preprocessing and image reconstruction.</li>
+<li><strong>Total Worker Processing</strong> represents the combined processing time reported by all worker nodes for a frame.</li>
+<li><strong>Maximum Worker Processing</strong> identifies the slowest worker node during preprocessing.</li>
+<li><strong>Maximum Worker Round Trip</strong> measures the slowest end-to-end communication time between the backend and an individual worker.</li>
+</ul>
+<p>The measurements demonstrate that image preprocessing and inference are independently instrumented, enabling detailed performance analysis of each stage of the distributed edge-processing pipeline.</p>
+<hr />
 <h2 id="10-backend-ha-architecture-validated-canary-and-target">10. Backend HA Architecture: Validated Canary and Target</h2>
 <h3 id="101-why-the-normal-backend-image-failed-on-pi3">10.1 Why the normal backend image failed on Pi3</h3>
 <p>The Pi3 containerd directory is inside the NFS-backed PXE root. The original backend image was approximately <code>3.26 GB</code>; after removing YOLO dependencies, the backend-only image was approximately <code>198 MB</code>. Even the smaller image repeatedly failed during container creation with <code>context deadline exceeded</code> before Python started.</p>
 <p>The existing <code>edge-worker:v1</code> image could start successfully. A repacked worker image with no new filesystem content also started, proving that newly imported manifests were valid and that the problem was the large number of new backend dependency files.</p>
 <h3 id="102-bundle-based-solution">10.2 Bundle-based solution</h3>
 <p>The validated solution uses:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>edge-worker:v1 base image
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>        +
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>one compressed backend-runtime.tar.gz file
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        ↓
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>container starts successfully
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>        ↓
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>archive extracted into pod-local /runtime
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>        ↓
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>backend starts with PYTHONPATH=/runtime/python:/runtime
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>edge-worker:v1 base image
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>        +
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>one compressed backend-runtime.tar.gz file
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>        ↓
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>container starts successfully
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        ↓
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>archive extracted into pod-local /runtime
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>        ↓
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>backend starts with PYTHONPATH=/runtime/python:/runtime
 </span></code></pre></div>
 <p>A real <code>backend-bundle-canary</code> pod reached <code>1/1 Ready</code> on <code>rpi3-01</code> and successfully served health, documentation, Kubernetes and storage APIs.</p>
 <h3 id="103-target-multi-pi3-design">10.3 Target multi-Pi3 design</h3>
 <p>The planned design is one edge-node pod on each Pi3 with two containers:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Pi3 edge-node pod
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>├── worker container
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>│   ├── worker service
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>│   └── port 8002
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>│
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>└── backend container
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    ├── bundled backend runtime
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    └── port 8000
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Pi3 edge-node pod
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>├── worker container
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>│   ├── worker service
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>│   └── port 8002
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>│
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>└── backend container
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    ├── bundled backend runtime
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    └── port 8000
 </span></code></pre></div>
 <p>The worker and backend remain separate processes and can have independent probes and resource limits while sharing the same pod network.</p>
 <p>The backend Service can then select all ready backend containers and distribute requests across them. Kubernetes already performs this internal load balancing; MetalLB is not required merely to balance traffic between backend pods.</p>
-<blockquote>
-<p><strong>Screenshot placeholder — target HA canary</strong><br />
-Show the Pi3 backend bundle pod and its successful readiness, storage and API tests.<br />
-Suggested filename: <code>assets/backend/backend-ha-canary-validation.png</code></p>
-</blockquote>
 <h3 id="104-ha-limitations">10.4 HA limitations</h3>
 <p>Even after deploying backend containers on every Pi3, the system will still depend on Pi5 for:</p>
 <ul>
@@ -2695,52 +2897,52 @@ Suggested filename: <code>assets/backend/backend-ha-canary-validation.png</code>
 <p>This should be described as backend and worker fault tolerance, not complete system-level HA.</p>
 <hr />
 <h2 id="11-backend-source-structure">11. Backend Source Structure</h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>backend/
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>├── app/
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>│   ├── api/
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>│   │   ├── frames.py
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>│   │   ├── events.py
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>│   │   ├── images.py
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>│   │   ├── alerts.py
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>│   │   ├── monitoring.py
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>│   │   ├── kubernetes.py
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>│   │   ├── storage.py
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>│   │   ├── telegram.py
-</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>│   │   └── model_dataset.py
-</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>│   ├── core/
-</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>│   │   └── config.py
-</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>│   ├── services/
-</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>│   │   ├── frame_processing_service.py
-</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>│   │   ├── distributed_frame_service.py
-</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>│   │   ├── image_splitter.py
-</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>│   │   ├── worker_registry.py
-</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>│   │   ├── task_dispatcher.py
-</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a>│   │   ├── inference_client.py
-</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>│   │   ├── storage_service.py
-</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a>│   │   ├── storage_status_service.py
-</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a>│   │   ├── alert_service.py
-</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a>│   │   └── telegram_service.py
-</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>│   └── main.py
-</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a>├── inference_app/
-</span><span id="__span-10-28"><a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a>├── worker_app/
-</span><span id="__span-10-29"><a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a>├── docker/
-</span><span id="__span-10-30"><a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a>│   ├── Dockerfile.backend
-</span><span id="__span-10-31"><a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a>│   ├── Dockerfile.inference
-</span><span id="__span-10-32"><a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a>│   ├── Dockerfile.worker
-</span><span id="__span-10-33"><a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a>│   ├── Dockerfile.edge-node
-</span><span id="__span-10-34"><a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>│   └── Dockerfile.edge-node-bundle
-</span><span id="__span-10-35"><a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a>├── requirements/
-</span><span id="__span-10-36"><a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a>│   ├── backend.txt
-</span><span id="__span-10-37"><a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a>│   ├── backend-extra.txt
-</span><span id="__span-10-38"><a id="__codelineno-10-38" name="__codelineno-10-38" href="#__codelineno-10-38"></a>│   ├── inference.txt
-</span><span id="__span-10-39"><a id="__codelineno-10-39" name="__codelineno-10-39" href="#__codelineno-10-39"></a>│   └── worker.txt
-</span><span id="__span-10-40"><a id="__codelineno-10-40" name="__codelineno-10-40" href="#__codelineno-10-40"></a>└── k8s/
-</span><span id="__span-10-41"><a id="__codelineno-10-41" name="__codelineno-10-41" href="#__codelineno-10-41"></a>    ├── 00-namespace-config.yaml
-</span><span id="__span-10-42"><a id="__codelineno-10-42" name="__codelineno-10-42" href="#__codelineno-10-42"></a>    ├── 05-backend-rbac.yaml
-</span><span id="__span-10-43"><a id="__codelineno-10-43" name="__codelineno-10-43" href="#__codelineno-10-43"></a>    ├── 10-backend.yaml
-</span><span id="__span-10-44"><a id="__codelineno-10-44" name="__codelineno-10-44" href="#__codelineno-10-44"></a>    ├── 12-backend-bundle-canary.yaml
-</span><span id="__span-10-45"><a id="__codelineno-10-45" name="__codelineno-10-45" href="#__codelineno-10-45"></a>    ├── 20-inference.yaml
-</span><span id="__span-10-46"><a id="__codelineno-10-46" name="__codelineno-10-46" href="#__codelineno-10-46"></a>    └── 30-workers.yaml
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>backend/
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>├── app/
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>│   ├── api/
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>│   │   ├── frames.py
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>│   │   ├── events.py
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>│   │   ├── images.py
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>│   │   ├── alerts.py
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>│   │   ├── monitoring.py
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>│   │   ├── kubernetes.py
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>│   │   ├── storage.py
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>│   │   ├── telegram.py
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>│   │   └── model_dataset.py
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>│   ├── core/
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>│   │   └── config.py
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>│   ├── services/
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>│   │   ├── frame_processing_service.py
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>│   │   ├── distributed_frame_service.py
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>│   │   ├── image_splitter.py
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>│   │   ├── worker_registry.py
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>│   │   ├── task_dispatcher.py
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>│   │   ├── inference_client.py
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>│   │   ├── storage_service.py
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a>│   │   ├── storage_status_service.py
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>│   │   ├── alert_service.py
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>│   │   └── telegram_service.py
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>│   └── main.py
+</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a>├── inference_app/
+</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>├── worker_app/
+</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>├── docker/
+</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a>│   ├── Dockerfile.backend
+</span><span id="__span-9-31"><a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a>│   ├── Dockerfile.inference
+</span><span id="__span-9-32"><a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a>│   ├── Dockerfile.worker
+</span><span id="__span-9-33"><a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a>│   ├── Dockerfile.edge-node
+</span><span id="__span-9-34"><a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a>│   └── Dockerfile.edge-node-bundle
+</span><span id="__span-9-35"><a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a>├── requirements/
+</span><span id="__span-9-36"><a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a>│   ├── backend.txt
+</span><span id="__span-9-37"><a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a>│   ├── backend-extra.txt
+</span><span id="__span-9-38"><a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a>│   ├── inference.txt
+</span><span id="__span-9-39"><a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a>│   └── worker.txt
+</span><span id="__span-9-40"><a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a>└── k8s/
+</span><span id="__span-9-41"><a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a>    ├── 00-namespace-config.yaml
+</span><span id="__span-9-42"><a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a>    ├── 05-backend-rbac.yaml
+</span><span id="__span-9-43"><a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a>    ├── 10-backend.yaml
+</span><span id="__span-9-44"><a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a>    ├── 12-backend-bundle-canary.yaml
+</span><span id="__span-9-45"><a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a>    ├── 20-inference.yaml
+</span><span id="__span-9-46"><a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a>    └── 30-workers.yaml
 </span></code></pre></div>
 <p>Update this tree if filenames differ in the final repository.</p>
 <hr />
@@ -2758,7 +2960,7 @@ Suggested filename: <code>assets/backend/backend-ha-canary-validation.png</code>
 <li><code>frontend-live-detection.png</code> — final annotated evidence in the UI.</li>
 </ol>
 <p>Recommended directory:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>assets/backend/
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>assets/backend/
 </span></code></pre></div>
 </article>
 
