@@ -264,7 +264,7 @@ GET /api/v1/images/raw/{frame_id}
 ```
 
 <!-- SCREENSHOT: Event History table with several stored detections -->
-![Event History](../images/frontend/frontend-event-history.png)
+![Event History](/images/event_history.png)
 
 *Figure 3: Event History page showing stored events, timestamps, locations and detection classes.*
 
@@ -301,7 +301,7 @@ Monitoring data is refreshed every five seconds. A manual refresh control can re
 - **Critical:** 70 °C or higher
 
 <!-- SCREENSHOT: Monitoring page showing all Raspberry Pi nodes and resource metrics -->
-![Cluster monitoring](../images/frontend/frontend-monitoring.png)
+![Cluster monitoring](images/react-monitoring-page.png)
 
 *Figure 4: Monitoring page showing live availability, CPU, memory, disk and temperature data.*
 
@@ -322,7 +322,7 @@ Example conditions include:
 Alerts are classified using the frontend types `info`, `warning`, `critical` and `error`. The page refreshes periodically so resolved and newly active conditions are reflected automatically.
 
 <!-- SCREENSHOT: Alerts page containing warning and critical alert cards -->
-![Alerts page](../images/frontend/frontend-alerts.png)
+![Alerts page](images/react-alerts-page.png)
 
 *Figure 5: Alerts page highlighting infrastructure and service conditions requiring attention.*
 
@@ -343,34 +343,15 @@ The storage view identifies:
 SeaweedFS data is stored on the external SSD so that detection evidence remains available after pod, service or cluster restarts.
 
 <!-- SCREENSHOT: Storage page showing image and metadata persistence information -->
-![Storage page](../images/frontend/frontend-storage.png)
+![Storage page](/images/storage.png)
 
 *Figure 6: Storage page presenting persistent evidence and metadata information.*
 
 ---
 
-## 12. Telegram Notifications
 
-The Telegram page presents the notification component used to inform the project team about detected threats and infrastructure-health events. Its service state is supplied through the backend monitoring response.
 
-The page displays:
-
-- Telegram bot service availability;
-- notification integration status;
-- threat-alert information;
-- infrastructure-health notification information;
-- the relationship between PIWATCH alerts and Telegram messages.
-
-Bot credentials are stored securely in backend or Kubernetes secrets and are never exposed to the browser.
-
-<!-- SCREENSHOT: Telegram page showing bot and notification status -->
-![Telegram notifications](../images/frontend/frontend-telegram.png)
-
-*Figure 7: Telegram page presenting notification-service status and alert integration.*
-
----
-
-## 13. Model and Dataset Information
+## 12. Model and Dataset Information
 
 The Model & Dataset page documents the custom YOLOv8 model used by the project. It requests model information from:
 
@@ -400,19 +381,19 @@ The project model detects the following classes:
 Recorded project results include an inference time of approximately 38 ms, mAP@50 of approximately 0.912 and mAP@50–95 of approximately 0.671.
 
 <!-- SCREENSHOT: Model & Dataset page showing metrics and supported classes -->
-![Model and dataset information](../images/frontend/frontend-model-dataset.png)
+![Model and dataset information](images/model_dataset.png)
 
 *Figure 8: Custom YOLO model information, evaluation results and supported threat classes.*
 
 ---
 
-## 14. Cluster Performance
+## 13. Cluster Performance
 
 The Cluster Performance page explains how the Raspberry Pi nodes contribute to the edge-computing platform. It presents information that can be verified from the deployed system, such as node roles, availability, uptime and current resource usage. Experimental results should only be shown when they were measured and recorded during project testing.
 
 ---
 
-## 15. API Integration
+## 14. API Integration
 
 The API base URL is configured through a Vite environment variable:
 
@@ -446,7 +427,7 @@ An empty events list is not the same as an API error. User-visible messages expl
 
 ---
 
-## 16. Theme and Responsive Design
+## 15. Theme and Responsive Design
 
 The application supports light and dark modes through shared CSS custom properties. Theme colours are defined centrally in `theme.css`; page-specific styles consume these variables instead of defining independent colour palettes.
 
@@ -459,10 +440,6 @@ The interface includes:
 - persistent navigation and top-bar controls;
 - consistent spacing and typography between pages.
 
-<!-- OPTIONAL SCREENSHOT: Side-by-side light and dark theme comparison -->
-![Light and dark themes](../images/frontend/frontend-themes.png)
-
-*Figure 9: PIWATCH light and dark themes using the shared colour system.*
 
 ---
 
