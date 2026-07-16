@@ -1835,7 +1835,7 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ansible<span class="w"> </span>--version
 </span></code></pre></div>
 <p>From Pi5, verify SSH access to one Pi3 worker before running the playbook:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ssh<span class="w"> </span>pi@192.168.50.101
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ssh<span class="w"> </span>pi3@192.168.50.101
 </span></code></pre></div>
 <p>Exit the remote session after confirming access:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">exit</span>
@@ -1908,7 +1908,7 @@
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span>--ask-become-pass
 </span></code></pre></div>
 <p>After deployment, confirm the service on a Pi3 worker:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>ssh<span class="w"> </span>pi@192.168.50.101<span class="w"> </span><span class="se">\</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>ssh<span class="w"> </span>pi3@192.168.50.101<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="s2">&quot;systemctl is-enabled prometheus-node-exporter &amp;&amp; systemctl is-active prometheus-node-exporter&quot;</span>
 </span></code></pre></div>
 <p>Expected output:</p>
@@ -1929,7 +1929,7 @@
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://127.0.0.1:9100/metrics<span class="w"> </span><span class="p">|</span><span class="w"> </span>head
 </span></code></pre></div>
 <p>Test Pi5, Pi4, and all eight Pi3 workers together:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">for</span><span class="w"> </span>ip<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">192</span>.168.178.200<span class="w"> </span><span class="m">192</span>.168.50.144<span class="w"> </span><span class="m">192</span>.168.50.<span class="o">{</span><span class="m">101</span>..108<span class="o">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">for</span><span class="w"> </span>ip<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">192</span>.168.50.1<span class="w"> </span><span class="m">192</span>.168.50.144<span class="w"> </span><span class="m">192</span>.168.50.<span class="o">{</span><span class="m">101</span>..108<span class="o">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span>curl<span class="w"> </span>-sf<span class="w"> </span>--connect-timeout<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;http://</span><span class="nv">$ip</span><span class="s2">:9100/metrics&quot;</span><span class="w"> </span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
 </span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ip</span><span class="s2">:9100 UP&quot;</span>
 </span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">  </span><span class="k">else</span>
@@ -1949,7 +1949,7 @@
 <tbody>
 <tr>
 <td>Pi5 control plane</td>
-<td><code>192.168.178.200:9100</code></td>
+<td><code>192.168.50.1:9100</code></td>
 </tr>
 <tr>
 <td>Pi4 sensor node</td>
@@ -1961,7 +1961,7 @@
 </tr>
 </tbody>
 </table>
-<p>Only <code>192.168.178.200:9100</code> is used for Pi5 so the same device is not counted twice through another network address.</p>
+<p>Only <code>192.168.50.1.200:9100</code> is used for Pi5 so the same device is not counted twice through another network address.</p>
 <p>The following screenshot may be used as read-only availability evidence. Crop out any failed Ansible attempt and retain only the command and ten <code>UP</code> results.</p>
 <p><img alt="Pi5, Pi4, and eight Pi3 Node Exporters reporting UP" src="../images/node_exporter-metrics.png" /></p>
 <hr />

@@ -1567,10 +1567,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#12-telegram-notifications" class="md-nav__link">
+  <a href="#12-model-and-dataset-information" class="md-nav__link">
     <span class="md-ellipsis">
       
-        12. Telegram Notifications
+        12. Model and Dataset Information
       
     </span>
   </a>
@@ -1578,10 +1578,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#13-model-and-dataset-information" class="md-nav__link">
+  <a href="#13-cluster-performance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        13. Model and Dataset Information
+        13. Cluster Performance
       
     </span>
   </a>
@@ -1589,26 +1589,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#14-cluster-performance" class="md-nav__link">
+  <a href="#14-api-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        14. Cluster Performance
+        14. API Integration
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#15-api-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15. API Integration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="15. API Integration">
+    <nav class="md-nav" aria-label="14. API Integration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1639,10 +1628,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#16-theme-and-responsive-design" class="md-nav__link">
+  <a href="#15-theme-and-responsive-design" class="md-nav__link">
     <span class="md-ellipsis">
       
-        16. Theme and Responsive Design
+        15. Theme and Responsive Design
       
     </span>
   </a>
@@ -1696,17 +1685,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#18-docker-and-k3s-deployment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        18. Docker and K3s Deployment
-      
-    </span>
-  </a>
   
 </li>
       
@@ -2032,7 +2010,7 @@
 <li>active warning and critical alerts.</li>
 </ul>
 <!-- SCREENSHOT: Dashboard with status cards, recent events and system summary -->
-<p><img alt="Dashboard overview" src="../images/frontend/frontend-dashboard.png" /></p>
+<p><img alt="Dashboard overview" src="../images/dashboard.png" /></p>
 <p><em>Figure 1: Dashboard overview with service status, node health and recent detection information.</em></p>
 <hr />
 <h2 id="7-live-detection">7. Live Detection</h2>
@@ -2048,7 +2026,7 @@
 </ul>
 <p>The current camera sender captures frames on the Raspberry Pi 4 and periodically uploads them to the backend. The page displays results returned by the backend; it does not connect directly to the camera stream.</p>
 <!-- SCREENSHOT: Live Detection page showing the latest annotated frame -->
-<p><img alt="Live Detection page" src="../images/frontend/frontend-live-detection.png" /></p>
+<p><img alt="Live Detection page" src="../images/live_detection.png" /></p>
 <p><em>Figure 2: Live Detection view showing the newest processed frame and its detection metadata.</em></p>
 <hr />
 <h2 id="8-event-history-and-evidence">8. Event History and Evidence</h2>
@@ -2073,7 +2051,7 @@
 <div class="language-http highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="err">GET /api/v1/images/raw/{frame_id}</span>
 </span></code></pre></div>
 <!-- SCREENSHOT: Event History table with several stored detections -->
-<p><img alt="Event History" src="../images/frontend/frontend-event-history.png" /></p>
+<p><img alt="Event History" src="../images/event_history.png" /></p>
 <p><em>Figure 3: Event History page showing stored events, timestamps, locations and detection classes.</em></p>
 <hr />
 <h2 id="9-cluster-monitoring">9. Cluster Monitoring</h2>
@@ -2135,7 +2113,7 @@
 <li><strong>Critical:</strong> 70 °C or higher</li>
 </ul>
 <!-- SCREENSHOT: Monitoring page showing all Raspberry Pi nodes and resource metrics -->
-<p><img alt="Cluster monitoring" src="../images/frontend/frontend-monitoring.png" /></p>
+<p><img alt="Cluster monitoring" src="../images/react-monitoring-page.png" /></p>
 <p><em>Figure 4: Monitoring page showing live availability, CPU, memory, disk and temperature data.</em></p>
 <hr />
 <h2 id="10-alerts">10. Alerts</h2>
@@ -2150,7 +2128,7 @@
 </ul>
 <p>Alerts are classified using the frontend types <code>info</code>, <code>warning</code>, <code>critical</code> and <code>error</code>. The page refreshes periodically so resolved and newly active conditions are reflected automatically.</p>
 <!-- SCREENSHOT: Alerts page containing warning and critical alert cards -->
-<p><img alt="Alerts page" src="../images/frontend/frontend-alerts.png" /></p>
+<p><img alt="Alerts page" src="../images/react-alerts-page.png" /></p>
 <p><em>Figure 5: Alerts page highlighting infrastructure and service conditions requiring attention.</em></p>
 <hr />
 <h2 id="11-storage">11. Storage</h2>
@@ -2165,25 +2143,10 @@
 </ul>
 <p>SeaweedFS data is stored on the external SSD so that detection evidence remains available after pod, service or cluster restarts.</p>
 <!-- SCREENSHOT: Storage page showing image and metadata persistence information -->
-<p><img alt="Storage page" src="../images/frontend/frontend-storage.png" /></p>
+<p><img alt="Storage page" src="../images/storage.png" /></p>
 <p><em>Figure 6: Storage page presenting persistent evidence and metadata information.</em></p>
 <hr />
-<h2 id="12-telegram-notifications">12. Telegram Notifications</h2>
-<p>The Telegram page presents the notification component used to inform the project team about detected threats and infrastructure-health events. Its service state is supplied through the backend monitoring response.</p>
-<p>The page displays:</p>
-<ul>
-<li>Telegram bot service availability;</li>
-<li>notification integration status;</li>
-<li>threat-alert information;</li>
-<li>infrastructure-health notification information;</li>
-<li>the relationship between PIWATCH alerts and Telegram messages.</li>
-</ul>
-<p>Bot credentials are stored securely in backend or Kubernetes secrets and are never exposed to the browser.</p>
-<!-- SCREENSHOT: Telegram page showing bot and notification status -->
-<p><img alt="Telegram notifications" src="../images/frontend/frontend-telegram.png" /></p>
-<p><em>Figure 7: Telegram page presenting notification-service status and alert integration.</em></p>
-<hr />
-<h2 id="13-model-and-dataset-information">13. Model and Dataset Information</h2>
+<h2 id="12-model-and-dataset-information">12. Model and Dataset Information</h2>
 <p>The Model &amp; Dataset page documents the custom YOLOv8 model used by the project. It requests model information from:</p>
 <div class="language-http highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="err">GET /api/v1/model/info</span>
 </span></code></pre></div>
@@ -2208,13 +2171,13 @@
 </ol>
 <p>Recorded project results include an inference time of approximately 38 ms, mAP@50 of approximately 0.912 and mAP@50–95 of approximately 0.671.</p>
 <!-- SCREENSHOT: Model & Dataset page showing metrics and supported classes -->
-<p><img alt="Model and dataset information" src="../images/frontend/frontend-model-dataset.png" /></p>
+<p><img alt="Model and dataset information" src="images/model_dataset.png" /></p>
 <p><em>Figure 8: Custom YOLO model information, evaluation results and supported threat classes.</em></p>
 <hr />
-<h2 id="14-cluster-performance">14. Cluster Performance</h2>
+<h2 id="13-cluster-performance">13. Cluster Performance</h2>
 <p>The Cluster Performance page explains how the Raspberry Pi nodes contribute to the edge-computing platform. It presents information that can be verified from the deployed system, such as node roles, availability, uptime and current resource usage. Experimental results should only be shown when they were measured and recorded during project testing.</p>
 <hr />
-<h2 id="15-api-integration">15. API Integration</h2>
+<h2 id="14-api-integration">14. API Integration</h2>
 <p>The API base URL is configured through a Vite environment variable:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>VITE_API_BASE_URL=http://192.168.178.200:8000
 </span></code></pre></div>
@@ -2267,7 +2230,7 @@
 </ul>
 <p>An empty events list is not the same as an API error. User-visible messages explain whether no detections exist or whether data could not be loaded.</p>
 <hr />
-<h2 id="16-theme-and-responsive-design">16. Theme and Responsive Design</h2>
+<h2 id="15-theme-and-responsive-design">15. Theme and Responsive Design</h2>
 <p>The application supports light and dark modes through shared CSS custom properties. Theme colours are defined centrally in <code>theme.css</code>; page-specific styles consume these variables instead of defining independent colour palettes.</p>
 <p>The interface includes:</p>
 <ul>
@@ -2278,9 +2241,6 @@
 <li>persistent navigation and top-bar controls;</li>
 <li>consistent spacing and typography between pages.</li>
 </ul>
-<!-- OPTIONAL SCREENSHOT: Side-by-side light and dark theme comparison -->
-<p><img alt="Light and dark themes" src="../images/frontend/frontend-themes.png" /></p>
-<p><em>Figure 9: PIWATCH light and dark themes using the shared colour system.</em></p>
 <hr />
 <h2 id="17-local-development">17. Local Development</h2>
 <h3 id="prerequisites">Prerequisites</h3>
@@ -2311,54 +2271,8 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>npm<span class="w"> </span>run<span class="w"> </span>preview<span class="w"> </span>--<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0
 </span></code></pre></div>
 <p>Because Vite embeds <code>VITE_API_BASE_URL</code> during the build, changing the production backend address requires rebuilding the frontend image or assets.</p>
-<hr />
-<h2 id="18-docker-and-k3s-deployment">18. Docker and K3s Deployment</h2>
-<p>The production frontend is compiled into static assets and served from a lightweight web-server container. The container is then deployed to the K3s cluster.</p>
-<p>The deployment provides:</p>
-<ul>
-<li>a frontend <code>Deployment</code>;</li>
-<li>a stable internal <code>Service</code> on port 80;</li>
-<li>an image built for the Raspberry Pi ARM architecture;</li>
-<li>an Ingress or NodePort for browser access;</li>
-<li>the correct API base URL at build time.</li>
-</ul>
-<p>Ingress routing is:</p>
-<table>
-<thead>
-<tr>
-<th>Path</th>
-<th>Destination</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/</code></td>
-<td>Frontend service on port 80</td>
-</tr>
-<tr>
-<td><code>/api/v1</code></td>
-<td>FastAPI backend service on port 8000</td>
-</tr>
-</tbody>
-</table>
-<p>Same-origin ingress routing avoids exposing internal Kubernetes service names to the browser and simplifies CORS configuration.</p>
-<p>The deployment can be inspected with:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>get<span class="w"> </span>pods
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>get<span class="w"> </span>deployments
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>get<span class="w"> </span>services
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>get<span class="w"> </span>ingress
-</span></code></pre></div>
-<p>The frontend communicates with the following core routes:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>/api/v1/events
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>/api/v1/monitoring/overview
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>/api/v1/model/info
-</span></code></pre></div>
-<!-- SCREENSHOT: kubectl output showing the running frontend pod and service -->
-<p><img alt="Frontend Kubernetes deployment" src="../images/frontend/frontend-k3s-deployment.png" /></p>
-<p><em>Figure 10: Frontend pod and service running in the K3s cluster.</em></p>
-<hr />
-<hr />
-<p>The PIWATCH frontend completes the presentation layer of the edge surveillance platform by transforming backend, inference, storage and monitoring data into a unified operational interface suitable for demonstrations, evaluation and continued use.</p>
+<p>-
+The PIWATCH frontend completes the presentation layer of the edge surveillance platform by transforming backend, inference, storage and monitoring data into a unified operational interface suitable for demonstrations, evaluation and continued use.</p>
 
 
 

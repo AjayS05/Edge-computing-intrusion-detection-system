@@ -79,6 +79,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#telegram-bot-notifications" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -1227,6 +1232,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telegram Bot Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -1244,6 +1269,274 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-project-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Project Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-notification-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Notification Content
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-telegram-bot-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Telegram Bot Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Telegram Bot Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-create-the-bot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Create the bot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-obtain-the-chat-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Obtain the chat ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-validate-the-bot-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Validate the bot token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-backend-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Backend Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-kubernetes-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Kubernetes Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-fastapi-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. FastAPI Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. FastAPI Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delivery-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-alert-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Alert Policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-check-configuration-and-pod-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Check configuration and pod health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-check-backend-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Check backend status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-send-an-end-to-end-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Send an end-to-end detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-test-infrastructure-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Test infrastructure alerts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-security-and-maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Security and Maintenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-final-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Final Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1411,6 +1704,265 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-project-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Project Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-notification-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Notification Content
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-telegram-bot-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Telegram Bot Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Telegram Bot Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-create-the-bot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Create the bot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-obtain-the-chat-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Obtain the chat ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-validate-the-bot-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Validate the bot token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-backend-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Backend Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-kubernetes-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Kubernetes Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-fastapi-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. FastAPI Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. FastAPI Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delivery-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-alert-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Alert Policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-check-configuration-and-pod-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Check configuration and pod health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-check-backend-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Check backend status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-send-an-end-to-end-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Send an end-to-end detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-test-infrastructure-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Test infrastructure alerts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-security-and-maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Security and Maintenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-final-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Final Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1427,9 +1979,452 @@
 
 
 
-  <h1>Telegram Bot Architecture</h1>
-
-
+<h1 id="telegram-bot-notifications">Telegram Bot Notifications</h1>
+<h2 id="1-overview">1. Overview</h2>
+<p>The Telegram notification feature informs the project team about:</p>
+<ul>
+<li>threats detected by the custom YOLOv8 model;</li>
+<li>infrastructure health events, such as a node becoming unavailable; and</li>
+<li>critical resource conditions reported by the monitoring stack.</li>
+</ul>
+<p>The integration is part of the FastAPI backend. It does not require a separate Telegram process in the current deployment. The backend uses the Telegram Bot HTTP API to validate the bot and deliver notifications to the configured chat.</p>
+<p>There is no Telegram page, panel or notification-delivery UI in the React frontend. Telegram operates independently through the backend, and users view alerts directly in the configured Telegram chat.</p>
+<blockquote>
+<p><strong>Security:</strong> Never commit a Telegram bot token or chat ID to Git. If a token has been exposed in source code, terminal output, screenshots, documentation, or chat, revoke it with BotFather and generate a new token.</p>
+</blockquote>
+<h2 id="2-project-integration">2. Project Integration</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raspberry Pi 4 camera node</td>
+<td>Captures frames and uploads them to FastAPI</td>
+</tr>
+<tr>
+<td>Backend + YOLO inference pod</td>
+<td>Validates uploads, runs inference, creates events and initiates alerts</td>
+</tr>
+<tr>
+<td>Telegram service</td>
+<td>Checks bot connectivity and sends messages through the Telegram Bot API</td>
+</tr>
+<tr>
+<td>SeaweedFS</td>
+<td>Persists raw images, annotated evidence and event metadata on SSD-backed storage</td>
+</tr>
+<tr>
+<td>Prometheus and Grafana</td>
+<td>Observe cluster health and provide health-event data</td>
+</tr>
+<tr>
+<td>Telegram chat</td>
+<td>Receives detection and infrastructure alerts</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-architecture">3. Architecture</h2>
+<p><img alt="Telegram bot architecture" src="images/telegram-bot-architecture.svg" /></p>
+<p><strong>Image placeholder — deployed Telegram architecture:</strong> Replace this note with a screenshot of the architecture diagram on the published documentation page.</p>
+<p>The end-to-end alert flow is:</p>
+<ol>
+<li>The Raspberry Pi 4 camera captures a frame and uploads it to <code>POST /api/v1/frames</code>.</li>
+<li>FastAPI validates the request and the custom YOLOv8 model processes the frame when inference-on-upload is enabled.</li>
+<li>The backend creates an event containing the detected class, confidence, camera identity and timestamp.</li>
+<li>Raw and annotated images are stored in the SeaweedFS <code>captured-images</code> bucket. Event JSON is stored in <code>event-metadata</code>.</li>
+<li>Alert rules decide whether the event requires a Telegram notification.</li>
+<li>The Telegram service sends the alert to the external Telegram Bot API.</li>
+<li>Telegram delivers the message to the configured team chat.</li>
+<li>The backend records the notification result in its logs or event metadata for troubleshooting and auditing.</li>
+</ol>
+<h2 id="4-notification-content">4. Notification Content</h2>
+<p>A threat notification should be short, actionable and traceable to the stored event.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>🚨 CRITICAL THREAT ALERT
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Event: weapon detected
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Confidence: 91.4%
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Camera: rpi4-camera-01
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>Location: lab-entry
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>Captured: 2026-07-15 01:42:18 UTC
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>Event ID: 3f5b...
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>Evidence: annotated image attached or linked
+</span></code></pre></div>
+<p>Recommended notification fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Severity</td>
+<td>Allows the team to prioritise the event</td>
+</tr>
+<tr>
+<td>Detection class</td>
+<td>Identifies the detected threat or object</td>
+</tr>
+<tr>
+<td>Confidence</td>
+<td>Shows the model confidence score</td>
+</tr>
+<tr>
+<td>Camera and location</td>
+<td>Identifies where the event occurred</td>
+</tr>
+<tr>
+<td>Timestamp</td>
+<td>Records when the frame was captured</td>
+</tr>
+<tr>
+<td>Event ID</td>
+<td>Correlates the Telegram alert with backend and metadata records</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>Provides the annotated frame or a backend evidence link</td>
+</tr>
+</tbody>
+</table>
+<p>The trained model classes are <code>fire</code>, <code>intruder</code>, <code>liquid_spill</code>, <code>person</code>, <code>smoke</code> and <code>weapon</code>. Notification policy should distinguish normal observations such as <code>person</code> from urgent threat classes rather than treating every detection as critical.</p>
+<h2 id="5-telegram-bot-setup">5. Telegram Bot Setup</h2>
+<h3 id="51-create-the-bot">5.1 Create the bot</h3>
+<ol>
+<li>Open Telegram and start a conversation with <strong>@BotFather</strong>.</li>
+<li>Run <code>/newbot</code>.</li>
+<li>Enter a display name and a unique username ending in <code>bot</code>.</li>
+<li>Copy the bot token temporarily to a secure location.</li>
+<li>Open the new bot and send <code>/start</code> so the conversation exists.</li>
+</ol>
+<h3 id="52-obtain-the-chat-id">5.2 Obtain the chat ID</h3>
+<p>After sending a message to the bot, request updates from Telegram:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span><span class="s2">&quot;https://api.telegram.org/bot&lt;REDACTED_BOT_TOKEN&gt;/getUpdates&quot;</span>
+</span></code></pre></div>
+<p>Find <code>message.chat.id</code> in the response. Group chat IDs are commonly negative numbers. Do not put the real token or chat ID into documentation or screenshots.</p>
+<h3 id="53-validate-the-bot-token">5.3 Validate the bot token</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span><span class="s2">&quot;https://api.telegram.org/bot&lt;REDACTED_BOT_TOKEN&gt;/getMe&quot;</span>
+</span></code></pre></div>
+<p>A valid response contains <code>"ok": true</code> and the bot identity.</p>
+<p><strong>Image placeholder — BotFather setup:</strong> Add a screenshot showing successful bot creation with the token fully hidden.</p>
+<p><strong>Image placeholder — Telegram chat ID:</strong> Add a redacted screenshot of the <code>getUpdates</code> response highlighting only <code>message.chat.id</code>.</p>
+<h2 id="6-backend-configuration">6. Backend Configuration</h2>
+<p>The backend settings load values from environment variables. Telegram is disabled by default and must be explicitly configured.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>TELEGRAM_ENABLED=true
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>TELEGRAM_BOT_TOKEN=&lt;BOT_TOKEN&gt;
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>TELEGRAM_CHAT_ID=&lt;CHAT_ID&gt;
+</span></code></pre></div>
+<p>Relevant application settings:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TELEGRAM_ENABLED</code></td>
+<td>Enables or disables Telegram notification delivery</td>
+</tr>
+<tr>
+<td><code>TELEGRAM_BOT_TOKEN</code></td>
+<td>Authenticates the bot with Telegram</td>
+</tr>
+<tr>
+<td><code>TELEGRAM_CHAT_ID</code></td>
+<td>Selects the private or group chat receiving alerts</td>
+</tr>
+</tbody>
+</table>
+<p>The application configuration currently defaults <code>telegram_enabled</code> to <code>false</code>. This is a safe default for development and prevents accidental alert delivery when credentials are absent.</p>
+<h2 id="7-kubernetes-configuration">7. Kubernetes Configuration</h2>
+<p>Telegram credentials belong in a Kubernetes Secret in the <code>edge-monitoring</code> namespace. Non-sensitive switches can remain in the backend ConfigMap.</p>
+<p>Create or update the Secret without writing the real values into a manifest:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>backend-secret<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">TELEGRAM_BOT_TOKEN</span><span class="o">=</span><span class="s1">&#39;&lt;BOT_TOKEN&gt;&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">TELEGRAM_CHAT_ID</span><span class="o">=</span><span class="s1">&#39;&lt;CHAT_ID&gt;&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+</span></code></pre></div>
+<p>Add the non-sensitive enable flag to the backend ConfigMap:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">data</span><span class="p">:</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">TELEGRAM_ENABLED</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+</span></code></pre></div>
+<p>The backend Deployment should load the ConfigMap and Secret:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">containers</span><span class="p">:</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backend</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nt">envFrom</span><span class="p">:</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">configMapRef</span><span class="p">:</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backend-config</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretRef</span><span class="p">:</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backend-secret</span>
+</span></code></pre></div>
+<p>Restart the backend so the new environment is loaded:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment/backend<span class="w"> </span>-n<span class="w"> </span>edge-monitoring
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/backend<span class="w"> </span>-n<span class="w"> </span>edge-monitoring
+</span></code></pre></div>
+<p>Confirm that the variable names exist without printing their secret values:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>backend-secret<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;keys&#39;</span>
+</span></code></pre></div>
+<p>Expected keys:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>[
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  &quot;TELEGRAM_BOT_TOKEN&quot;,
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>  &quot;TELEGRAM_CHAT_ID&quot;
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>]
+</span></code></pre></div>
+<p><strong>Image placeholder — Kubernetes Secret:</strong> Add a screenshot of the Secret key names only. Do not show decoded values.</p>
+<p><strong>Image placeholder — backend rollout:</strong> Add a screenshot of the successful backend rollout and Running pod.</p>
+<h2 id="8-fastapi-integration">8. FastAPI Integration</h2>
+<p>The Telegram router is included by the FastAPI application. The confirmed status endpoint is:</p>
+<div class="language-http highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="err">GET /api/v1/telegram/status</span>
+</span></code></pre></div>
+<p>It calls <code>telegram_service.status()</code>, which uses Telegram's <code>getMe</code> API to verify that the configured token can reach a valid bot.</p>
+<p>Example request:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>curl<span class="w"> </span>http://&lt;BACKEND_HOST&gt;:&lt;BACKEND_PORT&gt;/api/v1/telegram/status
+</span></code></pre></div>
+<p>Example successful response shape:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;online&quot;</span><span class="p">,</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">&quot;configured&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Telegram bot is reachable&quot;</span><span class="p">,</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;edge_sentinel_bot&quot;</span><span class="p">,</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">  </span><span class="nt">&quot;bot_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PIWATCH&quot;</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The exact wording may differ from the deployed service. A response should never contain <code>TELEGRAM_BOT_TOKEN</code> or <code>TELEGRAM_CHAT_ID</code>.</p>
+<p>The monitoring endpoint may also expose the Telegram service state as part of:</p>
+<div class="language-http highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="err">GET /api/v1/monitoring/overview</span>
+</span></code></pre></div>
+<p>This value is intended for backend monitoring and API verification. It is not displayed in the frontend.</p>
+<h3 id="delivery-tracking">Delivery tracking</h3>
+<p>If notification auditing is required, each stored event can include:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;telegram_sent&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">&quot;telegram_sent_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-07-15T01:42:20Z&quot;</span><span class="p">,</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="nt">&quot;telegram_error&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>No Telegram-specific frontend page or delivery-history UI is required for the current project. The following backend endpoints can be used for verification or future extensions:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Purpose</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /api/v1/telegram/status</code></td>
+<td>Bot configuration and connectivity</td>
+<td>Confirmed</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/telegram/deliveries</code></td>
+<td>Recent delivery attempts</td>
+<td>Optional future extension</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/telegram/test</code></td>
+<td>Send a controlled test alert</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/events/{event_id}/notify</code></td>
+<td>Retry one event notification</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-alert-policy">9. Alert Policy</h2>
+<p>Sending every frame can overwhelm the team and trigger Telegram rate limits. Apply an alert policy before delivery:</p>
+<ul>
+<li>notify only for configured detection classes and severities;</li>
+<li>require a minimum model confidence;</li>
+<li>suppress duplicate alerts for the same camera and class during a cooldown period;</li>
+<li>retry transient network failures with bounded backoff;</li>
+<li>record every successful or failed delivery against the event;</li>
+<li>never block frame ingestion while waiting for Telegram;</li>
+<li>include infrastructure alerts only after the configured Prometheus condition persists long enough to avoid brief false alarms.</li>
+</ul>
+<p>Suggested initial policy:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Suggested severity</th>
+<th>Telegram action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weapon</td>
+<td>Critical</td>
+<td>Send immediately with annotated evidence</td>
+</tr>
+<tr>
+<td>Fire or smoke</td>
+<td>Critical</td>
+<td>Send immediately with annotated evidence</td>
+</tr>
+<tr>
+<td>Intruder</td>
+<td>Critical</td>
+<td>Send immediately with annotated evidence</td>
+</tr>
+<tr>
+<td>Liquid spill</td>
+<td>Warning</td>
+<td>Send when confidence and persistence thresholds are met</td>
+</tr>
+<tr>
+<td>Person</td>
+<td>Informational</td>
+<td>Store event; notify only in restricted zones or schedules</td>
+</tr>
+<tr>
+<td>Node unavailable</td>
+<td>Critical</td>
+<td>Send after a short confirmation window</td>
+</tr>
+<tr>
+<td>Temperature ≥ 70°C</td>
+<td>Critical</td>
+<td>Send immediately after rule evaluation</td>
+</tr>
+<tr>
+<td>Temperature ≥ 60°C</td>
+<td>Warning</td>
+<td>Send once per cooldown period</td>
+</tr>
+</tbody>
+</table>
+<p>These thresholds should match the final Prometheus alert rules and project requirements.</p>
+<h2 id="10-testing">10. Testing</h2>
+<h3 id="101-check-configuration-and-pod-health">10.1 Check configuration and pod health</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>edge-monitoring
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>kubectl<span class="w"> </span>logs<span class="w"> </span>deployment/backend<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>--tail<span class="o">=</span><span class="m">100</span>
+</span></code></pre></div>
+<p>Avoid commands that print the complete pod environment because they may expose the bot token.</p>
+<h3 id="102-check-backend-status">10.2 Check backend status</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://&lt;BACKEND_HOST&gt;:&lt;BACKEND_PORT&gt;/api/v1/telegram/status<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+</span></code></pre></div>
+<p>Verify that:</p>
+<ul>
+<li><code>configured</code> is <code>true</code>;</li>
+<li>the reported status is online;</li>
+<li>the expected bot username is returned; and</li>
+<li>no credentials appear in the response.</li>
+</ul>
+<h3 id="103-send-an-end-to-end-detection">10.3 Send an end-to-end detection</h3>
+<ol>
+<li>Start the Pi4 camera sender.</li>
+<li>Present a safe test image containing a trained detection class.</li>
+<li>Confirm that the frame upload succeeds.</li>
+<li>Check that an event appears in <code>GET /api/v1/events</code>.</li>
+<li>Open the raw and annotated evidence URLs.</li>
+<li>Confirm that one Telegram notification reaches the configured chat.</li>
+<li>Confirm that delivery status is stored with the same event ID.</li>
+<li>Restart the backend and verify that the event and evidence remain available from SeaweedFS.</li>
+</ol>
+<h3 id="104-test-infrastructure-alerts">10.4 Test infrastructure alerts</h3>
+<p>Use a controlled test alert or temporary test rule. Do not deliberately overheat a Raspberry Pi or interrupt a shared cluster node merely to generate an alert.</p>
+<p><strong>Image placeholder — status endpoint:</strong> Add a screenshot of the successful <code>/api/v1/telegram/status</code> response.</p>
+<p><strong>Image placeholder — delivered threat alert:</strong> Add a screenshot of a received Telegram alert with event ID, detection, confidence and camera. Hide usernames or chat IDs if required.</p>
+<p><strong>Image placeholder — annotated evidence:</strong> Add the annotated image corresponding to the Telegram event.</p>
+<h2 id="11-troubleshooting">11. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>configured: false</code></td>
+<td>Token or chat ID is absent</td>
+<td>Check Secret key names and restart the backend</td>
+</tr>
+<tr>
+<td>Telegram status is offline</td>
+<td>Invalid/revoked token, DNS failure or no internet access</td>
+<td>Validate with <code>getMe</code>; verify outbound HTTPS from the backend pod</td>
+</tr>
+<tr>
+<td><code>401 Unauthorized</code></td>
+<td>Invalid or revoked bot token</td>
+<td>Generate a new token and update the Secret</td>
+</tr>
+<tr>
+<td><code>400 Bad Request: chat not found</code></td>
+<td>Wrong chat ID or the bot has not been started/added</td>
+<td>Send <code>/start</code>, add the bot to the group and obtain the ID again</td>
+</tr>
+<tr>
+<td><code>403 Forbidden</code></td>
+<td>User blocked the bot or bot lacks group access</td>
+<td>Restore access and verify group permissions</td>
+</tr>
+<tr>
+<td>Status works but no alert arrives</td>
+<td>Alert policy not triggered or send method not called</td>
+<td>Check event class, confidence, enable flag and backend logs</td>
+</tr>
+<tr>
+<td>Repeated alerts</td>
+<td>No cooldown or duplicate suppression</td>
+<td>Add a camera/class cooldown and event idempotency</td>
+</tr>
+<tr>
+<td>Message arrives without evidence</td>
+<td>Annotated object was not stored or not accessible</td>
+<td>Verify the <code>captured-images</code> object and backend image endpoint</td>
+</tr>
+<tr>
+<td>Alerts disappear after restart</td>
+<td>Delivery fields were kept only in memory</td>
+<td>Persist notification state with event metadata/database records</td>
+</tr>
+</tbody>
+</table>
+<p>Check recent backend logs without exposing the environment:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>kubectl<span class="w"> </span>logs<span class="w"> </span>deployment/backend<span class="w"> </span>-n<span class="w"> </span>edge-monitoring<span class="w"> </span>--since<span class="o">=</span>10m<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-iE<span class="w"> </span><span class="s1">&#39;telegram|notification|delivery|error&#39;</span>
+</span></code></pre></div>
+<h2 id="12-security-and-maintenance">12. Security and Maintenance</h2>
+<ul>
+<li>Keep bot credentials only in <code>.env</code> for local development and Kubernetes Secrets for deployment.</li>
+<li>Add <code>.env</code> to <code>.gitignore</code> and never paste real tokens into Markdown.</li>
+<li>Revoke and rotate any token that may have been exposed.</li>
+<li>Do not return secrets through FastAPI endpoints or include them in frontend code.</li>
+<li>Redact tokens, chat IDs, usernames and private images in screenshots.</li>
+<li>Use backend evidence endpoints instead of publishing the SeaweedFS S3 gateway directly.</li>
+<li>Add network timeouts and bounded retries for all Telegram requests.</li>
+<li>Store timestamps in UTC and include the timezone clearly in Telegram messages and API responses.</li>
+<li>Record delivery success, failure reason and retry count for auditing.</li>
+<li>Review bot membership and chat permissions when team members change.</li>
+</ul>
+<h2 id="13-final-verification">13. Final Verification</h2>
+<p>The Telegram feature is ready for demonstration when all of the following are true:</p>
+<ul>
+<li>the backend pod is Running;</li>
+<li><code>/api/v1/telegram/status</code> reports a configured, reachable bot;</li>
+<li>a controlled YOLO detection produces a persistent event;</li>
+<li>raw and annotated evidence remains available after a restart;</li>
+<li>exactly one notification reaches the correct Telegram chat;</li>
+<li>notification delivery state is linked to the event ID;</li>
+<li>no Telegram-specific frontend UI is required or presented as part of the implementation; and</li>
+<li>screenshots contain no credentials or sensitive identifiers</li>
+</ul>
 
 
 
