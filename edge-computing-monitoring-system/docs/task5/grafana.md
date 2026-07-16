@@ -105,31 +105,10 @@ Do not store the administrator password in Git or screenshots.
 
 ---
 
-## 4. Prometheus data source
-
-Grafana does not collect metrics directly from Node Exporter. It reads the metrics from Prometheus.
-
-The Prometheus data source uses the internal Kubernetes service address:
-
-```text
-http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
-```
-
-This service DNS name remains stable even if the Prometheus pod restarts.
-
-To verify the connection in Grafana:
-
-1. Open **Connections**.
-2. Select **Data sources**.
-3. Open **Prometheus**.
-4. Confirm the service URL.
-5. Select **Save & test**.
-
-![Successful Prometheus data-source connection](images/monitoring/grafana-prometheus-datasource.png)
 
 ---
 
-## 5. Dashboard configuration
+## 4. Dashboard configuration
 
 The **Node Exporter Full** dashboard was used as the main dashboard and configured for the Raspberry Pi monitoring job.
 
@@ -169,7 +148,7 @@ Some panels may show `N/A` when a metric is not supported by a particular Raspbe
 
 ---
 
-## 6. Dashboard verification
+## 5. Dashboard verification
 
 The dashboard was verified by:
 
@@ -185,7 +164,7 @@ The dashboard is considered working when live metrics are visible and new sample
 
 ---
 
-## 7. Result
+## 6. Result
 
 Grafana successfully visualizes the Raspberry Pi monitoring data stored in Prometheus. It provides a simple and centralized view of node health, resource usage, network activity, temperature, load, and uptime.
 
