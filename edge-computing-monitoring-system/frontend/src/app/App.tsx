@@ -6,12 +6,11 @@ import { EventHistoryPage } from "../pages/event-history/EventHistoryPage";
 import { AlertsPage } from "../pages/alerts/AlertsPage";
 import { Sidebar, type PageKey } from "../components/layout/Sidebar";
 import { LiveDetectionPage } from "../pages/live-detection/LiveDetectionPage";
-import { ModelDatasetPage } from "../pages/model-dataset/ModelDatasetPage";
 import { ClusterPerformancePage } from "../pages/cluster-performance/ClusterPerformancePage";
 import { Topbar } from "../components/layout/Topbar";
 import { StoragePage } from "../pages/storage/StoragePage";
 import "./App.css";
-import { TelegramPage } from "../pages/Telegram/TelegramPage";
+
 
 export type Theme = "light" | "dark";
 
@@ -22,8 +21,6 @@ const PAGE_TITLES: Record<PageKey, string> = {
   monitoring: "Monitoring",
   alerts: "Alerts",
   storage: "Storage",
-  modelDataset: "Model & Dataset",
-  telegram: "Telegram",
   clusterPerformance: "Cluster Performance",
 };
 
