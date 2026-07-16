@@ -264,7 +264,7 @@ GET /api/v1/images/raw/{frame_id}
 ```
 
 <!-- SCREENSHOT: Event History table with several stored detections -->
-![Event History](/images/event_history.png)
+![Event History](images/event_history.png)
 
 *Figure 3: Event History page showing stored events, timestamps, locations and detection classes.*
 
@@ -343,7 +343,7 @@ The storage view identifies:
 SeaweedFS data is stored on the external SSD so that detection evidence remains available after pod, service or cluster restarts.
 
 <!-- SCREENSHOT: Storage page showing image and metadata persistence information -->
-![Storage page](/images/storage.png)
+![Storage page](images/storage.png)
 
 *Figure 6: Storage page presenting persistent evidence and metadata information.*
 
@@ -494,55 +494,5 @@ npm run preview -- --host 0.0.0.0
 
 Because Vite embeds `VITE_API_BASE_URL` during the build, changing the production backend address requires rebuilding the frontend image or assets.
 
----
-
-## 18. Docker and K3s Deployment
-
-The production frontend is compiled into static assets and served from a lightweight web-server container. The container is then deployed to the K3s cluster.
-
-The deployment provides:
-
-- a frontend `Deployment`;
-- a stable internal `Service` on port 80;
-- an image built for the Raspberry Pi ARM architecture;
-- an Ingress or NodePort for browser access;
-- the correct API base URL at build time.
-
-Ingress routing is:
-
-| Path | Destination |
-| --- | --- |
-| `/` | Frontend service on port 80 |
-| `/api/v1` | FastAPI backend service on port 8000 |
-
-Same-origin ingress routing avoids exposing internal Kubernetes service names to the browser and simplifies CORS configuration.
-
-The deployment can be inspected with:
-
-```bash
-kubectl -n edge-monitoring get pods
-kubectl -n edge-monitoring get deployments
-kubectl -n edge-monitoring get services
-kubectl -n edge-monitoring get ingress
-```
-
-The frontend communicates with the following core routes:
-
-```text
-/api/v1/events
-/api/v1/monitoring/overview
-/api/v1/model/info
-```
-
-<!-- SCREENSHOT: kubectl output showing the running frontend pod and service -->
-![Frontend Kubernetes deployment](../images/frontend/frontend-k3s-deployment.png)
-
-*Figure 10: Frontend pod and service running in the K3s cluster.*
-
----
-
-
-
----
-
+-
 The PIWATCH frontend completes the presentation layer of the edge surveillance platform by transforming backend, inference, storage and monitoring data into a unified operational interface suitable for demonstrations, evaluation and continued use.
