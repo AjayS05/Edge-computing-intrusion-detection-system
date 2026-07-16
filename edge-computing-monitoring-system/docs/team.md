@@ -8,7 +8,7 @@ This document outlines the core roles, task distributions, and contact informati
 
 | Member | Tasks & Responsibilities | Contact Details |
 | :--- | :--- | :--- |
-| **Ajay S.** | <ul><li>**Task 1:** Infra Setup & PXE Boot</li><li>**Task 7:** HA Distributed Backend (k3s)</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 ajay.s@example.com<br>🆔 ID: 100002<br>🔗 [GitHub](https://github.com/) |
+| **Ajay Somaiya** | <ul><li>**Task 1:** Infra Setup & PXE Boot</li><li>**Task 7:** HA Distributed Backend (k3s)</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 ajay.somaiya@stud.fra-uas.de<br>🆔 ID: 1616457<br>🔗 [GitHub](https://github.com/AjayS05)  |
 | **Aliza** | <ul><li>**Task 1:** Infra Setup & PXE Boot</li><li>**Task 4:** Non-MPI Parallelization</li><li>**Task 7:** HA Distributed Backend (k3s)</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 aliza.-@stud.fra-uas.de<br>🆔 ID: 1590207<br>🔗 [GitHub](https://github.com/alizark) |
 | **Danih A.** | <ul><li>**Task 2:** HPL Benchmarking</li><li>**Task 3:** Cluster Deployment & Scaling</li><li>**Task 6:** Object Detection & Training</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 danih.a@example.com<br>🆔 ID: 100004<br>🔗 [GitHub](https://github.com/) |
 | **Dawood A.** | <ul><li>**Task 9:** Telegram Notification Gateway</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 dawood.a@example.com<br>🆔 ID: 100008<br>🔗 [GitHub](https://github.com/) |
