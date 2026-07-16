@@ -865,7 +865,7 @@ curl -s http://192.168.178.200:30090/api/v1/rules \
   | sort -u
 ```
 
-![Loaded Raspberry Pi alert rules](images/monitoring/raspberry-pi-alert-rules.png)
+![Loaded Raspberry Pi alert rules](images/raspberry-pi-alerts-rules.png)
 
 The screenshot is valid evidence that the `raspberry-pi-cluster` rule group loaded successfully and that all displayed rules were evaluated with status `OK`. The temperature-rule names include the `Hwmon` suffix in the running configuration; this naming difference does not change their purpose.
 
