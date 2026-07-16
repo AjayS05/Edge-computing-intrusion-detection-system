@@ -19,3 +19,7 @@ The platform consists of three main architectural layers:
 - **Software Architecture** – Kubernetes orchestration, frontend and backend services, distributed storage, monitoring, and alerting.
 
 Together, these components provide a scalable, modular, and energy-efficient edge computing platform for intelligent surveillance and future distributed computing workloads.
+
+## App URL
+
+[PiWatch]([https://example.com](https://edge-computing-intrusion-detection.vercel.app/))
