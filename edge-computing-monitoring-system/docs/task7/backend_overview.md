@@ -110,32 +110,77 @@ This provides reliable retry handling for the current deployment. In a future mu
 
 ---
 
-## 6. Distributed Processing
+## 6. Distributed Image Processing
 
-The backend discovers workers through:
+To improve scalability and demonstrate distributed edge computing, the backend performs image preprocessing across multiple Raspberry Pi 3 worker nodes before object detection.
+
+After receiving a frame from the Raspberry Pi 4 camera, the backend determines how many healthy worker nodes are available. Based on this, it selects an appropriate image-splitting layout and divides the original frame into multiple overlapping tiles.
+
+The tiles are then distributed to the available worker pods through the Kubernetes headless Service.
 
 ```text
-image-worker-headless.edge-monitoring.svc.cluster.local:8002
+Captured Image
+        │
+        ▼
+FastAPI Backend
+        │
+        ▼
+Split into image tiles
+        │
+        ▼
+Distribute tiles to Pi3 workers
+        │
+        ▼
+Parallel image preprocessing
+        │
+        ▼
+Processed tiles returned
+        │
+        ▼
+Image reconstruction
+        │
+        ▼
+YOLO inference
 ```
 
-The number of healthy workers determines the image layout:
+The backend dynamically adjusts the number of tiles according to the number of available workers.
 
-| Healthy workers | Selected layout | Tiles |
-|---:|---:|---:|
-| 8 or more | `4 × 2` | 8 |
-| 6–7 | `3 × 2` | 6 |
-| 4–5 | `2 × 2` | 4 |
-| 2–3 | `2 × 1` | 2 |
-| Fewer than 2 | Full-frame fallback | 1 |
+| Healthy Workers | Layout | Tiles |
+|----------------|--------|------:|
+| 8 or more | 4 × 2 | 8 |
+| 6–7 | 3 × 2 | 6 |
+| 4–5 | 2 × 2 | 4 |
+| 2–3 | 2 × 1 | 2 |
+| Fewer than 2 | Full image | 1 |
 
-A default overlap of `32 px` protects objects located near tile boundaries. Workers currently support processing modes such as CLAHE, grayscale and identity processing.
+The overlapping regions between neighbouring tiles ensure that objects located near tile boundaries are preserved during reconstruction.
 
-If a worker fails, the backend can retry the tile on another healthy worker. When all attempts fail, the original tile is used. This allows frame processing to continue with fewer Pi3 nodes, although latency can increase.
+---
 
-> **Screenshot placeholder — distributed response metadata**  
-> Capture a frame-upload response showing `active_worker_count`, layout, tile count, fallback count, workers used and latency.  
-> Suggested filename: `assets/backend/backend-distributed-metadata.png`
+### Responsibilities of the Pi3 Worker Nodes
 
+Each Raspberry Pi 3 runs a lightweight FastAPI worker service responsible only for image preprocessing.
+
+The worker does **not** execute the YOLO model.
+
+Instead, each worker receives one image tile from the backend, performs the configured preprocessing operation and returns the processed tile together with processing metadata.
+
+The implemented preprocessing modes include:
+
+- Identity processing
+- CLAHE contrast enhancement
+- Grayscale conversion
+
+Each worker returns:
+
+- processed image tile
+- worker identifier
+- checksum
+- processing latency
+
+The backend waits until all available workers respond, reconstructs the complete image from the processed tiles and forwards the reconstructed image to the dedicated YOLO inference service running on the Raspberry Pi 5.
+
+This architecture distributes preprocessing across multiple Raspberry Pi 3 nodes while keeping the computationally intensive object detection centralized on the Raspberry Pi 5.
 ---
 
 ## 7. YOLO Inference
