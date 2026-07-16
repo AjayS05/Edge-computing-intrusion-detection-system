@@ -2,248 +2,336 @@
 
 # Backend Architecture Design
 
-## 1. Purpose
+## 1. Architecture Purpose
 
-The PiWatch backend is the coordination layer of the edge-computing intrusion-detection system. It receives frames from the Raspberry Pi 4 camera node, persists the original image, distributes image preprocessing across eight Raspberry Pi 3 workers, invokes the YOLO inference service on the Raspberry Pi 5, stores the resulting evidence and metadata, and exposes APIs used by the frontend and Telegram alerting workflow.
-
-The architecture separates the pipeline into three independently deployable services:
-
-| Service | Runtime location | Port | Main responsibility |
-|---|---:|---:|---|
-| FastAPI backend | Raspberry Pi 5 (`cloud`) | `8000` | Request validation, orchestration, storage, events, alerts and APIs |
-| YOLO inference service | Raspberry Pi 5 (`cloud`) | `8001` | Model loading, object detection and annotated-image generation |
-| Image worker service | Raspberry Pi 3 nodes | `8002` | Distributed tile preprocessing and health reporting |
-
-The backend is exposed outside the K3s cluster through NodePort `30080`.
+The PiWatch backend architecture separates camera capture, orchestration, distributed preprocessing, YOLO inference, persistent storage, monitoring and user access into clear services. This allows each stage to be tested and deployed independently while keeping the edge-detection pipeline understandable and recoverable.
 
 ---
 
-## 2. Complete Backend Architecture
+## 2. System Architecture Diagram
 
-![PiWatch backend architecture](assets/backend/backend-architecture.svg)
+![PiWatch system architecture](assets/backend/piwatch-system-architecture.png)
 
-**Figure 1 — PiWatch backend architecture.** The Pi4 camera sends frames through the private `192.168.50.0/24` network. The Pi5 coordinates the Pi3 workers, performs inference through a dedicated service, and stores persistent evidence in SeaweedFS on the external SSD.
+**Figure 1 — PiWatch backend and edge-processing architecture.** The Pi4 camera sends frames to the backend, Pi3 workers process image tiles, Pi5 performs YOLO inference, SeaweedFS stores evidence, the frontend reads results through the API, and the monitoring stack can feed infrastructure conditions into the event and alert workflow.
 
-> **Screenshot placeholder — deployed backend architecture**  
-> Add a screenshot of the final architecture diagram used in the report or presentation.  
-> Suggested filename: `assets/backend/backend-architecture-final.png`
+This figure represents the baseline deployed architecture. The validated Pi3 backend-canary and future multi-replica backend design are documented separately in Section 10.
 
 ---
 
 ## 3. Hardware and Network Roles
 
-| Device | Address or identity | Role |
+| Device or service | Address or identity | Responsibility |
 |---|---|---|
-| Raspberry Pi 5 | `192.168.50.1`, K3s node `cloud` | Control plane, FastAPI backend, inference service, storage access and monitoring |
-| Raspberry Pi 4 | `192.168.50.144` | Camera capture and frame sender |
+| Raspberry Pi 5 | `cloud` | K3s control plane, production backend, inference, NFS/PXE services and storage access |
+| Pi5 private interface | `192.168.50.1` | Private edge-network gateway and NFS endpoint |
+| Pi5 Wi-Fi/LAN interface | `192.168.178.200` | Current frontend/backend access from the external network |
+| Raspberry Pi 4 camera | `192.168.50.144` | Captures and uploads frames |
 | Raspberry Pi 3 workers | `rpi3-01` to `rpi3-08` | Distributed image preprocessing |
-| Pi3 worker addresses | `192.168.50.101` to `192.168.50.108` | Private worker-node communication |
-| External SSD | Mounted on Pi5 under `/srv/nfs` | Persistent application, SeaweedFS and container-runtime storage |
+| Pi3 addresses | `192.168.50.101` to `192.168.50.108` | Internal worker communication |
+| External SSD | Mounted on Pi5 at `/srv/nfs` | PXE roots, SeaweedFS data and container storage |
 
-The private `192.168.50.0/24` network is used for the internal edge pipeline. This avoids depending on a temporary Wi-Fi address assigned by an external router.
+The Pi3 nodes PXE-boot from node-specific NFS roots such as:
+
+```text
+192.168.50.1:/srv/nfs/rpi3-01
+```
+
+This means the Pi3 filesystems are physically stored on the SSD, but each Pi3 has its own root directory.
 
 ---
 
-## 4. End-to-End Frame Processing Flow
+## 4. Deployed Kubernetes Topology
 
-### Step 1 — Frame capture
+```text
+K3s cluster
+├── Node: cloud (Raspberry Pi 5)
+│   ├── backend pod
+│   ├── inference pod
+│   ├── Traefik pod
+│   ├── Prometheus/Grafana components
+│   └── SeaweedFS-related storage access
+│
+├── Nodes: rpi3-01 ... rpi3-08
+│   ├── image-worker pods
+│   └── ServiceLB pods
+│
+├── Namespace: edge-monitoring
+│   ├── Deployment/backend
+│   ├── Service/backend (NodePort 30080)
+│   ├── Deployment/inference
+│   ├── Service/inference
+│   ├── Deployment/image-worker
+│   └── Service/image-worker-headless
+│
+├── Namespace: seaweedfs
+│   └── SeaweedFS master, filer, volume and S3 services
+│
+└── Namespace: monitoring
+    └── Prometheus, Alertmanager and Grafana
+```
 
-The Pi4 camera sender captures a JPEG frame with the configured resolution and quality. Each capture contains:
+> **Screenshot placeholder — Kubernetes topology**  
+> Use `kubectl get pods -A -o wide` and capture the relevant PiWatch workloads and nodes.  
+> Suggested filename: `assets/backend/kubernetes-backend-topology.png`
 
-- `capture_id`
-- `sensor_node_id`
-- `camera_location`
-- `captured_at`
-- `sequence_number`
-- SHA-256 image checksum
-- upload source (`live`, `retry` or `manual`)
+---
 
-### Step 2 — Backend request validation
+## 5. End-to-End Processing Flow
 
-The Pi4 submits the frame to:
+### Step 1 — Camera capture
+
+The Pi4 captures a JPEG frame and generates metadata including the sensor ID, location, timestamp, sequence number, upload source and checksum.
+
+### Step 2 — Frame upload
+
+The camera sends the frame to:
 
 ```text
 POST http://192.168.50.1:30080/api/v1/frames
 ```
 
-The FastAPI backend validates:
+The Kubernetes NodePort forwards the request to the ready backend pod selected by the `backend` Service.
 
-- image type (`JPEG` or `PNG`);
-- image size;
-- required sensor and capture fields;
-- checksum correctness;
-- idempotency information.
+### Step 3 — Validation and frame identity
 
-### Step 3 — Duplicate protection
+The backend validates the file type, file size, required metadata and optional checksum. It accepts a supplied `capture_id` or generates a deterministic one.
 
-The backend uses the persistent `capture_id` as the frame identity. When the sender retries an image after a timeout, the backend returns the stored result rather than running the complete pipeline again.
+### Step 4 — Raw-image storage
 
-This prevents:
-
-- duplicate inference;
-- duplicate events;
-- duplicate alerts;
-- repeated Telegram messages;
-- repeated metadata records for the same capture.
-
-### Step 4 — Raw-image persistence
-
-The exact bytes received from the Pi4 are stored in the `captured-images` bucket before distributed processing or inference modifies the frame.
+The unmodified uploaded bytes are stored in the `captured-images` SeaweedFS bucket before the distributed or inference stages.
 
 ### Step 5 — Worker discovery
 
-The backend discovers healthy worker pods through the headless Kubernetes Service:
+The backend resolves worker endpoints through:
 
 ```text
 image-worker-headless.edge-monitoring.svc.cluster.local:8002
 ```
 
-Only workers that pass their health checks are used.
+Only healthy workers are selected.
 
-### Step 6 — Adaptive image splitting
+### Step 6 — Adaptive tile layout
 
-The backend selects a stable tile layout based on the number of available workers.
+The backend chooses a layout based on the number of healthy workers:
 
-| Healthy workers | Layout | Number of tiles |
-|---:|---:|---:|
-| 8 or more | `4 × 2` | 8 |
-| 6–7 | `3 × 2` | 6 |
-| 4–5 | `2 × 2` | 4 |
-| 2–3 | `2 × 1` | 2 |
-| Fewer than 2 | Full-frame fallback | 1 |
+```text
+8+ workers → 4x2
+6–7       → 3x2
+4–5       → 2x2
+2–3       → 2x1
+<2        → full-frame fallback
+```
 
-A default overlap of `32 px` is used around tile boundaries. During reconstruction, only each tile's core region is used, preventing duplicated overlap regions.
+### Step 7 — Pi3 tile preprocessing
 
-### Step 7 — Distributed preprocessing
-
-Each tile is sent to a Pi3 worker. A worker can apply the configured processing mode, such as:
-
-- CLAHE contrast enhancement;
-- grayscale conversion;
-- identity processing.
-
-The worker returns the processed tile, checksum, worker identity and processing latency.
+Tiles are sent to worker pods over HTTP. A worker can apply CLAHE, grayscale or identity processing, then returns the processed tile with checksum and latency metadata.
 
 ### Step 8 — Retry and fallback
 
-When a worker request fails:
+Failed tiles can be retried on another worker. When all attempts fail, the original tile is retained. The frame therefore continues through the pipeline instead of being discarded.
 
-1. the backend retries the tile on another healthy worker;
-2. attempt errors are retained in the distribution metadata;
-3. if every worker attempt fails, the original tile is used;
-4. if distributed processing cannot be used, the full original frame proceeds to inference.
+### Step 9 — Reconstruction
 
-A worker failure therefore does not automatically discard the frame.
-
-### Step 9 — Frame reconstruction
-
-The backend reconstructs a single image from the successful or fallback tiles. YOLO is called once on the reconstructed image; the model is not executed separately on every Pi3.
+The backend reconstructs one frame from successful and fallback tiles. Overlap is removed using each tile's core region.
 
 ### Step 10 — YOLO inference
 
-The backend calls:
+The reconstructed frame is sent to:
 
 ```text
 http://inference.edge-monitoring.svc.cluster.local:8001
 ```
 
-The inference service loads `best_final.pt` once and returns:
-
-- detections;
-- class names;
-- confidence scores;
-- bounding boxes;
-- severity values;
-- inference latency;
-- annotated JPEG data when detections exist.
-
-The final model contains four classes:
-
-| Class | Severity policy |
-|---|---|
-| `fire` | Critical |
-| `weapon` | Critical |
-| `person` | Informational |
-| `container` | Informational |
+The inference service returns detections, confidence values, bounding boxes, severity, latency and annotated JPEG bytes.
 
 ### Step 11 — Event and alert creation
 
-A detected frame produces one frame-level event containing the complete `detections` array. Critical threat detections can additionally produce individual alert records.
-
-This keeps the Event History page organized while preserving all detections associated with the frame.
+The backend creates one event for the frame and optional critical alerts for configured threat detections.
 
 ### Step 12 — Persistent result storage
 
-The backend stores:
+The backend stores image evidence and JSON metadata in SeaweedFS.
 
-- raw image;
-- annotated image when detections exist;
-- frame JSON;
-- detection JSON;
-- event JSON;
-- alert JSON when required.
+### Step 13 — Frontend and notification access
 
-### Step 13 — API and notification access
+The frontend reads events and images through the backend API. Critical alerts can be delivered through Telegram. Monitoring metrics are retrieved from Prometheus and can contribute infrastructure alerts.
 
-The frontend reads events and images through the backend API. Critical alerts can also be sent through the Telegram bot integration.
+> **Screenshot placeholder — complete frame flow**  
+> Add a sequence or flow screenshot showing upload, worker calls, inference, storage and event output.  
+> Suggested filename: `assets/backend/backend-frame-pipeline.png`
 
 ---
 
-## 5. Core Backend Components
+## 6. Core Architecture Components
 
-### 5.1 FastAPI coordinator
+### 6.1 FastAPI backend
 
-The coordinator owns the public REST API and the full request lifecycle. Its responsibilities include:
+The backend is the orchestration layer. It does not load the YOLO model directly in the deployed architecture. Its main responsibilities are request validation, distributed processing, storage, metadata generation, API delivery and integrations.
 
-- input validation;
-- duplicate protection;
-- worker discovery;
-- tile dispatch;
-- image reconstruction;
-- inference-service communication;
-- SeaweedFS access;
-- event and alert generation;
-- Telegram integration;
-- frontend image streaming;
-- monitoring and storage-status APIs.
+### 6.2 Image worker service
 
-### 5.2 Distributed frame service
+The worker service is intentionally lightweight and runs on the Pi3 nodes. It exposes a health endpoint and an image-processing endpoint on port `8002`.
 
-The distributed frame service decides whether distributed processing can be used and produces structured metadata containing:
+### 6.3 YOLO inference service
 
-- active worker count;
-- selected layout;
-- tile count;
-- successful tiles;
-- failed tiles;
-- fallback tiles;
-- workers used;
-- worker processing latency;
-- total distributed-stage latency.
+The inference service runs separately on Pi5 so the large model and inference dependencies do not have to exist in every backend or worker image.
 
-### 5.3 Worker registry
+### 6.4 SeaweedFS storage
 
-The worker registry resolves worker endpoints from Kubernetes DNS or configured URLs. Health checks ensure that unavailable workers are excluded from new assignments.
+SeaweedFS provides S3-compatible object storage. The application uses shared buckets for evidence and metadata rather than storing authoritative results only inside one pod.
 
-### 5.4 Task dispatcher
+### 6.5 Monitoring stack
 
-The dispatcher assigns tiles to workers, balances requests and retries failures. It records the worker used for each tile and the latency of every attempt.
+Prometheus gathers node and application metrics. Grafana provides visualization, while the backend monitoring API converts Prometheus results into the frontend response format.
 
-### 5.5 Inference client
+### 6.6 Event and alert service
 
-The backend inference client sends the reconstructed image to the inference service over HTTP and converts the response into backend metadata.
-
-### 5.6 Storage service
-
-The storage service abstracts SeaweedFS S3 and local fallback storage. It generates predictable object keys and provides read, write and list operations.
-
-### 5.7 Alert and Telegram services
-
-The alert service creates alerts according to the detection severity policy. The Telegram service sends critical notifications when a token and chat ID are configured.
+Detection results are transformed into event and alert records. Monitoring conditions can also feed the event/alert path. Telegram is a downstream notification channel, not the only way to see a detection.
 
 ---
 
-## 6. Backend Source Layout
+## 7. Service Communication Matrix
+
+| Source | Destination | Address or Service | Purpose |
+|---|---|---|---|
+| Pi4 camera | Backend | `192.168.50.1:30080` | Upload frames |
+| Frontend | Backend | Current Pi5/NodePort address | Read events, images and monitoring data |
+| Backend | Workers | `image-worker-headless...:8002` | Health checks and tile processing |
+| Backend | Inference | `inference...:8001` | YOLO inference |
+| Backend | SeaweedFS | `seaweedfs-s3...:8333` | Object read/write operations |
+| Backend | Prometheus | `prometheus-kube-prometheus-prometheus.monitoring...:9090` | Metrics queries |
+| Backend | Kubernetes API | In-cluster API through ServiceAccount | Pod and workload status |
+| Backend | Telegram API | HTTPS | Critical notifications |
+| Prometheus | Backend | `/metrics` | Backend metrics collection |
+
+---
+
+## 8. Storage Architecture
+
+```text
+External SSD on Pi5 (/srv/nfs)
+├── Pi3 PXE/NFS roots
+│   ├── rpi3-01
+│   ├── rpi3-02
+│   └── ...
+├── SeaweedFS data
+├── Docker data
+└── other cluster storage
+```
+
+Application evidence is stored through SeaweedFS:
+
+```text
+captured-images
+├── raw images
+└── annotated images
+
+event-metadata
+├── frame metadata
+├── detection metadata
+├── events
+└── alerts
+```
+
+A normal Kubernetes `hostPath` on each Pi3 would refer to a different node-specific NFS root. For that reason, multi-replica backend pods should not rely on a supposedly shared `/data` hostPath. The validated canary uses pod-local `emptyDir` volumes and keeps shared evidence in SeaweedFS.
+
+---
+
+## 9. Reliability and Failure Behaviour
+
+### Worker failure
+
+When one or more Pi3 workers are unavailable:
+
+- the headless Service no longer returns unhealthy endpoints;
+- the backend uses the remaining workers;
+- the tile layout can shrink;
+- failed requests are retried;
+- original-tile or full-frame fallback remains available.
+
+Worker loss therefore reduces capacity but does not necessarily stop frame processing.
+
+### Backend pod failure
+
+Kubernetes restarts the backend pod. Readiness probes keep it out of Service traffic until `/health` succeeds.
+
+### Inference failure
+
+The backend cannot complete new detections until the inference service becomes available. Current inference is a single Pi5 workload.
+
+### Storage failure
+
+If SeaweedFS or the Pi5 SSD is unavailable, evidence storage and retrieval are affected.
+
+### Pi5 failure
+
+Pi5 remains a system-wide dependency because it hosts the K3s control plane, PXE/NFS services, inference and shared storage access. Backend replicas on Pi3 improve Pi3-level service availability but do not remove this Pi5 dependency.
+
+---
+
+## 10. Backend HA Architecture: Validated Canary and Target
+
+### 10.1 Why the normal backend image failed on Pi3
+
+The Pi3 containerd directory is inside the NFS-backed PXE root. The original backend image was approximately `3.26 GB`; after removing YOLO dependencies, the backend-only image was approximately `198 MB`. Even the smaller image repeatedly failed during container creation with `context deadline exceeded` before Python started.
+
+The existing `edge-worker:v1` image could start successfully. A repacked worker image with no new filesystem content also started, proving that newly imported manifests were valid and that the problem was the large number of new backend dependency files.
+
+### 10.2 Bundle-based solution
+
+The validated solution uses:
+
+```text
+edge-worker:v1 base image
+        +
+one compressed backend-runtime.tar.gz file
+        ↓
+container starts successfully
+        ↓
+archive extracted into pod-local /runtime
+        ↓
+backend starts with PYTHONPATH=/runtime/python:/runtime
+```
+
+A real `backend-bundle-canary` pod reached `1/1 Ready` on `rpi3-01` and successfully served health, documentation, Kubernetes and storage APIs.
+
+### 10.3 Target multi-Pi3 design
+
+The planned design is one edge-node pod on each Pi3 with two containers:
+
+```text
+Pi3 edge-node pod
+├── worker container
+│   ├── worker service
+│   └── port 8002
+│
+└── backend container
+    ├── bundled backend runtime
+    └── port 8000
+```
+
+The worker and backend remain separate processes and can have independent probes and resource limits while sharing the same pod network.
+
+The backend Service can then select all ready backend containers and distribute requests across them. Kubernetes already performs this internal load balancing; MetalLB is not required merely to balance traffic between backend pods.
+
+> **Screenshot placeholder — target HA canary**  
+> Show the Pi3 backend bundle pod and its successful readiness, storage and API tests.  
+> Suggested filename: `assets/backend/backend-ha-canary-validation.png`
+
+### 10.4 HA limitations
+
+Even after deploying backend containers on every Pi3, the system will still depend on Pi5 for:
+
+- K3s control plane;
+- PXE boot and NFS roots;
+- inference;
+- SeaweedFS and SSD access.
+
+This should be described as backend and worker fault tolerance, not complete system-level HA.
+
+---
+
+## 11. Backend Source Structure
 
 ```text
 backend/
@@ -254,9 +342,10 @@ backend/
 │   │   ├── images.py
 │   │   ├── alerts.py
 │   │   ├── monitoring.py
-│   │   ├── model.py
+│   │   ├── kubernetes.py
 │   │   ├── storage.py
-│   │   └── telegram.py
+│   │   ├── telegram.py
+│   │   └── model_dataset.py
 │   ├── core/
 │   │   └── config.py
 │   ├── services/
@@ -272,127 +361,46 @@ backend/
 │   │   └── telegram_service.py
 │   └── main.py
 ├── inference_app/
-│   ├── main.py
-│   ├── inference_service.py
-│   └── schemas.py
 ├── worker_app/
-│   ├── main.py
-│   ├── processing.py
-│   ├── config.py
-│   └── schemas.py
 ├── docker/
 │   ├── Dockerfile.backend
 │   ├── Dockerfile.inference
-│   └── Dockerfile.worker
+│   ├── Dockerfile.worker
+│   ├── Dockerfile.edge-node
+│   └── Dockerfile.edge-node-bundle
 ├── requirements/
 │   ├── backend.txt
+│   ├── backend-extra.txt
 │   ├── inference.txt
 │   └── worker.txt
 └── k8s/
     ├── 00-namespace-config.yaml
+    ├── 05-backend-rbac.yaml
     ├── 10-backend.yaml
+    ├── 12-backend-bundle-canary.yaml
     ├── 20-inference.yaml
     └── 30-workers.yaml
 ```
 
----
-
-## 7. Service Communication
-
-| Source | Destination | Protocol | Purpose |
-|---|---|---|---|
-| Pi4 camera sender | Backend NodePort `30080` | HTTP multipart | Upload a frame |
-| Backend | Pi3 workers `8002` | HTTP | Health checks and tile processing |
-| Backend | Inference service `8001` | HTTP | YOLO inference |
-| Backend | SeaweedFS S3 `8333` | S3-compatible HTTP | Store and retrieve objects |
-| Frontend | Backend NodePort `30080` | HTTP JSON/image | Events, monitoring and evidence |
-| Backend | Telegram Bot API | HTTPS | Critical notifications |
-| Prometheus | Backend and nodes | HTTP metrics | Monitoring |
+Update this tree if filenames differ in the final repository.
 
 ---
 
-## 8. Reliability Design
+## 12. Architecture Validation Evidence
 
-### Health probes
+Capture the following evidence for the final report:
 
-Backend, inference and worker deployments use Kubernetes probes:
+1. `piwatch-system-architecture.png` — architecture diagram included above.
+2. `kubernetes-backend-topology.png` — pods and nodes.
+3. `backend-frame-pipeline.png` — end-to-end processing flow.
+4. `backend-worker-endpoints.png` — headless Service endpoints.
+5. `backend-inference-logs.png` — successful inference call.
+6. `backend-seaweedfs-objects.png` — stored raw, annotated and JSON objects.
+7. `backend-ha-canary-validation.png` — Pi3 backend bundle canary.
+8. `backend-monitoring-overview.png` — Prometheus-backed monitoring response.
+9. `frontend-live-detection.png` — final annotated evidence in the UI.
 
-- startup probes allow initialization time;
-- readiness probes prevent traffic before a service is ready;
-- liveness probes restart an unresponsive container.
-
-### Persistent storage
-
-SeaweedFS stores evidence on SSD-backed storage, so restarting backend or inference pods does not remove images and metadata.
-
-### Local image availability
-
-The K3s manifests use `imagePullPolicy: Never` for locally built ARM64 images. Therefore, the worker image must be present in K3s containerd on every Pi3 that may run a worker pod.
-
-### Graceful degradation
-
-The pipeline supports:
-
-- fewer available workers;
-- per-tile retry;
-- original-tile fallback;
-- full-frame fallback;
-- no-detection responses without annotated images;
-- retry-safe uploads through persistent capture IDs.
-
----
-
-## 9. Performance Metadata
-
-Each processed frame can include:
-
-```text
-distributed_processing.active_worker_count
-distributed_processing.layout
-distributed_processing.tile_count
-distributed_processing.successful_tile_count
-distributed_processing.fallback_tile_count
-distributed_processing.failed_tile_count
-distributed_processing.total_latency_seconds
-distributed_processing.workers_used
-
-inference.model_latency_seconds
-inference.round_trip_latency_seconds
-inference.detection_count
-
-pipeline_latency_seconds
-```
-
-These fields support performance evaluation, troubleshooting and frontend visualization.
-
----
-
-## 10. Architecture Validation
-
-The deployed architecture is considered healthy when:
-
-- Pi5 and all Pi3 nodes report `Ready`;
-- one backend pod is ready on `cloud`;
-- one inference pod is ready on `cloud`;
-- eight worker pods are ready across `rpi3-01` to `rpi3-08`;
-- the worker headless Service exposes eight endpoints;
-- backend health checks can reach inference and workers;
-- a Pi4 upload returns `HTTP 200`;
-- inference logs show `POST /infer HTTP/1.1 200 OK`;
-- raw images and JSON remain available after a backend restart.
-
----
-
-## 11. Screenshots to Add
-
-1. `backend-architecture-final.png` — final architecture diagram.
-2. `backend-pipeline-flow.png` — Pi4 upload through storage and event creation.
-3. `kubernetes-worker-distribution.png` — eight worker pods across Pi3 nodes.
-4. `backend-inference-logs.png` — backend uploads and inference `POST /infer 200`.
-5. `distributed-response-metadata.png` — frame response showing `4x2`, eight tiles and inference metadata.
-6. `frontend-live-detection.png` — annotated image and detection metadata in the UI.
-
-Recommended image directory:
+Recommended directory:
 
 ```text
 assets/backend/
