@@ -927,7 +927,7 @@ The document uses three screenshots as final deployment evidence:
 |---|---|
 | Monitoring components running in K3s | `images/prometheus-pods-healthy.png` |
 | Raspberry Pi scrape targets reporting `UP` | `images/prometheus-targets.png` |
-| Raspberry Pi alert rules loaded with status `OK` | `images/raspberry-pi-alert-rules.png` |
+| Raspberry Pi alert rules loaded with status `OK` | `images/raspberry-pi-alerts-rules.png` |
 
 The local installation is documented through commands and expected outputs, so additional local Prometheus screenshots are not required.
 
