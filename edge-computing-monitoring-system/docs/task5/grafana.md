@@ -441,7 +441,7 @@ The dashboard is successfully verified when live values are visible for the sele
 Some panels may show `N/A` when a metric is not supported by a particular Raspberry Pi, operating system, filesystem, or Node Exporter version. This does not invalidate the dashboard when the core availability, CPU, memory, disk, network, uptime, and load metrics are present.
 
  
-`![Verified Grafana dashboard with live Raspberry Pi metrics](images/grafana-dashboard-verified.png)`
+`![Verified Grafana dashboard with live Raspberry Pi metrics](images/monitoring-dashboard.png)`
 
 ---
 
