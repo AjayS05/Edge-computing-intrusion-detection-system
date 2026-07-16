@@ -44,4 +44,3 @@ For each one of these configurations the theoretical maximum value of N was comp
 - Finally, let's see the speedup that we achieved from 2 worker nodes all the way up to 4 worker nodes.
 ![Speedup](images/boxplot_speedup.png)
 - As we can observe, the speedup gets better with more workers but never exceed the multiplying factor which is expected because the sequential part such as the allocation of the memory cannot be parallelized which limits the speedup.
- 
