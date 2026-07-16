@@ -1,0 +1,232 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-node-canary-02
+  namespace: edge-monitoring
+  labels:
+    app: edge-node-canary-02
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: edge-node-canary-02
+
+  template:
+    metadata:
+      labels:
+        app: edge-node-canary-02
+        deployment-role: canary
+
+    spec:
+      serviceAccountName: backend-kubernetes-reader
+
+      nodeSelector:
+        kubernetes.io/hostname: rpi3-02
+
+      terminationGracePeriodSeconds: 30
+
+      containers:
+        - name: worker
+          image: edge-node-bundle:ha-canary-v1
+          imagePullPolicy: Never
+
+          command:
+            - uvicorn
+
+          args:
+            - worker_app.main:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8002"
+
+          ports:
+            - name: worker-http
+              containerPort: 8002
+
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: worker-http
+            failureThreshold: 90
+            periodSeconds: 2
+            timeoutSeconds: 2
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: worker-http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: worker-http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+
+            limits:
+              cpu: "300m"
+              memory: "192Mi"
+
+        - name: backend
+          image: edge-node-bundle:ha-canary-v1
+          imagePullPolicy: Never
+
+          command:
+            - /bin/sh
+            - -c
+
+          args:
+            - |
+              set -eu
+
+              echo "Extracting backend runtime..."
+
+              find /runtime \
+                -mindepth 1 \
+                -maxdepth 1 \
+                -exec rm -rf {} +
+
+              tar -xzf \
+                /opt/backend/backend-runtime.tar.gz \
+                -C /runtime
+
+              echo "Starting backend..."
+
+              exec uvicorn app.main:app \
+                --host 0.0.0.0 \
+                --port 8000
+
+          ports:
+            - name: backend-http
+              containerPort: 8000
+
+          envFrom:
+            - configMapRef:
+                name: backend-config
+
+            - secretRef:
+                name: backend-secret
+
+          env:
+            - name: PYTHONPATH
+              value: /runtime/python:/runtime
+
+            - name: PYTHONUNBUFFERED
+              value: "1"
+
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+
+            - name: PROMETHEUS_URL
+              value: >-
+                http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+
+            - name: RUN_INFERENCE_ON_UPLOAD
+              value: "false"
+
+            - name: DISTRIBUTED_PROCESSING_ENABLED
+              value: "false"
+
+            - name: TELEGRAM_ENABLED
+              value: "false"
+
+          volumeMounts:
+            - name: backend-runtime
+              mountPath: /runtime
+
+            - name: backend-data
+              mountPath: /data
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: backend-http
+            failureThreshold: 180
+            periodSeconds: 2
+            timeoutSeconds: 2
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: backend-http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: backend-http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "160Mi"
+
+            limits:
+              cpu: "750m"
+              memory: "384Mi"
+
+      volumes:
+        - name: backend-runtime
+          emptyDir:
+            sizeLimit: 512Mi
+
+        - name: backend-data
+          emptyDir:
+            sizeLimit: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge-node-backend-canary-02
+  namespace: edge-monitoring
+spec:
+  type: ClusterIP
+
+  selector:
+    app: edge-node-canary-02
+
+  ports:
+    - name: backend-http
+      port: 8000
+      targetPort: backend-http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge-node-worker-canary-02
+  namespace: edge-monitoring
+spec:
+  type: ClusterIP
+
+  selector:
+    app: edge-node-canary-02
+
+  ports:
+    - name: worker-http
+      port: 8002
+      targetPort: worker-http

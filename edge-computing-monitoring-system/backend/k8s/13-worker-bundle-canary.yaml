@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-bundle-canary
+  namespace: edge-monitoring
+  labels:
+    app: edge-worker-bundle-canary
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: edge-worker-bundle-canary
+
+  template:
+    metadata:
+      labels:
+        app: edge-worker-bundle-canary
+
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: rpi3-01
+
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 20
+
+      containers:
+        - name: worker
+          image: edge-node-bundle:ha-canary-v1
+          imagePullPolicy: Never
+
+          command:
+            - uvicorn
+
+          args:
+            - worker_app.main:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8002"
+
+          ports:
+            - name: worker-http
+              containerPort: 8002
+
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: worker-http
+            failureThreshold: 60
+            periodSeconds: 2
+            timeoutSeconds: 2
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: worker-http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: worker-http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+
+            limits:
+              cpu: "300m"
+              memory: "192Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker-bundle-canary
+  namespace: edge-monitoring
+spec:
+  type: ClusterIP
+
+  selector:
+    app: edge-worker-bundle-canary
+
+  ports:
+    - name: worker-http
+      port: 8002
+      targetPort: worker-http

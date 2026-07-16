@@ -1,0 +1,41 @@
+# syntax=docker/dockerfile:1
+
+FROM edge-worker:v1 AS builder
+
+WORKDIR /build
+
+COPY requirements/backend-extra.txt /tmp/backend-extra.txt
+
+RUN mkdir -p /bundle/python \
+    && python -m pip install \
+      --no-cache-dir \
+      --no-compile \
+      --target /bundle/python \
+      -r /tmp/backend-extra.txt
+
+COPY app /bundle/app
+
+RUN find /bundle \
+      -type d -name '__pycache__' \
+      -prune -exec rm -rf '{}' + \
+    && find /bundle \
+      -type f \( -name '*.pyc' -o -name '*.pyo' \) \
+      -delete \
+    && tar -C /bundle \
+      -czf /backend-runtime.tar.gz \
+      .
+
+FROM edge-worker:v1
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+RUN mkdir -p /opt/backend
+
+COPY --from=builder \
+  /backend-runtime.tar.gz \
+  /opt/backend/backend-runtime.tar.gz
+
+CMD ["uvicorn", "worker_app.main:app", "--host", "0.0.0.0", "--port", "8002"]

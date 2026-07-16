@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+
+FROM edge-worker:v1
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+COPY requirements/backend-extra.txt /tmp/backend-extra.txt
+
+RUN --mount=type=cache,id=edge-node-pip-cache,target=/root/.cache/pip \
+    python -m pip install \
+      --no-compile \
+      -r /tmp/backend-extra.txt \
+    && find /usr/local/lib/python3.13/site-packages \
+      -type d -name '__pycache__' \
+      -prune -exec rm -rf '{}' + \
+    && find /usr/local/lib/python3.13/site-packages \
+      -type f \( -name '*.pyc' -o -name '*.pyo' \) \
+      -delete \
+    && rm -f /tmp/backend-extra.txt
+
+COPY app ./app
+
+CMD ["uvicorn", "worker_app.main:app", "--host", "0.0.0.0", "--port", "8002"]

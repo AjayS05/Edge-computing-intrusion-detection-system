@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-ha-canary
+  namespace: edge-monitoring
+  labels:
+    app: edge-backend-ha-canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edge-backend-ha-canary
+  template:
+    metadata:
+      labels:
+        app: edge-backend-ha-canary
+    spec:
+      serviceAccountName: backend-kubernetes-reader
+
+      nodeSelector:
+        kubernetes.io/hostname: rpi3-01
+
+      terminationGracePeriodSeconds: 30
+
+      containers:
+        - name: backend
+          image: edge-backend:ha-canary-v1
+          imagePullPolicy: Never
+
+          ports:
+            - name: http
+              containerPort: 8000
+
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secret
+
+          volumeMounts:
+            - name: backend-data
+              mountPath: /data
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 30
+            periodSeconds: 2
+            timeoutSeconds: 2
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "750m"
+              memory: "512Mi"
+
+      volumes:
+        - name: backend-data
+          emptyDir:
+            sizeLimit: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-ha-canary
+  namespace: edge-monitoring
+spec:
+  type: ClusterIP
+  selector:
+    app: edge-backend-ha-canary
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http

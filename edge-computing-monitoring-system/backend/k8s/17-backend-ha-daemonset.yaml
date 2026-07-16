@@ -1,0 +1,161 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: backend-ha
+  namespace: edge-monitoring
+  labels:
+    app: backend-ha
+    component: backend
+spec:
+  selector:
+    matchLabels:
+      app: backend-ha
+
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+
+  template:
+    metadata:
+      labels:
+        app: backend-ha
+        component: backend
+        deployment-role: ha
+
+    spec:
+      serviceAccountName: backend-kubernetes-reader
+
+      nodeSelector:
+        piwatch.io/backend-node: "true"
+
+      terminationGracePeriodSeconds: 30
+
+      containers:
+        - name: backend
+          image: edge-node-bundle:ha-v1
+          imagePullPolicy: Never
+
+          command:
+            - /bin/sh
+            - -c
+
+          args:
+            - |
+              set -eu
+
+              echo "Extracting backend runtime..."
+
+              find /runtime \
+                -mindepth 1 \
+                -maxdepth 1 \
+                -exec rm -rf {} +
+
+              tar -xzf \
+                /opt/backend/backend-runtime.tar.gz \
+                -C /runtime
+
+              echo "Starting PiWatch backend..."
+
+              exec uvicorn app.main:app \
+                --host 0.0.0.0 \
+                --port 8000
+
+          ports:
+            - name: backend-http
+              containerPort: 8000
+              protocol: TCP
+
+          envFrom:
+            - configMapRef:
+                name: backend-config
+
+            - secretRef:
+                name: backend-secret
+
+          env:
+            - name: PYTHONPATH
+              value: /runtime/python:/runtime
+
+            - name: PYTHONUNBUFFERED
+              value: "1"
+
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+
+            - name: DATA_DIRECTORY
+              value: /data
+
+            - name: PROMETHEUS_URL
+              value: >-
+                http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+
+          volumeMounts:
+            - name: backend-runtime
+              mountPath: /runtime
+
+            - name: backend-data
+              mountPath: /data
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: backend-http
+            failureThreshold: 180
+            periodSeconds: 2
+            timeoutSeconds: 2
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: backend-http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: backend-http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "160Mi"
+
+            limits:
+              cpu: "750m"
+              memory: "384Mi"
+
+      volumes:
+        - name: backend-runtime
+          emptyDir:
+            sizeLimit: 512Mi
+
+        - name: backend-data
+          emptyDir:
+            sizeLimit: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-ha-internal
+  namespace: edge-monitoring
+  labels:
+    app: backend-ha
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+
+  selector:
+    app: backend-ha
+
+  ports:
+    - name: http
+      port: 8000
+      targetPort: backend-http
+      protocol: TCP
