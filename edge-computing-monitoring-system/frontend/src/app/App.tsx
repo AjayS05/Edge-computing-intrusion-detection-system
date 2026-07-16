@@ -23,6 +23,7 @@ const PAGE_TITLES: Record<PageKey, string> = {
   alerts: "Alerts",
   storage: "Storage",
   modelDataset: "Model & Dataset",
+  telegram: "Telegram",
   clusterPerformance: "Cluster Performance",
 };
 
