@@ -360,4 +360,4 @@ The Telegram feature is ready for demonstration when all of the following are tr
 - exactly one notification reaches the correct Telegram chat;
 - notification delivery state is linked to the event ID;
 - no Telegram-specific frontend UI is required or presented as part of the implementation; and
-- screenshots contain no credentials or sensitive identifiers.
+- screenshots contain no credentials or sensitive identifiers
