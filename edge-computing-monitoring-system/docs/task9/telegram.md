@@ -25,9 +25,9 @@ Unlike the frontend, Telegram does not require a separate application or service
 
 ## 3. Telegram Architecture
 
-![Telegram Architecture](assets/telegram/telegram-architecture.png)
+![Telegram Architecture](assets/telegram/telegram-notification.png)
 
-**Figure 1. Telegram notification workflow**
+**Figure 1. Telegram notification**
 
 The notification flow is:
 
@@ -324,14 +324,6 @@ backend/
 └── backend-secret
 ```
 
----
 
-## 13. Screenshots
-
- Telegram Alert Received
-
-```
-assets/telegram/telegram-alert.png
-```
 
 </article>
