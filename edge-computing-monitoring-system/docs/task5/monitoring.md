@@ -258,7 +258,17 @@ The following screenshot may be used as read-only availability evidence. Crop ou
 
 ---
 
-## 4. FastAPI monitoring integration
+## 4. Prometheus collection and monitoring flow
+
+After Node Exporter was verified on Pi5, Pi4, and the eight Pi3 workers, Prometheus was configured to scrape the metrics exposed on port `9100`.
+
+Prometheus runs inside the K3s `monitoring` namespace and collects metrics from all Raspberry Pi hosts every 15 seconds. It stores the data as time-series metrics, supports PromQL queries, and evaluates alert rules.
+
+The FastAPI backend does not query Node Exporter directly. Instead, it queries Prometheus through the internal Kubernetes service:
+
+```text
+http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+## 5. FastAPI monitoring integration
 
 The FastAPI backend queries Prometheus and returns normalized data for the frontend.
 
@@ -336,7 +346,7 @@ HTTP/1.1 200 OK
 
 ---
 
-## 5. Backend health thresholds
+## 6. Backend health thresholds
 
 | Resource | Warning | Critical |
 |---|---:|---:|
@@ -356,7 +366,7 @@ Application-level alerts include:
 
 ---
 
-## 6. React frontend integration
+## 7. React frontend integration
 
 The React frontend calls the monitoring endpoint every five seconds. A manual refresh button executes the same request immediately.
 
