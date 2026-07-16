@@ -101,9 +101,9 @@ Username:
 admin
 ```
 
-Do not store the administrator password in Git or screenshots.
 
----
+
+
 
 
 ---
