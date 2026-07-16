@@ -31,7 +31,7 @@ This benchmark uses **Dr. Christian Baun's Task Distributor** — the same tool 
 
 The task distributor splits a POV-Ray scene into horizontal image strips and distributes them across worker nodes. The process has three phases which directly map to Amdahl's serial and parallel fractions:
 
-![Workflow Task Distributor Baun](images/baun_povray.png)
+[![Workflow Task Distributor Baun](images/baun_povray.png)](images/baun_povray.png)
 
 #### Phase 1 — 1st Sequential Part (master only)
 - Master creates a locfile on the NFS shared volume
@@ -77,7 +77,7 @@ The stacked bar charts show three components per run:
 - **Red** — time master spent setting up SSH connections and lockfile
 
 The speedup bars show T1/Tn — how much faster N workers is compared to 1 worker.
-![Task Distributor 8 Node Result](images/task_distributor.png)
+[![Task Distributor 8 Node Result](images/task_distributor.png)](images/task_distributor.png)
 
 #### What the results show
 
@@ -208,7 +208,7 @@ Rather than increasing the number of physical machines, the workload granularity
 
 #### Results
 The graph shows us the results of Speedup and Walltime with 32 cores. 
-![Task Distributor 32 Cores](images/task_distributor_32_cores.png)
+[![Task Distributor 32 Cores](images/task_distributor_32_cores.png)](images/task_distributor_32_cores.png)
 
 The overall behaviour follows the same trend observed in the original benchmark.
 
@@ -254,7 +254,7 @@ The measured wall-clock time includes:
 
 Unlike MPI, these communication costs are included in every task execution and therefore become part of the measured runtime.
 ### Results
-![Celery Results](images/celery.png)
+[![Celery Results](images/celery.png)](images/celery.png)
 
 For 10K, 100K and 1M samples, execution time remains almost constant regardless of the number of workers. The workload is simply too small for parallel execution to offset the overhead of task scheduling and communication. Consequently, the measured speedup remains close to one—or even below one—demphasizing Amdahl's Law where the fixed overhead dominates the computation.
 
@@ -282,3 +282,23 @@ Several improvements could reduce these communication costs:
 - Implement dynamic load balancing so that idle workers can immediately receive additional work rather than waiting for fixed task assignments to complete.
 
 Overall, the Celery benchmark illustrates an important trade-off in distributed systems. Frameworks such as Celery greatly simplify task distribution and fault tolerance, but this convenience introduces non-negligible scheduling and messaging overhead. For coarse-grained workloads, these costs become relatively insignificant and useful speedup is achieved. For fine-grained workloads, however, the framework overhead dominates, limiting scalability compared with lighter-weight communication mechanisms such as MPI or ZeroMQ.
+
+## How to run
+### Task Distributor
+Place the ```task-distributor-master.sh``` and ```task-distributor-worker.sh``` in the master node. Change the shared folder in ```task-distributor-master.sh``` accordingly. Then, to execute 10 runs with 8 or 32 workers use the following code:
+```
+for workers in 1 2 4 8 16 32; do
+    for i in $(seq 1 2); do
+        echo "=== Workers: $workers | Run: $i/2 ==="
+        for j in 101 102 103 104 105 106 107 108; do
+            ssh pi3@192.168.50.$j "rm -rf /tmp/worker* /tmp/blob*" &
+        done
+        wait
+        sleep 1
+        ./run_one.sh 800 600 $workers
+    done
+done
+```
+
+### Celery Benchmark
+Run the ```benchmark_celery.py``` in the master node. Change the IPS accordingly. 

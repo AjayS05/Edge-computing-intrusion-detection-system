@@ -60,6 +60,7 @@ nav:
         # - Hardware Components: task1/hardware.md
         - System Architecture: task1/architecture.md
         - Execution Flow: task1/execution_flow.md
+        - PXE Setup: task1/network.md
       # - Raspberry Pi Cluster: task1/cluster.md
       # - PXE Boot: task1/pxe.md
       # - Operating System Setup: task1/os.md
