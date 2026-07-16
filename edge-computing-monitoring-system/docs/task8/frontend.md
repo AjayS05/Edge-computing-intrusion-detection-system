@@ -228,7 +228,7 @@ The view should identify:
 The current camera sender captures frames on the Raspberry Pi 4 and periodically uploads them to the backend. The page displays results returned by the backend; it does not connect directly to the camera stream.
 
 <!-- SCREENSHOT: Live Detection page showing the latest annotated frame -->
-![Live Detection page](../images/frontend/frontend-live-detection.png)
+![Live Detection page](images/live_detection.png)
 
 *Figure 2: Live Detection view showing the newest processed frame and its detection metadata.*
 
