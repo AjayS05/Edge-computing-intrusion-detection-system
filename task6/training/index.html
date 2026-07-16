@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#model-training" class="md-skip">
+        <a href="#data-collection" class="md-skip">
           Skip to content
         </a>
       
@@ -788,10 +788,32 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#training-execution-cloud-workflow" class="md-nav__link">
+  <a href="#dataset-architecture-specifications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Training Execution &amp; Cloud Workflow
+        Dataset Architecture &amp; Specifications
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessing-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preprocessing Configurations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#augmentation-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Augmentation Settings
       
     </span>
   </a>
@@ -1448,10 +1470,32 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#training-execution-cloud-workflow" class="md-nav__link">
+  <a href="#dataset-architecture-specifications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Training Execution &amp; Cloud Workflow
+        Dataset Architecture &amp; Specifications
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessing-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preprocessing Configurations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#augmentation-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Augmentation Settings
       
     </span>
   </a>
@@ -1475,11 +1519,39 @@
 
 
 
+<h1 id="data-collection">Data Collection</h1>
+<p>This section covers our custom dataset acquisition, structural distribution, preprocessing filters, and environmental augmentation strategies designed to prepare our images for model ingestion.</p>
+<h2 id="dataset-architecture-specifications">Dataset Architecture &amp; Specifications</h2>
+<p>To ensure the security model is completely reliable when running live on the edge, we put together a large-scale, target-specific custom dataset. </p>
+<ul>
+<li><strong>Dataset Footprint &amp; Sources:</strong> Organized a high-density archive containing over <strong>37,000+ total images</strong> covering our core security classes. To achieve this scale and ensure high visual diversity, the data was aggregated from multiple sources:</li>
+<li><strong>Roboflow Universe:</strong> Sourced domain-specific public datasets related to intrusion detection and security monitoring.</li>
+<li><strong>Kaggle:</strong> Integrated specialized, publicly available security and surveillance image datasets to introduce unique environments.</li>
+<li><strong>COCO Dataset:</strong> Extracted baseline objects (such as people and backpacks) from the massive Common Objects in Context (COCO) dataset to strengthen the model's general object recognition capabilities.</li>
+<li><strong>Dataset Distribution Split:</strong> The full dataset is strictly partitioned to maintain independent evaluation boundaries:</li>
+<li><strong>Training Set:</strong> 70% (Used to build model paths)</li>
+<li><strong>Validation Set:</strong> 15% (Used to check accuracy during runs)</li>
+<li><strong>Test Set:</strong> 15% (Used for the final model statistics)</li>
+<li><strong>Labels &amp; Schema:</strong> All images from these varied sources were uploaded to <strong>Roboflow</strong>, which served as our central data management platform. The annotations, bounding box coordinates, and folder splits were standardized there and exported in the YOLO format, linked via the central <code>data.yaml</code> configuration file.</li>
+</ul>
+<h2 id="preprocessing-configurations">Preprocessing Configurations</h2>
+<p>Before passing data to the model, two mandatory image filters were configured globally to standardize the camera frames:
+* <strong>Auto-Orient:</strong> Applied across all samples to strip camera orientation metadata, making sure images stay right-side up.
+* <strong>Resize Adjustment:</strong> Applied a uniform <strong>Stretch to 640x640 pixels</strong> to match our target neural network input dimension perfectly.</p>
+<h2 id="augmentation-settings">Augmentation Settings</h2>
+<p>We deliberately generated multiple modified versions of our training images using software transformations within Roboflow. This prepares the AI model to handle tough, unpredictable real-world environments without making mistakes:</p>
+<ul>
+<li><strong>Outputs per Training Example:</strong> Generated <strong>3 augmented variations</strong> for every 1 original training image to aggressively expand our training patterns.</li>
+<li><strong>Horizontal Flip:</strong> Flipped images horizontally to ensure the model detects threats moving from both left-to-right and right-to-left directions.</li>
+<li><strong>Exposure Adjustments:</strong> Shifted image brightness randomly <strong>between -15% and +15%</strong>. This simulates low-lighting levels, dark rooms, shadow blocks, or daytime outdoor sun glare, ensuring high sensitivity in poor visibility.</li>
+<li><strong>Multi-Angle Variations:</strong> Rotated and tilted angles to train the model to recognize targets even if the security camera is mounted sideways, skewed, or high up on ceilings.</li>
+</ul>
 <h1 id="model-training">Model Training</h1>
 <p>This section outlines our cloud-based training execution environment, physical hardware acceleration, execution lifecycle, and weights optimization workflow.</p>
 <h2 id="training-execution-cloud-workflow">Training Execution &amp; Cloud Workflow</h2>
 <p>To train the model efficiently without bottlenecking local hardware, the entire training pipeline was offloaded to cloud-based hardware acceleration:</p>
 <ul>
+<li><strong>Model Selection &amp; Architecture:</strong> Utilized the <strong>YOLOv8 Nano (yolov8n)</strong> architecture. This lightweight, anchor-free model has a tiny memory footprint (approx. 3.2 million parameters), making it the ideal candidate for high-speed, real-time edge deployment on resource-constrained hardware.</li>
 <li><strong>Notebook Instance &amp; Platform:</strong> Executed cleanly inside a dedicated cloud notebook named <strong><code>Cloud Model Final</code></strong> hosted directly on the <strong>Kaggle</strong> infrastructure. Kaggle provided the necessary pre-configured environment, dependencies, and compute limits needed for this extensive workload.</li>
 <li><strong>Hardware Acceleration Engine:</strong> Scaled execution loops using parallelized data streams across <strong>2 x NVIDIA Tesla T4 GPUs</strong> (a dual graphics card acceleration setup provided by Kaggle's cloud environment).</li>
 <li><strong>Execution Lifecycle:</strong> The training pipeline completed a deep training run over <strong>10 continuous processing hours</strong>. We configured hyperparameters such as a tailored batch size and an optimized learning rate to ensure stable gradient descent across all epochs.</li>

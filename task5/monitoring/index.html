@@ -744,10 +744,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-fastapi-monitoring-integration" class="md-nav__link">
+  <a href="#4-prometheus-collection-and-monitoring-flow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. FastAPI monitoring integration
+        4. Prometheus collection and monitoring flow
       
     </span>
   </a>
@@ -755,10 +755,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-backend-health-thresholds" class="md-nav__link">
+  <a href="#6-backend-health-thresholds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Backend health thresholds
+        6. Backend health thresholds
       
     </span>
   </a>
@@ -766,10 +766,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-react-frontend-integration" class="md-nav__link">
+  <a href="#7-react-frontend-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. React frontend integration
+        7. React frontend integration
       
     </span>
   </a>
@@ -1669,10 +1669,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-fastapi-monitoring-integration" class="md-nav__link">
+  <a href="#4-prometheus-collection-and-monitoring-flow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. FastAPI monitoring integration
+        4. Prometheus collection and monitoring flow
       
     </span>
   </a>
@@ -1680,10 +1680,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-backend-health-thresholds" class="md-nav__link">
+  <a href="#6-backend-health-thresholds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Backend health thresholds
+        6. Backend health thresholds
       
     </span>
   </a>
@@ -1691,10 +1691,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-react-frontend-integration" class="md-nav__link">
+  <a href="#7-react-frontend-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. React frontend integration
+        7. React frontend integration
       
     </span>
   </a>
@@ -1950,9 +1950,17 @@
 <p>The following screenshot may be used as read-only availability evidence. Crop out any failed Ansible attempt and retain only the command and ten <code>UP</code> results.</p>
 <p><img alt="Pi5, Pi4, and eight Pi3 Node Exporters reporting UP" src="../images/node_exporter-metrics.png" /></p>
 <hr />
-<h2 id="4-fastapi-monitoring-integration">4. FastAPI monitoring integration</h2>
-<p>The FastAPI backend queries Prometheus and returns normalized data for the frontend.</p>
-<div class="language-http highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="err">GET /api/v1/monitoring/overview</span>
+<h2 id="4-prometheus-collection-and-monitoring-flow">4. Prometheus collection and monitoring flow</h2>
+<p>After Node Exporter was verified on Pi5, Pi4, and the eight Pi3 workers, Prometheus was configured to scrape the metrics exposed on port <code>9100</code>.</p>
+<p>Prometheus runs inside the K3s <code>monitoring</code> namespace and collects metrics from all Raspberry Pi hosts every 15 seconds. It stores the data as time-series metrics, supports PromQL queries, and evaluates alert rules.</p>
+<p>The FastAPI backend does not query Node Exporter directly. Instead, it queries Prometheus through the internal Kubernetes service:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>## 5. FastAPI monitoring integration
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>The FastAPI backend queries Prometheus and returns normalized data for the frontend.
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>```http
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>GET /api/v1/monitoring/overview
 </span></code></pre></div>
 <p>The endpoint returns:</p>
 <ul>
@@ -2003,7 +2011,7 @@ Suggested file: <code>images/monitoring/monitoring-api-response.png</code><br />
 Add a successful JSON response from <code>/api/v1/monitoring/overview</code>.</p>
 </blockquote>
 <hr />
-<h2 id="5-backend-health-thresholds">5. Backend health thresholds</h2>
+<h2 id="6-backend-health-thresholds">6. Backend health thresholds</h2>
 <table>
 <thead>
 <tr>
@@ -2045,7 +2053,7 @@ Add a successful JSON response from <code>/api/v1/monitoring/overview</code>.</p
 <li>Critical temperature</li>
 </ul>
 <hr />
-<h2 id="6-react-frontend-integration">6. React frontend integration</h2>
+<h2 id="7-react-frontend-integration">7. React frontend integration</h2>
 <p>The React frontend calls the monitoring endpoint every five seconds. A manual refresh button executes the same request immediately.</p>
 <p>The interface displays:</p>
 <ul>

@@ -1021,17 +1021,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why-seaweedfs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why SeaweedFS
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#storage-architecture-initial-deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1747,17 +1736,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why-seaweedfs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why SeaweedFS
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#storage-architecture-initial-deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2038,15 +2016,6 @@
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>...
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>rpi3-08                192.168.50.108
 </span></code></pre></div>
-<hr />
-<h2 id="why-seaweedfs">Why SeaweedFS</h2>
-<p>We evaluated three options — MinIO (distributed mode), SeaweedFS, and Longhorn — and chose SeaweedFS for these reasons:</p>
-<ul>
-<li>Pi 3 nodes only have 1GB RAM each. SeaweedFS volume servers run comfortably at ~100–256MB RAM, whereas MinIO distributed mode requires 512MB+ per instance.</li>
-<li>SeaweedFS has a native S3-compatible API via its S3 gateway component.</li>
-<li>It supports topology-aware replication across nodes out of the box.</li>
-<li>Official ARM64 Docker images are available.</li>
-</ul>
 <hr />
 <h2 id="storage-architecture-initial-deployment">Storage Architecture (Initial Deployment)</h2>
 <p>Since all Pi 3s are diskless (PXE boot), we could not use <code>local-path</code> storage at first. Instead:</p>
