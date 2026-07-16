@@ -68,7 +68,7 @@ ansible --version
 From Pi5, verify SSH access to one Pi3 worker before running the playbook:
 
 ```bash
-ssh pi@192.168.50.101
+ssh pi3@192.168.50.101
 ```
 
 Exit the remote session after confirming access:
@@ -170,7 +170,7 @@ ansible-playbook -i inventory.ini install-node-exporter.yml \
 After deployment, confirm the service on a Pi3 worker:
 
 ```bash
-ssh pi@192.168.50.101 \
+ssh pi3@192.168.50.101 \
   "systemctl is-enabled prometheus-node-exporter && systemctl is-active prometheus-node-exporter"
 ```
 
