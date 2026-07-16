@@ -14,7 +14,7 @@ This document outlines the core roles, task distributions, and contact informati
 | **Dawood A.** | <ul><li>**Task 9:** Telegram Notification Gateway</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 dawood.a@example.com<br>🆔 ID: 100008<br>🔗 [GitHub](https://github.com/) |
 | **Madhusudan** | <ul><li>**Task 6:** Object Detection & Training</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 madhusudan@example.com<br>🆔 ID: 100005<br>🔗 [GitHub](https://github.com/) |
 | **Muhiba Maheen** | <ul><li>**Task 8:** Presentation Frontend</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 muhiba.m@example.com<br>🆔 ID: 100007<br>🔗 [GitHub](https://github.com/) |
-| **Riya Chauhan** | <ul><li>**Task 1:** Infra Setup & PXE Boot</li><li>**Task 5:** Centralized Monitoring</li><li>**Task 7:** HA Distributed Backend (k3s)</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 riya.c@example.com<br>🆔 ID: 100003<br>🔗 [GitHub](https://github.com/) |
+| **Riya Chauhan** | <ul><li>**Task 1:** Infra Setup & PXE Boot</li><li>**Task 5:** Centralized Monitoring</li><li>**Task 7:** HA Distributed Backend (k3s)</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 riya.chauhan@stud.fra-uas.de<br>🆔 ID: 1614156<br>🔗 [GitHub](https://github.com/) |
 | **Shehroz Khan** | <ul><li>**Task 8:** Presentation Frontend</li><li>**Task 10:** Documentation & Poster</li></ul> | 📧 shehroz.k@example.com<br>🆔 ID: 100006<br>🔗 [GitHub](https://github.com/) |
 
 ---
