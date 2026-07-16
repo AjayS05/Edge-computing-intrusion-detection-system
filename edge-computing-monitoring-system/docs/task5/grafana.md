@@ -445,23 +445,3 @@ Some panels may show `N/A` when a metric is not supported by a particular Raspbe
 
 ---
 
-## Exporting the Dashboard
-
-Export the completed dashboard so another team member can import the exact panels, variables, thresholds, and layout without recreating them manually.
-
-1. Open the completed dashboard.
-2. Select **Dashboard settings**.
-3. Select **JSON model** or **Export**, depending on the Grafana version.
-4. Enable the option to make the dashboard importable on another instance, if displayed.
-5. Save the file as:
-
-```text
-grafana/raspberry-pi-monitoring-dashboard.json
-```
-
-To import the saved file later:
-
-1. Open **Dashboards → New → Import**.
-2. Upload `raspberry-pi-monitoring-dashboard.json`.
-3. Select the Prometheus data source.
-4. Select **Import**.
