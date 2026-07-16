@@ -26,19 +26,42 @@ The system provides infrastructure-level visualization through Grafana and appli
 
 ---
 
-## 2.Monitoring Components and Responsibilities
+## 2. Monitoring Components and Responsibilities
+
+The monitoring system was implemented in a clear flow. First, Node Exporter was installed directly on the Raspberry Pi hosts using Ansible. Each exporter exposes Linux system metrics on port `9100`.
+
+Prometheus then collects these metrics from Pi5, Pi4, and the eight Pi3 workers. It stores the values as time-series data, supports PromQL queries, and evaluates alert rules for node failures, high resource usage, and temperature problems.
+
+Grafana uses Prometheus as its data source and presents the collected metrics through dashboards, graphs, gauges, and status panels. This makes it easier to view both current and historical cluster performance.
+
+The same Prometheus data is also queried by the FastAPI backend and converted into simplified JSON for the React monitoring and alerts pages.
+
+```text
+Raspberry Pi hosts
+        ↓
+Node Exporter :9100
+        ↓
+Prometheus
+   ├── Alertmanager
+   ├── Grafana
+   └── FastAPI backend
+            ↓
+      React frontend
+```
 
 The existing Ansible-installed Node Exporters are retained as Linux services on the Raspberry Pi hosts. The Node Exporter dependency included in `kube-prometheus-stack` is disabled to prevent two exporters from competing for port `9100`.
 
 | Component | Responsibility |
 |---|---|
 | Node Exporter | Exposes Linux host metrics on port `9100`. |
-| Prometheus | Scrapes, stores, and queries time-series metrics. |
-| Grafana | Displays current and historical metrics. |
+| Prometheus | Scrapes, stores, queries, and evaluates time-series metrics. |
+| Grafana | Displays current and historical metrics through dashboards. |
 | Alertmanager | Manages alerts produced by Prometheus rules. |
 | kube-state-metrics | Exposes Kubernetes workload and object metrics. |
 | FastAPI | Converts Prometheus data into frontend-ready JSON. |
 | React frontend | Displays cluster health, node metrics, and alerts. |
+
+For detailed setup and deployment steps, see [Prometheus](prometheus.md) and [Grafana](grafana.md).
 
 ---
 
@@ -226,7 +249,7 @@ The final monitoring addresses are:
 | Pi4 sensor node | `192.168.50.144:9100` |
 | Pi3-01 to Pi3-08 | `192.168.50.101:9100` to `192.168.50.108:9100` |
 
-Only `192.168.50.1.200:9100` is used for Pi5 so the same device is not counted twice through another network address.
+Only `192.168.50.1:9100` is used for Pi5 so the same device is not counted twice through another network address.
 
 The following screenshot may be used as read-only availability evidence. Crop out any failed Ansible attempt and retain only the command and ten `UP` results.
 
