@@ -31,12 +31,3 @@ To transition the project from cloud training onto our physical edge device (`pi
 - **Core Library Installation:** Loaded the necessary vision tools and engine libraries required to process input frames directly through the Pi's processor.
 - **Thermal & Resource Tuning:** Modified system settings to ensure the Pi handles steady image processing loops smoothly without overheating or lagging.
 
-## 3. Production Runtime Configuration
-
-The production streaming software is housed completely within the **`edge-camera-sender-runtime/`** deployment package.
-
-```text
-/home/pi4/
- ├── best_final.pt                 <-- Final Flashed Model Weights
- ├── live_edge_threat2.py         <-- Core Multi-Class Inference Script
- └── edge-camera-sender-runtime/  <-- Live System Streaming Package
