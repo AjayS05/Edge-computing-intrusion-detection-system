@@ -22,4 +22,4 @@ Together, these components provide a scalable, modular, and energy-efficient edg
 
 ## App URL
 
-[PiWatch]([https://example.com](https://edge-computing-intrusion-detection.vercel.app/))
+[PiWatch]([(https://edge-computing-intrusion-detection.vercel.app/)])
