@@ -152,12 +152,12 @@ This section shows how were the execution automated.
 ```
 ## Monte Carlo Pi
 ![MonteCarlopi](images/MPI_mcpi_boxplots.png)
-- For N=1 000 and N=100 000, we can see that even though the speed up increases from 1 to 8 proc, it drastically drops at 8 and keeps getting worse until 32 proc. This is because the problem size is too low for an efficient parallelization(Amdahl's law). In fact, from 8 proc and on, the work is not done within one single worker node, thus the communication takes a large proportion of the run-time.
+- For N=1 000 and N=100 000, we can see that even though the speed up increases from 1 to 4 proc, it drastically drops at 8 and keeps getting worse until 32 proc. This is because the problem size is too low for an efficient parallelization(Amdahl's law). In fact, from 8 proc and on, the work is not done within one single worker node, thus the communication takes a large proportion of the run-time.
 - For N=10 000 000 and N=1 000 000 000, the sequential part is much less important, so the parallelization becomes more efficient. In fact, the more workers the better the speedup gets, matter of fact it peaked at 21 with $np = 32 and N = 1 000 000 000(Gustafson's law).
 
 ## Matrix Multiplication
 ![Matrix Multiplication](images/MPI_mm_boxplots.png)
-- Same remarks as in the previous example. Amdahl's law from N=50 to N=200. Gustafson's law from N=400 until N=800.
+- Same remarks as in the previous example. Amdahl's law from N=50 to N=100. Gustafson's law from N=400 until N=800.
 - The values are much more sparse. In fact, in the previous example, the worker cores only send the number of points inside the circumscribed circle to the master node. Whereas in this example, the worker nodes send a complete row after its computation. Thus the communication takes a larger proportion. This leads to a sparser graph and a lower peak of the speedup(16).
 
 

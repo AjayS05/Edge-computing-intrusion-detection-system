@@ -38,7 +38,7 @@ For each one of these configurations the theoretical maximum value of N was comp
 ![Boxplot 4 nodes](images/boxplot_rp3_16.png)
 - Firstly, the Gflops values are in general better. In fact, now we use 4 nodes so it's expected to reach higher values of Gflops. Secondly, the general behavior is much more expected: increasing until the limit where it drops.
 
-![Boxplot 8 nodes](images/boxplot_rp3_16.png)
+![Boxplot 8 nodes](images/boxplot_rp3_32.png)
 - Lastly, as expected, here we have the best Glfops values yet as we use all 8 worker nodes(peak at 17.3 for N=18000). Moreover, we can once again observe the expected behavior: increasing until the limit where it drops.
 
 - Finally, let's see the speedup that we achieved from 2 worker nodes all the way up to 4 worker nodes.
