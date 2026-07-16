@@ -13,6 +13,10 @@
         <link rel="canonical" href="https://yourdomain.com/task8/frontend/">
       
       
+        <link rel="prev" href="../../task7/high_availability/">
+      
+      
+        <link rel="next" href="../../task9/telegram/">
       
       
         
@@ -1004,18 +1008,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -1036,7 +1042,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1051,17 +1057,44 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../frontend_architecture.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend – PIWATCH
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    UI Architecture
+    Frontend – PIWATCH
   
 
     
@@ -1070,62 +1103,303 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ui.md" class="md-nav__link">
+      
         
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
-  <span class="md-ellipsis">
+  
     
   
-    User Interface Components
   
-
-    
-  </span>
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Overview
+      
+    </span>
+  </a>
   
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-role-in-the-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Role in the System
+      
+    </span>
+  </a>
   
-
-      </a>
-    </li>
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Technology Stack
+      
+    </span>
+  </a>
   
-
-              
-            
-              
-                
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-frontend-project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Frontend Project Structure
+      
+    </span>
+  </a>
   
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../dashboard.md" class="md-nav__link">
+    <nav class="md-nav" aria-label="4. Frontend Project Structure">
+      <ul class="md-nav__list">
         
+          <li class="md-nav__item">
+  <a href="#main-files-and-directories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main files and directories
+      
+    </span>
+  </a>
   
+</li>
+        
+      </ul>
+    </nav>
   
-  <span class="md-ellipsis">
-    
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-user-interface-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. User Interface Structure
+      
+    </span>
+  </a>
   
-    Real-time Event Dashboard
+    <nav class="md-nav" aria-label="5. User Interface Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main pages
+      
+    </span>
+  </a>
   
-
-    
-  </span>
+</li>
+        
+      </ul>
+    </nav>
   
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Dashboard
+      
+    </span>
+  </a>
   
-
-      </a>
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-live-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Live Detection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-event-history-and-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Event History and Evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-cluster-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Cluster Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Alerts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Storage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-model-and-dataset-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Model and Dataset Information
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-cluster-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Cluster Performance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-api-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. API Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. API Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frontend-facing-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend-facing endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-theme-and-responsive-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Theme and Responsive Design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. Local Development
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="17. Local Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-and-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install and run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Production build
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
