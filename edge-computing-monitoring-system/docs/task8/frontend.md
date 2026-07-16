@@ -206,7 +206,7 @@ Recommended dashboard information includes:
 - active warning and critical alerts.
 
 <!-- SCREENSHOT: Dashboard with status cards, recent events and system summary -->
-![Dashboard overview](../images/frontend/frontend-dashboard.png)
+![Dashboard overview](images/dashboard.png)
 
 *Figure 1: Dashboard overview with service status, node health and recent detection information.*
 
