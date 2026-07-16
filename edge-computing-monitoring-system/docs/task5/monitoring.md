@@ -28,28 +28,7 @@ The system provides infrastructure-level visualization through Grafana and appli
 
 ## 2. Monitoring Components and Responsibilities
 
-The monitoring system was implemented in a clear flow. First, Node Exporter was installed directly on the Raspberry Pi hosts using Ansible. Each exporter exposes Linux system metrics on port `9100`.
 
-Prometheus then collects these metrics from Pi5, Pi4, and the eight Pi3 workers. It stores the values as time-series data, supports PromQL queries, and evaluates alert rules for node failures, high resource usage, and temperature problems.
-
-Grafana uses Prometheus as its data source and presents the collected metrics through dashboards, graphs, gauges, and status panels. This makes it easier to view both current and historical cluster performance.
-
-The same Prometheus data is also queried by the FastAPI backend and converted into simplified JSON for the React monitoring and alerts pages.
-
-```text
-Raspberry Pi hosts
-        ↓
-Node Exporter :9100
-        ↓
-Prometheus
-   ├── Alertmanager
-   ├── Grafana
-   └── FastAPI backend
-            ↓
-      React frontend
-```
-
-The existing Ansible-installed Node Exporters are retained as Linux services on the Raspberry Pi hosts. The Node Exporter dependency included in `kube-prometheus-stack` is disabled to prevent two exporters from competing for port `9100`.
 
 | Component | Responsibility |
 |---|---|
