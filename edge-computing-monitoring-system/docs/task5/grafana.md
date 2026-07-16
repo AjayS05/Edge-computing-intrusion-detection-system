@@ -84,7 +84,7 @@ http://<K3S-NODE-IP>:30300
 For this deployment:
 
 ```text
-http://192.168.178.200:30300
+http://192.168.50.1:30300
 ```
 
 Retrieve the administrator password:
