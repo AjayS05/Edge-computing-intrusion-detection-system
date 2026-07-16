@@ -19,8 +19,6 @@ export type PageKey =
   | "monitoring"
   | "alerts"
   | "storage"
-  | "telegram"
-  | "modelDataset"
   | "clusterPerformance";
 
 type SidebarProps = {
@@ -40,8 +38,6 @@ const operations = [
 
 const platform = [
   { key: "storage", label: "Storage", icon: Database },
-  { key: "telegram", label: "Telegram", icon: Send },
-  { key: "modelDataset", label: "Model & Dataset", icon: Boxes },
   { key: "clusterPerformance", label: "Cluster Performance", icon: Cpu },
 ] as const;
 
