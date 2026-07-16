@@ -661,10 +661,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-final-architecture" class="md-nav__link">
+  <a href="#2monitoring-components-and-responsibilities" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Final architecture
+        2.Monitoring Components and Responsibilities
       
     </span>
   </a>
@@ -1614,10 +1614,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-final-architecture" class="md-nav__link">
+  <a href="#2monitoring-components-and-responsibilities" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Final architecture
+        2.Monitoring Components and Responsibilities
       
     </span>
   </a>
@@ -1779,7 +1779,7 @@
 <p>The system provides infrastructure-level visualization through Grafana and application-ready monitoring data through the FastAPI backend and React frontend.</p>
 <p><img alt="Raspberry Pi cluster monitoring architecture" src="../images/monitoring-architecture.png" /></p>
 <hr />
-<h2 id="2-final-architecture">2. Final architecture</h2>
+<h2 id="2monitoring-components-and-responsibilities">2.Monitoring Components and Responsibilities</h2>
 <p>The existing Ansible-installed Node Exporters are retained as Linux services on the Raspberry Pi hosts. The Node Exporter dependency included in <code>kube-prometheus-stack</code> is disabled to prevent two exporters from competing for port <code>9100</code>.</p>
 <table>
 <thead>
@@ -1823,9 +1823,6 @@
 <h2 id="3-node-exporter-deployment-with-ansible">3. Node Exporter deployment with Ansible</h2>
 <p>Node Exporter runs directly on each Raspberry Pi as a Linux systemd service and exposes host metrics on port <code>9100</code>. Ansible is run from Pi5 to install and configure the exporter consistently on the eight Pi3 workers.</p>
 <p>The Kubernetes Node Exporter component remains disabled because the host-level exporters already occupy port <code>9100</code>.</p>
-<blockquote>
-<p><strong>Safety note:</strong> Do not rerun the installation playbook merely to create documentation evidence when the exporters are already working. Use the read-only verification commands in Section 3.5. Run the playbook only when provisioning a new node, repairing a missing installation, or intentionally applying the configuration again.</p>
-</blockquote>
 <h3 id="31-prerequisites">3.1 Prerequisites</h3>
 <p>Install Ansible on Pi5:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>update

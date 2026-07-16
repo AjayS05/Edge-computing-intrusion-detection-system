@@ -1650,7 +1650,13 @@
 <li><strong>Core Library Installation:</strong> Loaded the necessary vision tools and engine libraries required to process input frames directly through the Pi's processor.</li>
 <li><strong>Thermal &amp; Resource Tuning:</strong> Modified system settings to ensure the Pi handles steady image processing loops smoothly without overheating or lagging.</li>
 </ul>
-
+<h2 id="3-production-runtime-configuration">3. Production Runtime Configuration</h2>
+<p>The production streaming software is housed completely within the <strong><code>edge-camera-sender-runtime/</code></strong> deployment package.</p>
+<p>```text
+/home/pi4/
+ ├── best_final.pt                 &lt;-- Final Flashed Model Weights
+ ├── live_edge_threat2.py         &lt;-- Core Multi-Class Inference Script
+ └── edge-camera-sender-runtime/  &lt;-- Live System Streaming Package</p>
 
 
 

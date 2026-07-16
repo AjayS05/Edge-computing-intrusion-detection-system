@@ -962,6 +962,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#celery-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Celery Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2259,6 +2270,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#celery-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Celery Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2330,7 +2352,7 @@
 <hr />
 <h3 id="how-task-distributor-works">How Task Distributor Works</h3>
 <p>The task distributor splits a POV-Ray scene into horizontal image strips and distributes them across worker nodes. The process has three phases which directly map to Amdahl's serial and parallel fractions:</p>
-<p><img alt="Workflow Task Distributor Baun" src="../images/baun_povray.png" /></p>
+<p><a href="../images/baun_povray.png"><img alt="Workflow Task Distributor Baun" src="../images/baun_povray.png" /></a></p>
 <h4 id="phase-1-1st-sequential-part-master-only">Phase 1 — 1st Sequential Part (master only)</h4>
 <ul>
 <li>Master creates a locfile on the NFS shared volume</li>
@@ -2399,7 +2421,7 @@
 <li><strong>Red</strong> — time master spent setting up SSH connections and lockfile</li>
 </ul>
 <p>The speedup bars show T1/Tn — how much faster N workers is compared to 1 worker.
-<img alt="Task Distributor 8 Node Result" src="../images/task_distributor.png" /></p>
+<a href="../images/task_distributor.png"><img alt="Task Distributor 8 Node Result" src="../images/task_distributor.png" /></a></p>
 <h4 id="what-the-results-show">What the results show</h4>
 <h5 id="200150-pure-amdahls-law-regime">200×150 — Pure Amdahl's Law regime</h5>
 <table>
@@ -2583,7 +2605,7 @@
 Rather than increasing the number of physical machines, the workload granularity is increased, allowing the scheduler to exploit the multicore CPUs of each Raspberry Pi.</p>
 <h4 id="results_1">Results</h4>
 <p>The graph shows us the results of Speedup and Walltime with 32 cores. 
-<img alt="Task Distributor 32 Cores" src="../images/task_distributor_32_cores.png" /></p>
+<a href="../images/task_distributor_32_cores.png"><img alt="Task Distributor 32 Cores" src="../images/task_distributor_32_cores.png" /></a></p>
 <p>The overall behaviour follows the same trend observed in the original benchmark.</p>
 <ul>
 <li>Small images (200×150, 400×300 and 800×600) continue to exhibit Amdahl's Law. Rendering each strip requires very little computation, while the overhead of launching additional SSH sessions, managing more worker processes and assembling a larger number of image strips dominates execution time. Increasing the worker count beyond four therefore reduces performance rather than improving it.</li>
@@ -2625,7 +2647,7 @@ Rather than increasing the number of physical machines, the workload granularity
 </ul>
 <p>Unlike MPI, these communication costs are included in every task execution and therefore become part of the measured runtime.</p>
 <h3 id="results_2">Results</h3>
-<p><img alt="Celery Results" src="../images/celery.png" /></p>
+<p><a href="../images/celery.png"><img alt="Celery Results" src="../images/celery.png" /></a></p>
 <p>For 10K, 100K and 1M samples, execution time remains almost constant regardless of the number of workers. The workload is simply too small for parallel execution to offset the overhead of task scheduling and communication. Consequently, the measured speedup remains close to one—or even below one—demphasizing Amdahl's Law where the fixed overhead dominates the computation.</p>
 <p>A different trend emerges for 10M and 50M samples. As the computational workload increases, communication becomes a much smaller fraction of the total runtime and the cluster begins to benefit from parallel execution. The best result is obtained for 50M samples using 32 workers, achieving approximately 2.68× speedup. This demonstrates Gustafson's Law: larger problem sizes improve parallel efficiency because the computation grows much faster than the communication overhead.</p>
 <p>However, the scaling is still far from linear.</p>
@@ -2663,6 +2685,8 @@ Rather than increasing the number of physical machines, the workload granularity
 </span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    done
 </span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>done
 </span></code></pre></div></p>
+<h3 id="celery-benchmark">Celery Benchmark</h3>
+<p>Run the <code>benchmark_celery.py</code> in the master node. Change the IPS accordingly. </p>
 
 
 
