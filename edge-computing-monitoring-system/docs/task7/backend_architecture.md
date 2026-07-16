@@ -122,25 +122,50 @@ The backend chooses a layout based on the number of healthy workers:
 <2        → full-frame fallback
 ```
 
-### Step 7 — Pi3 tile preprocessing
+### Step 7 — Distributed Image Preprocessing
 
-Tiles are sent to worker pods over HTTP. A worker can apply CLAHE, grayscale or identity processing, then returns the processed tile with checksum and latency metadata.
+The backend sends each image tile to a separate Raspberry Pi 3 worker through the Kubernetes headless Service.
+
+Each worker independently preprocesses its assigned tile using the configured preprocessing mode, such as:
+
+- CLAHE contrast enhancement
+- Grayscale conversion
+- Identity processing
+
+The worker does not perform object detection.
+
+Instead, it returns:
+
+- processed image tile
+- checksum
+- worker identifier
+- processing latency
+
+Since multiple workers process tiles simultaneously, image preprocessing is executed in parallel across the cluster.
+
+---
 
 ### Step 8 — Retry and fallback
 
 Failed tiles can be retried on another worker. When all attempts fail, the original tile is retained. The frame therefore continues through the pipeline instead of being discarded.
 
-### Step 9 — Reconstruction
+### Step 9 — Image Reconstruction
 
-The backend reconstructs one frame from successful and fallback tiles. Overlap is removed using each tile's core region.
+After all worker responses are received, the backend reconstructs a complete image by combining the processed tiles.
+
+Only the central region of each tile is used during reconstruction so that overlapping border regions are removed, preventing duplicated image content.
+
+Once reconstruction is complete, the backend forwards a single reconstructed frame to the inference service.
+
+The YOLO model is executed only once per frame regardless of how many worker nodes participated in preprocessing.
 
 ### Step 10 — YOLO inference
 
-The reconstructed frame is sent to:
+The backend performs only one inference for every uploaded frame.
 
-```text
-http://inference.edge-monitoring.svc.cluster.local:8001
-```
+After the distributed preprocessing stage has completed and the processed tiles have been reconstructed into a single image, the backend forwards the reconstructed frame to the dedicated inference service running on the Raspberry Pi 5.
+
+The Raspberry Pi 3 workers never execute the YOLO model.
 
 The inference service returns detections, confidence values, bounding boxes, severity, latency and annotated JPEG bytes.
 
@@ -168,9 +193,15 @@ The frontend reads events and images through the backend API. Critical alerts ca
 
 The backend is the orchestration layer. It does not load the YOLO model directly in the deployed architecture. Its main responsibilities are request validation, distributed processing, storage, metadata generation, API delivery and integrations.
 
-### 6.2 Image worker service
+### 6.2 Image Worker Service
 
-The worker service is intentionally lightweight and runs on the Pi3 nodes. It exposes a health endpoint and an image-processing endpoint on port `8002`.
+The image worker service is a lightweight FastAPI application deployed on the Raspberry Pi 3 worker nodes.
+
+Its only responsibility is image preprocessing.
+
+Each worker receives one image tile, applies the configured preprocessing algorithm and returns the processed tile together with processing metadata.
+
+By distributing preprocessing across several Raspberry Pi 3 nodes, the backend reduces the preprocessing workload performed by a single device while maintaining a single centralized YOLO inference stage.
 
 ### 6.3 YOLO inference service
 
@@ -266,6 +297,33 @@ If SeaweedFS or the Pi5 SSD is unavailable, evidence storage and retrieval are a
 ### Pi5 failure
 
 Pi5 remains a system-wide dependency because it hosts the K3s control plane, PXE/NFS services, inference and shared storage access. Backend replicas on Pi3 improve Pi3-level service availability but do not remove this Pi5 dependency.
+
+---
+
+## Backend Performance
+
+Latency measurements were collected using the backend's built-in timing instrumentation during frame processing.
+
+The measurements include distributed preprocessing, inference and the complete backend pipeline.
+
+| Processing Stage | Mean Latency |
+|------------------|------------:|
+| Worker Processing | 1546 ms |
+| Distributed Processing | 2206 ms |
+| YOLO Model Inference | 529 ms |
+| Inference Round Trip | 683 ms |
+| Complete Backend Pipeline | 6454 ms |
+
+The distributed processing latency includes communication between the backend and worker nodes together with image preprocessing.
+
+YOLO inference latency represents only execution of the object detection model after the image has already been reconstructed.
+
+> **Screenshot placeholder – Backend Performance Results**  
+> Include a table or graph showing latency measurements collected from multiple processed frames.
+>
+> Suggested filename:
+>
+> `assets/backend/backend-performance-results.png`
 
 ---
 
