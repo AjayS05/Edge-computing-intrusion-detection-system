@@ -85,7 +85,7 @@ nav:
   - Task 7 - Backend Services:
       - Service Overview: task7/backend_overview.md
       - Architecture Design: task7/backend_architecture.md
-      - REST API Reference: task7/backend_api.md
+      # - REST API Reference: task7/backend_api.md
       - SeaweedFS Storage: task7/seaweedfs.md
       - Kubernetes Deployment: task7/kubernetes.md
       - High Availability Approaches: task7/high_availability.md

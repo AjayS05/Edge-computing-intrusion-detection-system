@@ -11,7 +11,7 @@ The architecture is organized into three layers:
 ---
 ## Hardware Architecture
 
-![Hardware Architecture](images/hardware_architecture.png)
+[![Hardware Architecture](images/hardware_architecture.png)](images/hardware_architecture.png)
 
 The cluster consists of eleven Raspberry Pi devices connected through a dedicated Gigabit Ethernet network.
 
@@ -34,7 +34,7 @@ The Raspberry Pi 5 is connected to an external SSD that serves as the primary pe
 
 This is our hardware setup:
 
-![Hardware Setup](images/hardware_setup.jpeg)
+[![Hardware Setup](images/hardware_setup.jpeg)](images/hardware_setup.jpeg)
 
 ---
 
@@ -247,4 +247,4 @@ This separates configuration data from application code while allowing secure ma
 ## The Complete Story
 After combining all above, we get the complete system architecture of PiWatch. 
 
-![System Architecture](images/system_architecture.png)
+[![System Architecture](images/system_architecture.png)](images/system_architecture.png)
