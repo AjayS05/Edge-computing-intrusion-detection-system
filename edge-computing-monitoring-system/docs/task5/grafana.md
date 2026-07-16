@@ -23,12 +23,7 @@ The dashboard displays:
 - Raspberry Pi temperature
 - System load and uptime
 
-Grafana is also useful during performance experiments because it makes resource changes visible before, during, and after inference workloads.
-
-> **IMAGE REQUIRED — Complete dashboard**  
-> Save as: `images/monitoring/grafana-dashboard-overview.png`  
-> Capture the complete dashboard with the Job set to `raspberry-pi-nodes`, several live panels, the selected time range, and no credentials visible. Replace this placeholder with:  
-> `![Complete Raspberry Pi Grafana dashboard](images/monitoring/grafana-dashboard-overview.png)`
+Grafana is also useful during performance experiments because it makes resource changes visible before, during, and after inference workloads. The final dashboard screenshot is included in the Dashboard Verification section to avoid displaying the same dashboard twice.
 
 ---
 
@@ -40,6 +35,11 @@ Grafana is installed as part of `kube-prometheus-stack`. It is enabled in `prome
 grafana:
   enabled: true
   replicas: 1
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 3000
+    nodePort: 30300
 ```
 
 Deploy the monitoring stack:
@@ -51,6 +51,7 @@ helm upgrade --install prometheus \
   --create-namespace \
   -f prometheus-k3s-values.yaml \
   --set nodeExporter.enabled=false \
+  --wait \
   --timeout 30m
 ```
 
@@ -67,11 +68,11 @@ The Grafana pod should show all containers ready:
 3/3 Running
 ```
 
-![Grafana pod running in the monitoring namespace](images/monitoring/prometheus-grafana-pod.png)
+![Grafana pod running in the monitoring namespace](images/prometheus-grafana-pod.png)
 
 The screenshot above is valid evidence: the Grafana pod reports `3/3` containers ready and `Running`.
 
-![Grafana and Prometheus services in the monitoring namespace](images/monitoring/grafana-monitoring-services.png)
+![Grafana and Prometheus services in the monitoring namespace](images/grafana-monitoring-services.png)
 
 The service output confirms that Grafana is exposed as a NodePort service on port `30300` and Prometheus on port `30090`.
 
@@ -106,6 +107,21 @@ Then open:
 http://192.168.178.200:3001
 ```
 
+Verify the Grafana HTTP service through the permanent NodePort:
+
+```bash
+curl -fsS http://192.168.178.200:30300/api/health | jq
+```
+
+Expected fields include:
+
+```json
+{
+  "database": "ok",
+  "message": "Ok"
+}
+```
+
 Retrieve the administrator password:
 
 ```bash
@@ -122,12 +138,7 @@ Use the following username:
 admin
 ```
 
-Do not add the administrator password to Git, screenshots, or documentation.
-
-> **OPTIONAL IMAGE — Grafana login**  
-> Save as: `images/monitoring/grafana-login.png`  
-> Capture the login page without displaying credentials. Replace this placeholder with:  
-> `![Grafana login page](images/monitoring/grafana-login.png)`
+Do not add the administrator password to Git, screenshots, or documentation. A login-page screenshot is not required because it does not prove that the data source or dashboards are working.
 
 ---
 
@@ -150,10 +161,8 @@ http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
 
 Kubernetes service DNS is used because Grafana and Prometheus run inside the same K3s cluster.
 
-> **IMAGE REQUIRED — Prometheus data source**  
-> Save as: `images/monitoring/grafana-prometheus-datasource.png`  
-> Capture the Prometheus URL and successful **Save & test** response. Do not expose credentials. Replace this placeholder with:  
-> `![Successful Prometheus data-source connection](images/monitoring/grafana-prometheus-datasource.png)`
+ 
+`![Successful Prometheus data-source connection](images/monitoring/grafana-prometheus-datasource.png)`
 
 ---
 
@@ -182,6 +191,30 @@ Use the following selections:
 - **Time range:** Last 15 minutes
 - **Refresh interval:** 10 seconds
 
+If the imported dashboard does not list `raspberry-pi-nodes`, open **Dashboard settings → Variables** and verify the variable queries.
+
+For the Job variable, use:
+
+```text
+label_values(node_uname_info, job)
+```
+
+For the Instance or Node variable, use:
+
+```text
+label_values(node_uname_info{job="$job"}, instance)
+```
+
+Set each variable to refresh **On dashboard load**. Return to the dashboard and select:
+
+```text
+Job: raspberry-pi-nodes
+Instance: All or the required Raspberry Pi
+```
+
+
+`![Grafana dashboard variables for Raspberry Pi targets](images/monitoring/grafana-dashboard-variables.png)`
+
 ### Create a custom panel
 
 For each panel described below:
@@ -195,10 +228,7 @@ For each panel described below:
 7. Select **Apply**.
 8. Save the dashboard.
 
-> **OPTIONAL IMAGE — Dashboard editor**  
-> Save as: `images/monitoring/grafana-dashboard-editor.png`  
-> Capture one panel editor with its PromQL query and preview visible. Replace this placeholder with:  
-> `![Grafana panel configuration](images/monitoring/grafana-dashboard-editor.png)`
+The panel editor does not require a separate screenshot when the query and settings are already documented below.
 
 ---
 
@@ -222,10 +252,6 @@ Recommended settings:
 | Legend | `{{instance}}` |
 
 A stat panel is suitable for a compact cluster overview. A state timeline is useful when historical availability must be shown.
-
-> **IMAGE REQUIRED — Node availability**  
-> Save as: `images/monitoring/grafana-node-availability.png`  
-> Replace this placeholder with: `![Node availability panel](images/monitoring/grafana-node-availability.png)`
 
 ---
 
@@ -257,10 +283,6 @@ Recommended settings:
 | Critical threshold | `90` |
 | Legend | `{{instance}}` |
 
-> **IMAGE REQUIRED — CPU panel**  
-> Save as: `images/monitoring/grafana-cpu-panel.png`  
-> Replace this placeholder with: `![CPU usage panel](images/monitoring/grafana-cpu-panel.png)`
-
 ---
 
 ## Memory Usage Panel
@@ -289,10 +311,6 @@ Recommended settings:
 | Warning threshold | `80` |
 | Critical threshold | `90` |
 | Legend | `{{instance}}` |
-
-> **IMAGE REQUIRED — Memory panel**  
-> Save as: `images/monitoring/grafana-memory-panel.png`  
-> Replace this placeholder with: `![Memory usage panel](images/monitoring/grafana-memory-panel.png)`
 
 ---
 
@@ -330,10 +348,6 @@ Recommended settings:
 | Warning threshold | `80` |
 | Critical threshold | `90` |
 | Legend | `{{instance}}` |
-
-> **IMAGE REQUIRED — Disk panel**  
-> Save as: `images/monitoring/grafana-disk-panel.png`  
-> Replace this placeholder with: `![Disk usage panel](images/monitoring/grafana-disk-panel.png)`
 
 ---
 
@@ -373,10 +387,6 @@ Recommended settings:
 | Query A legend | `RX {{instance}}` |
 | Query B legend | `TX {{instance}}` |
 
-> **IMAGE REQUIRED — Network panel**  
-> Save as: `images/monitoring/grafana-network-panel.png`  
-> Replace this placeholder with: `![Network traffic panel](images/monitoring/grafana-network-panel.png)`
-
 ---
 
 ## Temperature Panel
@@ -412,10 +422,6 @@ Recommended settings:
 
 Use the query that returns temperature data in Prometheus. Some nodes may not expose the same temperature metric depending on hardware and operating-system support.
 
-> **IMAGE REQUIRED — Temperature panel**  
-> Save as: `images/monitoring/grafana-temperature-panel.png`  
-> Replace this placeholder with: `![Raspberry Pi temperature panel](images/monitoring/grafana-temperature-panel.png)`
-
 ---
 
 ## Dashboard Verification
@@ -434,13 +440,28 @@ The dashboard is successfully verified when live values are visible for the sele
 
 Some panels may show `N/A` when a metric is not supported by a particular Raspberry Pi, operating system, filesystem, or Node Exporter version. This does not invalidate the dashboard when the core availability, CPU, memory, disk, network, uptime, and load metrics are present.
 
-> **IMAGE REQUIRED — Verified dashboard**  
-> Save as: `images/monitoring/grafana-dashboard-verified.png`  
-> Capture the final dashboard showing several nodes, live values, the Job selection, and the time range. Replace this placeholder with:  
-> `![Verified Grafana dashboard with live Raspberry Pi metrics](images/monitoring/grafana-dashboard-verified.png)`
+ 
+`![Verified Grafana dashboard with live Raspberry Pi metrics](images/grafana-dashboard-verified.png)`
 
 ---
 
-## Results
+## Exporting the Dashboard
 
-Grafana is successfully deployed in K3s and connected to Prometheus. The dashboard displays live and historical availability, CPU, memory, disk, network, and temperature data for Pi5, Pi4, and the eight Pi3 workers.
+Export the completed dashboard so another team member can import the exact panels, variables, thresholds, and layout without recreating them manually.
+
+1. Open the completed dashboard.
+2. Select **Dashboard settings**.
+3. Select **JSON model** or **Export**, depending on the Grafana version.
+4. Enable the option to make the dashboard importable on another instance, if displayed.
+5. Save the file as:
+
+```text
+grafana/raspberry-pi-monitoring-dashboard.json
+```
+
+To import the saved file later:
+
+1. Open **Dashboards → New → Import**.
+2. Upload `raspberry-pi-monitoring-dashboard.json`.
+3. Select the Prometheus data source.
+4. Select **Import**.
