@@ -10,7 +10,7 @@ The PiWatch backend architecture separates camera capture, orchestration, distri
 
 ## 2. System Architecture Diagram
 
-![PiWatch system architecture](assets/backend/piwatch-system-architecture.png)
+![PiWatch system architecture](piwatch-system-architecture.png)
 
 **Figure 1 — PiWatch backend and edge-processing architecture.** The Pi4 camera sends frames to the backend, Pi3 workers process image tiles, Pi5 performs YOLO inference, SeaweedFS stores evidence, the frontend reads results through the API, and the monitoring stack can feed infrastructure conditions into the event and alert workflow.
 
