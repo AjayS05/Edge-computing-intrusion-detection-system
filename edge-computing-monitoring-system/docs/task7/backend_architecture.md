@@ -70,9 +70,7 @@ K3s cluster
     └── Prometheus, Alertmanager and Grafana
 ```
 
-> **Screenshot placeholder — Kubernetes topology**  
-> Use `kubectl get pods -A -o wide` and capture the relevant PiWatch workloads and nodes.  
-> Suggested filename: `assets/backend/kubernetes-backend-topology.png`
+
 
 ---
 
@@ -181,9 +179,6 @@ The backend stores image evidence and JSON metadata in SeaweedFS.
 
 The frontend reads events and images through the backend API. Critical alerts can be delivered through Telegram. Monitoring metrics are retrieved from Prometheus and can contribute infrastructure alerts.
 
-> **Screenshot placeholder — complete frame flow**  
-> Add a sequence or flow screenshot showing upload, worker calls, inference, storage and event output.  
-> Suggested filename: `assets/backend/backend-frame-pipeline.png`
 
 ---
 
@@ -302,28 +297,36 @@ Pi5 remains a system-wide dependency because it hosts the K3s control plane, PXE
 
 ## Backend Performance
 
-Latency measurements were collected using the backend's built-in timing instrumentation during frame processing.
+## Backend Performance Evaluation
 
-The measurements include distributed preprocessing, inference and the complete backend pipeline.
+Performance measurements were collected using the backend's built-in latency instrumentation during the processing of **20 frames**. The backend records latency for each major stage of the distributed processing pipeline, allowing performance to be evaluated from image preprocessing through to inference.
 
-| Processing Stage | Mean Latency |
-|------------------|------------:|
-| Worker Processing | 1546 ms |
-| Distributed Processing | 2206 ms |
-| YOLO Model Inference | 529 ms |
-| Inference Round Trip | 683 ms |
-| Complete Backend Pipeline | 6454 ms |
+### Latency Results
 
-The distributed processing latency includes communication between the backend and worker nodes together with image preprocessing.
+| Processing Stage | Samples | Mean (ms) | Median (ms) | Min (ms) | Max (ms) | P95 (ms) |
+|------------------|--------:|----------:|------------:|---------:|---------:|----------:|
+| Complete Backend Pipeline | 20 | **6453.53** | **1680.93** | **919.16** | **34013.48** | **24908.62** |
+| YOLO Model Inference | 20 | **528.54** | **520.77** | **464.27** | **743.07** | **582.04** |
+| Inference Round Trip | 20 | **682.76** | **582.07** | **488.00** | **2442.78** | **850.99** |
+| Distributed Processing | 20 | **2205.79** | **741.60** | **255.31** | **19919.31** | **8920.94** |
+| Total Worker Processing | 20 | **1546.23** | **85.39** | **65.52** | **16116.75** | **11592.70** |
+| Maximum Worker Processing | 20 | **1113.06** | **16.07** | **12.94** | **15579.63** | **5700.40** |
+| Maximum Worker Round Trip | 20 | **1751.60** | **290.31** | **156.10** | **18089.88** | **8355.57** |
 
-YOLO inference latency represents only execution of the object detection model after the image has already been reconstructed.
+### Interpretation of the Metrics
 
-> **Screenshot placeholder – Backend Performance Results**  
-> Include a table or graph showing latency measurements collected from multiple processed frames.
->
-> Suggested filename:
->
-> `assets/backend/backend-performance-results.png`
+The backend records latency at multiple stages of the processing pipeline:
+
+- **Complete Backend Pipeline** measures the total time required for the backend to process an uploaded frame, including distributed preprocessing, inference, metadata generation and storage.
+- **YOLO Model Inference** measures only the execution time of the YOLO object detection model on the Raspberry Pi 5.
+- **Inference Round Trip** includes both the YOLO inference time and the communication overhead between the backend and the inference service.
+- **Distributed Processing** measures the complete preprocessing stage, including image distribution to worker nodes, preprocessing and image reconstruction.
+- **Total Worker Processing** represents the combined processing time reported by all worker nodes for a frame.
+- **Maximum Worker Processing** identifies the slowest worker node during preprocessing.
+- **Maximum Worker Round Trip** measures the slowest end-to-end communication time between the backend and an individual worker.
+
+The measurements demonstrate that image preprocessing and inference are independently instrumented, enabling detailed performance analysis of each stage of the distributed edge-processing pipeline.
+
 
 ---
 
@@ -372,9 +375,6 @@ The worker and backend remain separate processes and can have independent probes
 
 The backend Service can then select all ready backend containers and distribute requests across them. Kubernetes already performs this internal load balancing; MetalLB is not required merely to balance traffic between backend pods.
 
-> **Screenshot placeholder — target HA canary**  
-> Show the Pi3 backend bundle pod and its successful readiness, storage and API tests.  
-> Suggested filename: `assets/backend/backend-ha-canary-validation.png`
 
 ### 10.4 HA limitations
 
