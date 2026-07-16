@@ -47,15 +47,10 @@ The Raspberry Pi 5 is the central server of the cluster and performs multiple in
 It hosts:
 
 - K3s Kubernetes Control Plane
-- Application deployments
 - PXE Boot Server
 - DHCP Server
 - TFTP Server
 - NFS Server
-- SeaweedFS storage services
-- Prometheus
-- Grafana
-- Alertmanager
 
 The Pi5 also exports the shared root filesystem used by all Raspberry Pi 3 worker nodes during network boot.
 
